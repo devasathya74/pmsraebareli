@@ -1,4 +1,4 @@
-.env
+# .env inclusion allowed by user request
 __pycache__/
 *.pyc
 data/

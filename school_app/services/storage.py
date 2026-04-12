@@ -8,36 +8,15 @@ from werkzeug.utils import secure_filename
 
 
 def build_storage_service(config):
-    if config["STORAGE_BACKEND"] == "supabase":
-        return SupabaseStorageService(
-            url=config["SUPABASE_URL"],
-            key=config["SUPABASE_KEY"],
-            bucket=config["SUPABASE_BUCKET"],
-        )
-    return LocalStorageService(config["LOCAL_UPLOAD_DIR"])
+    # Remote-only architecture: Local file storage is disabled
+    return SupabaseStorageService(
+        url=config["SUPABASE_URL"],
+        key=config["SUPABASE_KEY"],
+        bucket=config["SUPABASE_BUCKET"],
+    )
 
 
-class LocalStorageService:
-    def __init__(self, upload_dir: str):
-        self.base_path = Path(upload_dir)
-        self.base_path.mkdir(parents=True, exist_ok=True)
-
-    def upload(self, file_storage: FileStorage, folder: str = "general") -> dict[str, str]:
-        filename = secure_filename(file_storage.filename or "upload.bin")
-        object_name = f"{folder}/{uuid.uuid4()}-{filename}"
-        destination = self.base_path / object_name
-        destination.parent.mkdir(parents=True, exist_ok=True)
-        file_storage.save(destination)
-        return {
-            "file_url": f"/auth/files/{object_name.replace('\\', '/')}",
-            "object_name": object_name,
-            "filename": filename,
-        }
-
-    def delete(self, object_name: str) -> None:
-        target = self.base_path / object_name
-        if target.exists():
-            target.unlink()
+# Removed LocalStorageService to enforce Cloud storage (Supabase)
 
 
 class SupabaseStorageService:

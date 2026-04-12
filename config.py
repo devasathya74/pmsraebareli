@@ -21,19 +21,12 @@ class Config:
     SESSION_COOKIE_SAMESITE = os.getenv("SESSION_COOKIE_SAMESITE", "Strict")
     WTF_CSRF_ENABLED = True
 
-    DATA_BACKEND = os.getenv("DATA_BACKEND", "sqlite")
-    LOCAL_DATA_FILE = os.getenv("LOCAL_DATA_FILE", str(BASE_DIR / "data" / "local_store.json"))
-    SQLITE_DATA_FILE = os.getenv("SQLITE_DATA_FILE", str(BASE_DIR / "data" / "school_app.db"))
-    LOCAL_UPLOAD_DIR = os.getenv("LOCAL_UPLOAD_DIR", str(BASE_DIR / "uploads"))
-    BACKUP_DIR = os.getenv("BACKUP_DIR", str(BASE_DIR / "backups"))
-    BOOTSTRAP_FROM_JSON = os.getenv("BOOTSTRAP_FROM_JSON", "false").lower() == "true"
-    ALLOW_DEMO_SEED = os.getenv("ALLOW_DEMO_SEED", "false").lower() == "true"
-
+    DATA_BACKEND = os.getenv("DATA_BACKEND", "firestore")
+    FIRESTORE_COLLECTION_PREFIX = os.getenv("FIRESTORE_COLLECTION_PREFIX", "pmsr")
     FIREBASE_PROJECT_ID = os.getenv("FIREBASE_PROJECT_ID", "")
     FIREBASE_CREDENTIALS_PATH = os.getenv("FIREBASE_CREDENTIALS_PATH", "")
-    FIRESTORE_COLLECTION_PREFIX = os.getenv("FIRESTORE_COLLECTION_PREFIX", "pmsr")
 
-    STORAGE_BACKEND = os.getenv("STORAGE_BACKEND", "local")
+    STORAGE_BACKEND = os.getenv("STORAGE_BACKEND", "supabase")
     SUPABASE_URL = os.getenv("SUPABASE_URL", "")
     SUPABASE_KEY = os.getenv("SUPABASE_KEY", "")
     SUPABASE_BUCKET = os.getenv("SUPABASE_BUCKET", "school-files")

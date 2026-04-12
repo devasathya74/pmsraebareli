@@ -21,8 +21,7 @@ def create_app() -> Flask:
     app = Flask(__name__)
     app.config.from_object(Config)
 
-    Path(app.config["LOCAL_UPLOAD_DIR"]).mkdir(parents=True, exist_ok=True)
-    Path(app.config["LOCAL_DATA_FILE"]).parent.mkdir(parents=True, exist_ok=True)
+    # Local directory setup removed for Cloud-only mode
 
     app.repository = build_repository(app.config)
     app.storage_service = build_storage_service(app.config)
@@ -274,61 +273,7 @@ def _register_commands(app: Flask) -> None:
         print("Admin email=admin@gmail.com password=654321")
         print("Teacher email=tr@gmail.com password=123456")
 
-    @app.cli.command("backup-data")
-    def backup_data():
-        archive_path = create_backup_archive(
-            data_file=app.config.get("SQLITE_DATA_FILE") or app.config.get("LOCAL_DATA_FILE"),
-            upload_dir=app.config.get("LOCAL_UPLOAD_DIR"),
-            backup_dir=app.config["BACKUP_DIR"],
-        )
-        print(f"Backup created: {archive_path}")
-
-    @app.cli.command("reset-data")
-    @click.option("--keep-files", is_flag=True, help="Keep uploaded files in the uploads directory.")
-    @click.option("--keep-backups", is_flag=True, help="Keep existing backups.")
-    def reset_data(keep_files: bool, keep_backups: bool):
-        data_dir = Path(app.config["SQLITE_DATA_FILE"]).resolve().parent
-        sqlite_path = Path(app.config["SQLITE_DATA_FILE"]).resolve()
-        json_path = Path(app.config["LOCAL_DATA_FILE"]).resolve()
-
-        if sqlite_path.exists():
-            # On Windows the running server may keep a handle open, so truncate instead of deleting.
-            import sqlite3
-
-            connection = sqlite3.connect(sqlite_path)
-            try:
-                connection.execute("DELETE FROM records")
-                connection.commit()
-            finally:
-                connection.close()
-
-        # Best-effort cleanup of WAL/SHM files.
-        for path in [sqlite_path.with_suffix(".db-wal"), sqlite_path.with_suffix(".db-shm")]:
-            try:
-                if path.exists():
-                    path.unlink()
-            except OSError:
-                pass
-
-        # Reset the JSON store too (used only when BOOTSTRAP_FROM_JSON=true or DATA_BACKEND=local)
-        from school_app.services.repository import DEFAULT_COLLECTIONS
-        json_path.parent.mkdir(parents=True, exist_ok=True)
-        json_path.write_text(__import__("json").dumps(DEFAULT_COLLECTIONS, indent=2), encoding="utf-8")
-
-        if not keep_files:
-            upload_dir = Path(app.config["LOCAL_UPLOAD_DIR"]).resolve()
-            if upload_dir.exists():
-                import shutil
-                shutil.rmtree(upload_dir, ignore_errors=True)
-
-        if not keep_backups:
-            backup_dir = Path(app.config["BACKUP_DIR"]).resolve()
-            if backup_dir.exists():
-                import shutil
-                shutil.rmtree(backup_dir, ignore_errors=True)
-
-        data_dir.mkdir(parents=True, exist_ok=True)
-        print("Data reset complete.")
+    # CLI commands for local storage (backup/reset) have been removed to enforce Cloud-only mode
 
     @app.cli.command("create-admin")
     @click.option("--email", required=True)
