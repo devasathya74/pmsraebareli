@@ -1,0 +1,719 @@
+/* ========================================
+   RESPONSIVE CSS FRAMEWORK
+   Police Modern School - Raebareli
+   Mobile-First Approach
+   ======================================== */
+
+/* ========================================
+   1. CSS VARIABLES & DESIGN TOKENS
+   ======================================== */
+:root {
+    /* Breakpoints */
+    --breakpoint-sm: 480px;
+    --breakpoint-md: 768px;
+    --breakpoint-lg: 1024px;
+    --breakpoint-xl: 1280px;
+
+    /* Spacing Scale - Mobile */
+    --space-xs: 0.25rem;
+    /* 4px */
+    --space-sm: 0.5rem;
+    /* 8px */
+    --space-md: 1rem;
+    /* 16px */
+    --space-lg: 1.5rem;
+    /* 24px */
+    --space-xl: 2rem;
+    /* 32px */
+    --space-2xl: 3rem;
+    /* 48px */
+    --space-3xl: 4rem;
+    /* 64px */
+
+    /* Typography Scale - Mobile */
+    --text-xs: 0.75rem;
+    /* 12px */
+    --text-sm: 0.875rem;
+    /* 14px */
+    --text-base: 1rem;
+    /* 16px */
+    --text-lg: 1.125rem;
+    /* 18px */
+    --text-xl: 1.25rem;
+    /* 20px */
+    --text-2xl: 1.5rem;
+    /* 24px */
+    --text-3xl: 1.75rem;
+    /* 28px */
+    --text-4xl: 2rem;
+    /* 32px */
+
+    /* Touch Targets */
+    --touch-target-min: 44px;
+    --touch-target-comfortable: 48px;
+
+    /* Container */
+    --container-max: 1280px;
+    --container-padding: 1rem;
+}
+
+/* Desktop Spacing & Typography */
+@media (min-width: 768px) {
+    :root {
+        --space-xl: 3rem;
+        /* 48px */
+        --space-2xl: 4rem;
+        /* 64px */
+        --space-3xl: 5rem;
+        /* 80px */
+
+        --text-2xl: 2rem;
+        /* 32px */
+        --text-3xl: 2.25rem;
+        /* 36px */
+        --text-4xl: 2.5rem;
+        /* 40px */
+
+        --container-padding: 1.5rem;
+    }
+}
+
+/* ========================================
+   2. RESPONSIVE UTILITIES
+   ======================================== */
+
+/* Container */
+.container-responsive {
+    width: 100%;
+    max-width: var(--container-max);
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: var(--container-padding);
+    padding-right: var(--container-padding);
+}
+
+/* Hide/Show based on screen size */
+.mobile-only {
+    display: block;
+}
+
+.tablet-only,
+.desktop-only {
+    display: none;
+}
+
+@media (min-width: 768px) {
+    .mobile-only {
+        display: none;
+    }
+
+    .tablet-only {
+        display: block;
+    }
+}
+
+@media (min-width: 1024px) {
+    .tablet-only {
+        display: none;
+    }
+
+    .desktop-only {
+        display: block;
+    }
+}
+
+/* ========================================
+   3. RESPONSIVE GRID SYSTEM
+   ======================================== */
+
+.grid-responsive {
+    display: grid;
+    gap: var(--space-md);
+    grid-template-columns: 1fr;
+}
+
+@media (min-width: 480px) {
+    .grid-responsive-sm-2 {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (min-width: 768px) {
+    .grid-responsive-md-2 {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .grid-responsive-md-3 {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+@media (min-width: 1024px) {
+    .grid-responsive-lg-3 {
+        grid-template-columns: repeat(3, 1fr);
+    }
+
+    .grid-responsive-lg-4 {
+        grid-template-columns: repeat(4, 1fr);
+    }
+}
+
+/* ========================================
+   4. RESPONSIVE TYPOGRAPHY
+   ======================================== */
+
+.text-responsive-xs {
+    font-size: var(--text-xs);
+}
+
+.text-responsive-sm {
+    font-size: var(--text-sm);
+}
+
+.text-responsive-base {
+    font-size: var(--text-base);
+}
+
+.text-responsive-lg {
+    font-size: var(--text-lg);
+}
+
+.text-responsive-xl {
+    font-size: var(--text-xl);
+}
+
+.text-responsive-2xl {
+    font-size: var(--text-2xl);
+}
+
+.text-responsive-3xl {
+    font-size: var(--text-3xl);
+}
+
+.text-responsive-4xl {
+    font-size: var(--text-4xl);
+}
+
+/* Responsive Headings */
+h1.responsive {
+    font-size: var(--text-3xl);
+    line-height: 1.2;
+}
+
+h2.responsive {
+    font-size: var(--text-2xl);
+    line-height: 1.3;
+}
+
+h3.responsive {
+    font-size: var(--text-xl);
+    line-height: 1.4;
+}
+
+@media (min-width: 768px) {
+    h1.responsive {
+        font-size: var(--text-4xl);
+    }
+}
+
+/* ========================================
+   5. RESPONSIVE SPACING
+   ======================================== */
+
+/* Padding */
+.p-responsive {
+    padding: var(--space-md);
+}
+
+.px-responsive {
+    padding-left: var(--space-md);
+    padding-right: var(--space-md);
+}
+
+.py-responsive {
+    padding-top: var(--space-md);
+    padding-bottom: var(--space-md);
+}
+
+@media (min-width: 768px) {
+    .p-responsive {
+        padding: var(--space-xl);
+    }
+
+    .px-responsive {
+        padding-left: var(--space-xl);
+        padding-right: var(--space-xl);
+    }
+
+    .py-responsive {
+        padding-top: var(--space-xl);
+        padding-bottom: var(--space-xl);
+    }
+}
+
+/* Margin */
+.m-responsive {
+    margin: var(--space-md);
+}
+
+.mx-responsive {
+    margin-left: var(--space-md);
+    margin-right: var(--space-md);
+}
+
+.my-responsive {
+    margin-top: var(--space-md);
+    margin-bottom: var(--space-md);
+}
+
+@media (min-width: 768px) {
+    .m-responsive {
+        margin: var(--space-xl);
+    }
+
+    .mx-responsive {
+        margin-left: var(--space-xl);
+        margin-right: var(--space-xl);
+    }
+
+    .my-responsive {
+        margin-top: var(--space-xl);
+        margin-bottom: var(--space-xl);
+    }
+}
+
+/* ========================================
+   6. TOUCH-FRIENDLY COMPONENTS
+   ======================================== */
+
+/* Buttons */
+.btn-touch {
+    min-height: var(--touch-target-min);
+    min-width: var(--touch-target-min);
+    padding: 0.75rem 1.5rem;
+    font-size: var(--text-base);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    cursor: pointer;
+    border-radius: 0.5rem;
+    transition: all 0.2s ease;
+}
+
+.btn-touch-full {
+    width: 100%;
+}
+
+@media (min-width: 768px) {
+    .btn-touch-full {
+        width: auto;
+    }
+}
+
+/* Input Fields */
+.input-touch {
+    min-height: var(--touch-target-min);
+    padding: 0.75rem 1rem;
+    font-size: var(--text-base);
+    width: 100%;
+    border-radius: 0.5rem;
+    border: 2px solid #d1d5db;
+    transition: border-color 0.2s ease;
+}
+
+.input-touch:focus {
+    outline: none;
+    border-color: #1e3a8a;
+    box-shadow: 0 0 0 3px rgba(30, 58, 138, 0.1);
+}
+
+/* ========================================
+   7. RESPONSIVE NAVIGATION
+   ======================================== */
+
+.nav-responsive {
+    position: relative;
+}
+
+/* Mobile Menu */
+.nav-mobile-menu {
+    position: fixed;
+    top: 0;
+    left: -100%;
+    width: 80%;
+    max-width: 320px;
+    height: 100vh;
+    background: white;
+    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+    transition: left 0.3s ease;
+    z-index: 1000;
+    overflow-y: auto;
+}
+
+.nav-mobile-menu.open {
+    left: 0;
+}
+
+.nav-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.5);
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+    z-index: 999;
+}
+
+.nav-overlay.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+@media (min-width: 1024px) {
+    .nav-mobile-menu {
+        position: static;
+        width: auto;
+        max-width: none;
+        height: auto;
+        box-shadow: none;
+        background: transparent;
+    }
+
+    .nav-overlay {
+        display: none;
+    }
+}
+
+/* ========================================
+   8. RESPONSIVE TABLES
+   ======================================== */
+
+.table-responsive {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+.table-responsive table {
+    width: 100%;
+    min-width: 600px;
+}
+
+/* Mobile: Card-based table */
+@media (max-width: 767px) {
+    .table-card-mobile {
+        display: block;
+    }
+
+    .table-card-mobile thead {
+        display: none;
+    }
+
+    .table-card-mobile tbody {
+        display: block;
+    }
+
+    .table-card-mobile tr {
+        display: block;
+        margin-bottom: 1rem;
+        background: white;
+        border-radius: 0.5rem;
+        padding: 1rem;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .table-card-mobile td {
+        display: flex;
+        justify-content: space-between;
+        padding: 0.5rem 0;
+        border-bottom: 1px solid #e5e7eb;
+    }
+
+    .table-card-mobile td:last-child {
+        border-bottom: none;
+    }
+
+    .table-card-mobile td::before {
+        content: attr(data-label);
+        font-weight: 600;
+        color: #374151;
+    }
+}
+
+/* ========================================
+   9. RESPONSIVE CARDS
+   ======================================== */
+
+.card-responsive {
+    background: white;
+    border-radius: 0.75rem;
+    padding: var(--space-md);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+@media (min-width: 768px) {
+    .card-responsive {
+        padding: var(--space-xl);
+    }
+
+    .card-responsive:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+    }
+}
+
+/* ========================================
+   10. RESPONSIVE MODALS
+   ======================================== */
+
+.modal-responsive {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    z-index: 9999;
+    padding: 0;
+}
+
+.modal-responsive-content {
+    background: white;
+    width: 100%;
+    max-height: 90vh;
+    overflow-y: auto;
+    border-radius: 1rem 1rem 0 0;
+    padding: var(--space-lg);
+}
+
+@media (min-width: 768px) {
+    .modal-responsive {
+        align-items: center;
+        padding: var(--space-lg);
+    }
+
+    .modal-responsive-content {
+        width: auto;
+        max-width: 600px;
+        border-radius: 1rem;
+        max-height: 80vh;
+    }
+}
+
+/* ========================================
+   11. RESPONSIVE FORMS
+   ======================================== */
+
+.form-responsive {
+    width: 100%;
+}
+
+.form-group-responsive {
+    margin-bottom: var(--space-md);
+}
+
+.form-row-responsive {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-md);
+}
+
+@media (min-width: 768px) {
+    .form-row-responsive {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+/* ========================================
+   12. RESPONSIVE IMAGES
+   ======================================== */
+
+.img-responsive {
+    max-width: 100%;
+    height: auto;
+    display: block;
+}
+
+.img-cover {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.img-contain {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+/* ========================================
+   13. RESPONSIVE FLEX UTILITIES
+   ======================================== */
+
+.flex-responsive {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md);
+}
+
+@media (min-width: 768px) {
+    .flex-responsive-row {
+        flex-direction: row;
+    }
+}
+
+.flex-responsive-center {
+    align-items: center;
+    justify-content: center;
+}
+
+.flex-responsive-between {
+    justify-content: space-between;
+}
+
+/* ========================================
+   14. RESPONSIVE SIDEBAR LAYOUT
+   ======================================== */
+
+.layout-sidebar {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+.sidebar-responsive {
+    position: fixed;
+    top: 0;
+    left: -280px;
+    width: 280px;
+    height: 100vh;
+    background: #1e3a8a;
+    transition: left 0.3s ease;
+    z-index: 1000;
+    overflow-y: auto;
+}
+
+.sidebar-responsive.open {
+    left: 0;
+}
+
+.main-content-responsive {
+    flex: 1;
+    width: 100%;
+    padding: var(--space-md);
+}
+
+@media (min-width: 1024px) {
+    .sidebar-responsive {
+        position: static;
+        left: 0;
+    }
+
+    .layout-sidebar {
+        flex-direction: row;
+    }
+
+    .main-content-responsive {
+        padding: var(--space-xl);
+    }
+}
+
+/* ========================================
+   15. UTILITY CLASSES
+   ======================================== */
+
+/* Text Alignment */
+.text-center-mobile {
+    text-align: center;
+}
+
+@media (min-width: 768px) {
+    .text-left-desktop {
+        text-align: left;
+    }
+}
+
+/* Width */
+.w-full {
+    width: 100%;
+}
+
+.w-auto {
+    width: auto;
+}
+
+/* Max Width */
+.max-w-sm {
+    max-width: 24rem;
+}
+
+.max-w-md {
+    max-width: 28rem;
+}
+
+.max-w-lg {
+    max-width: 32rem;
+}
+
+.max-w-xl {
+    max-width: 36rem;
+}
+
+.max-w-2xl {
+    max-width: 42rem;
+}
+
+.max-w-full {
+    max-width: 100%;
+}
+
+/* Overflow */
+.overflow-auto {
+    overflow: auto;
+}
+
+.overflow-hidden {
+    overflow: hidden;
+}
+
+.overflow-x-auto {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+.overflow-y-auto {
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+/* ========================================
+   16. PRINT STYLES
+   ======================================== */
+
+@media print {
+    .no-print {
+        display: none !important;
+    }
+
+    .print-full-width {
+        width: 100% !important;
+        max-width: none !important;
+    }
+
+    body {
+        font-size: 12pt;
+    }
+
+    .card-responsive {
+        box-shadow: none;
+        border: 1px solid #ddd;
+    }
+}

@@ -1,0 +1,8 @@
+{
+  "name": "PMS Raebareli",
+  "short_name": "PMS",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#1e3a8a",
+  "theme_color": "#1e3a8a"
+}

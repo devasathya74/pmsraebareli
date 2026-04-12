@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="hi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inventory & Reports | Admin | पुलिस मॉडर्न स्कूल</title>
+
+    <!-- Favicons -->
+    <link rel="icon" type="image/png" sizes="32x32" href="../assets/images/logo/logo.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="../assets/images/logo/logo.png">
+    <link rel="apple-touch-icon" href="../assets/images/logo/logo.png">
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Tiro+Devanagari+Hindi&display=swap" rel="stylesheet">
+
+    <!-- Responsive CSS Framework -->
+    <link rel="stylesheet" href="../assets/css/responsive.css">
+    <style>
+        html { font-size: 90%; }
+        body { font-family: 'Poppins', 'Tiro Devanagari Hindi', sans-serif; line-height: 1.8; }
+        .container { max-width: 100% !important; padding-left: 2rem !important; padding-right: 2rem !important; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .animate-fade-in { animation: fadeIn 0.5s ease-out forwards; }
+        .tab-btn { background: white; color: #1f2937; }
+        .tab-btn.active { background: #1e3a8a !important; color: white !important; }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        .page-nav-btn { padding: 1rem 1.5rem; font-weight: 600; color: #4b5563; border-bottom: 3px solid transparent; transition: all 0.3s; white-space: nowrap; display: flex; align-items: center; gap: 0.5rem; }
+        .page-nav-btn:hover { background-color: #f9fafb; color: #1e3a8a; }
+        .page-nav-btn.active { color: #1e3a8a; border-bottom-color: #1e3a8a; background-color: #eff6ff; }
+
+        /* Category Section Styles */
+        .category-section { margin-bottom: 2rem; }
+        .category-header { display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem 1rem; border-radius: 0.5rem; margin-bottom: 0.75rem; font-weight: 700; font-size: 1rem; }
+        .cat-furniture { background: #eff6ff; color: #1e3a8a; border-left: 4px solid #1e3a8a; }
+        .cat-electronics { background: #f0fdf4; color: #15803d; border-left: 4px solid #15803d; }
+        .cat-hardware { background: #fff7ed; color: #c2410c; border-left: 4px solid #c2410c; }
+        .cat-other { background: #faf5ff; color: #7e22ce; border-left: 4px solid #7e22ce; }
+        .cat-badge { padding: 0.15rem 0.6rem; border-radius: 9999px; font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; }
+        .badge-furniture { background: #bfdbfe; color: #1e3a8a; }
+        .badge-electronics { background: #bbf7d0; color: #15803d; }
+        .badge-hardware { background: #fed7aa; color: #c2410c; }
+        .badge-other { background: #e9d5ff; color: #7e22ce; }
+            h1, h2, h3, h4, h5, h6 { font-family: 'Nunito', sans-serif; }
+    </style>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    </head>
+
+<body class="bg-gray-50">
+
+    <!-- Header -->
+    <header class="bg-blue-900 text-white shadow-lg sticky top-0 z-50">
+        <div class="container mx-auto px-6 py-4">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h1 class="text-xl md:text-2xl font-bold">Admin Dashboard</h1>
+                    <p class="text-blue-200 text-sm">इन्वेंटरी एवं रिपोर्ट्स</p>
+                </div>
+                <div class="flex items-center gap-4">
+                    <div class="relative">
+                        <button onclick="toggleUserDropdown()" class="flex items-center gap-2 focus:outline-none">
+                            <span id="user-name" class="text-sm font-semibold hidden md:block text-blue-100">Loading...</span>
+                            <div class="w-8 h-8 rounded-full bg-blue-700 flex items-center justify-center border-2 border-blue-400">
+                                <i class="fas fa-user text-sm"></i>
+                            </div>
+                            <i class="fas fa-chevron-down text-xs text-blue-300"></i>
+                        </button>
+                        <div id="user-dropdown" class="hidden absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-xl z-50 border border-gray-100 py-1">
+                            <div class="px-4 py-3 border-b border-gray-100">
+                                <p class="text-xs text-gray-500 uppercase tracking-wider font-bold">Signed in as</p>
+                                <p id="dropdown-user-email" class="text-sm font-medium text-gray-900 truncate">user@example.com</p>
+                            </div>
+                            <a href="#" onclick="openChangePasswordModal()" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
+                                <i class="fas fa-key w-4 text-gray-400 mr-2"></i>Change Password
+                            </a>
+                            <div class="border-t border-gray-100 my-1"></div>
+                            <a href="#" onclick="authHelper.logout()" class="block px-4 py-2 text-sm text-red-600 hover:bg-red-50">
+                                <i class="fas fa-sign-out-alt w-4 text-red-400 mr-2"></i>Logout
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Page Group Navigation -->
+    <div class="bg-white border-b shadow-sm sticky top-[72px] z-40 overflow-x-auto no-scrollbar">
+        <div class="container mx-auto px-6 flex">
+            <a href="admin-dashboard.html" class="page-nav-btn" id="nav-dash"><i class="fas fa-th-large"></i> Main</a>
+            <a href="admin-students.html" class="page-nav-btn" id="nav-students"><i class="fas fa-users"></i> Students</a>
+            <a href="admin-messages.html" class="page-nav-btn" id="nav-messages"><i class="fas fa-envelope"></i> Communication</a>
+            <a href="admin-monitor.html" class="page-nav-btn" id="nav-monitor"><i class="fas fa-desktop"></i> Monitor</a>
+            <a href="admin-inventory.html" class="page-nav-btn active" id="nav-inventory"><i class="fas fa-boxes"></i> Inventory</a>
+        </div>
+    </div>
+
+    <div class="container mx-auto px-6 py-8">
+        <div class="bg-white rounded-xl shadow-lg mb-8 overflow-hidden">
+            <div class="flex overflow-x-auto no-scrollbar border-b">
+                <button onclick="switchTab('inventory')" id="tab-btn-inventory" class="tab-btn active px-8 py-4 font-bold transition-colors hover:bg-gray-50 whitespace-nowrap">
+                    <i class="fas fa-warehouse mr-2"></i>Stock Inventory
+                </button>
+                <button onclick="switchTab('teacher-reports')" id="tab-btn-teacher-reports" class="tab-btn px-8 py-4 font-bold transition-colors hover:bg-gray-50 whitespace-nowrap">
+                    <i class="fas fa-file-alt mr-2"></i>Teacher Reports
+                </button>
+            </div>
+
+            <!-- Inventory Tab -->
+            <div id="inventory-tab" class="tab-content active p-6">
+                <div class="flex flex-wrap items-center justify-between gap-4 mb-6">
+                    <h3 class="text-xl font-bold text-gray-800">Assets & Supplies</h3>
+                    <button onclick="openAddInventoryModal()" class="bg-blue-900 text-white px-5 py-2 rounded-lg hover:bg-blue-800 flex items-center gap-2 font-bold shadow">
+                        <i class="fas fa-plus"></i> Add Item
+                    </button>
+                </div>
+
+                <!-- Category Filter Tabs -->
+                <div class="flex flex-wrap gap-2 mb-6">
+                    <button onclick="filterInventory('all')" id="filter-all" class="px-4 py-1.5 rounded-full text-sm font-bold bg-blue-900 text-white shadow">All</button>
+                    <button onclick="filterInventory('furniture')" id="filter-furniture" class="px-4 py-1.5 rounded-full text-sm font-bold bg-gray-100 text-gray-600 hover:bg-blue-50 hover:text-blue-800">🪑 Furniture</button>
+                    <button onclick="filterInventory('electronics')" id="filter-electronics" class="px-4 py-1.5 rounded-full text-sm font-bold bg-gray-100 text-gray-600 hover:bg-green-50 hover:text-green-800">🖥️ Electronics</button>
+                    <button onclick="filterInventory('hardware')" id="filter-hardware" class="px-4 py-1.5 rounded-full text-sm font-bold bg-gray-100 text-gray-600 hover:bg-orange-50 hover:text-orange-800">🔧 Hardware</button>
+                    <button onclick="filterInventory('other')" id="filter-other" class="px-4 py-1.5 rounded-full text-sm font-bold bg-gray-100 text-gray-600 hover:bg-purple-50 hover:text-purple-800">📦 Other</button>
+                </div>
+
+                <!-- Loading state -->
+                <div id="inventory-loading" class="flex items-center justify-center py-12 text-gray-400">
+                    <i class="fas fa-spinner fa-spin text-2xl mr-3"></i> Loading inventory...
+                </div>
+
+                <!-- Category-wise Sections -->
+                <div id="inventory-sections" class="hidden">
+                    <!-- Furniture Section -->
+                    <div class="category-section" id="section-furniture">
+                        <div class="category-header cat-furniture">
+                            <i class="fas fa-couch"></i> Furniture
+                            <span id="count-furniture" class="ml-auto text-xs font-normal opacity-70">0 items</span>
+                        </div>
+                        <div class="overflow-x-auto rounded-lg border mb-2">
+                            <table class="w-full text-left text-sm">
+                                <thead class="bg-blue-50 text-blue-900 font-bold">
+                                    <tr>
+                                        <th class="px-5 py-3">Item Name</th>
+                                        <th class="px-5 py-3">Issuing Date</th>
+                                        <th class="px-5 py-3">Issuing Authority</th>
+                                        <th class="px-5 py-3 text-center">Quantity</th>
+                                        <th class="px-5 py-3 text-center">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tbody-furniture" class="divide-y divide-gray-100"></tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Electronics Section -->
+                    <div class="category-section" id="section-electronics">
+                        <div class="category-header cat-electronics">
+                            <i class="fas fa-laptop"></i> Electronics
+                            <span id="count-electronics" class="ml-auto text-xs font-normal opacity-70">0 items</span>
+                        </div>
+                        <div class="overflow-x-auto rounded-lg border mb-2">
+                            <table class="w-full text-left text-sm">
+                                <thead class="bg-green-50 text-green-900 font-bold">
+                                    <tr>
+                                        <th class="px-5 py-3">Item Name</th>
+                                        <th class="px-5 py-3">Issuing Date</th>
+                                        <th class="px-5 py-3">Issuing Authority</th>
+                                        <th class="px-5 py-3 text-center">Quantity</th>
+                                        <th class="px-5 py-3 text-center">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tbody-electronics" class="divide-y divide-gray-100"></tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Hardware Section -->
+                    <div class="category-section" id="section-hardware">
+                        <div class="category-header cat-hardware">
+                            <i class="fas fa-tools"></i> Hardware
+                            <span id="count-hardware" class="ml-auto text-xs font-normal opacity-70">0 items</span>
+                        </div>
+                        <div class="overflow-x-auto rounded-lg border mb-2">
+                            <table class="w-full text-left text-sm">
+                                <thead class="bg-orange-50 text-orange-900 font-bold">
+                                    <tr>
+                                        <th class="px-5 py-3">Item Name</th>
+                                        <th class="px-5 py-3">Issuing Date</th>
+                                        <th class="px-5 py-3">Issuing Authority</th>
+                                        <th class="px-5 py-3 text-center">Quantity</th>
+                                        <th class="px-5 py-3 text-center">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tbody-hardware" class="divide-y divide-gray-100"></tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Other Section -->
+                    <div class="category-section" id="section-other">
+                        <div class="category-header cat-other">
+                            <i class="fas fa-box"></i> Other
+                            <span id="count-other" class="ml-auto text-xs font-normal opacity-70">0 items</span>
+                        </div>
+                        <div class="overflow-x-auto rounded-lg border mb-2">
+                            <table class="w-full text-left text-sm">
+                                <thead class="bg-purple-50 text-purple-900 font-bold">
+                                    <tr>
+                                        <th class="px-5 py-3">Item Name</th>
+                                        <th class="px-5 py-3">Issuing Date</th>
+                                        <th class="px-5 py-3">Issuing Authority</th>
+                                        <th class="px-5 py-3 text-center">Quantity</th>
+                                        <th class="px-5 py-3 text-center">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tbody-other" class="divide-y divide-gray-100"></tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Empty state (shown when all sections are empty) -->
+                    <div id="inventory-empty" class="hidden text-center py-16 text-gray-400">
+                        <i class="fas fa-box-open text-5xl mb-4 opacity-30"></i>
+                        <p class="text-lg font-semibold">No items found</p>
+                        <p class="text-sm">Click "Add Item" to add your first stock item.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Reports Tab -->
+            <div id="teacher-reports-tab" class="tab-content p-6">
+                <h3 class="text-xl font-bold text-gray-800 mb-6">Monthly Teacher Activity Reports</h3>
+                <div class="overflow-x-auto rounded-lg border">
+                    <table class="w-full text-left">
+                        <thead class="bg-gray-100 text-gray-700 font-bold">
+                            <tr>
+                                <th class="px-6 py-4">Teacher Name</th>
+                                <th class="px-6 py-4">Month</th>
+                                <th class="px-6 py-4">Total Days</th>
+                                <th class="px-6 py-4">Status</th>
+                                <th class="px-6 py-4 text-center">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="teacher-reports-body">
+                            <!-- Populated by JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== ADD INVENTORY ITEM MODAL ===== -->
+    <div id="add-inventory-modal" class="hidden fixed inset-0 bg-black bg-opacity-60 z-[70] flex items-center justify-center p-4 backdrop-blur-sm">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-lg w-full animate-fade-in">
+            <div class="bg-blue-900 text-white px-6 py-4 rounded-t-2xl flex justify-between items-center">
+                <h3 class="text-lg font-bold"><i class="fas fa-plus-circle mr-2"></i>Add Stock Item</h3>
+                <button onclick="closeAddInventoryModal()" class="text-blue-200 hover:text-white text-xl"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="p-6 space-y-5">
+                <!-- Category -->
+                <div>
+                    <label class="block text-sm font-bold text-gray-700 mb-1">Category <span class="text-red-500">*</span></label>
+                    <div class="grid grid-cols-2 gap-3" id="category-selector">
+                        <button type="button" onclick="selectCategory('furniture')" id="cat-btn-furniture"
+                            class="cat-select-btn flex items-center gap-2 px-4 py-3 rounded-xl border-2 border-gray-200 text-gray-600 hover:border-blue-400 hover:bg-blue-50 font-semibold transition-all">
+                            <i class="fas fa-couch text-blue-700"></i> Furniture
+                        </button>
+                        <button type="button" onclick="selectCategory('electronics')" id="cat-btn-electronics"
+                            class="cat-select-btn flex items-center gap-2 px-4 py-3 rounded-xl border-2 border-gray-200 text-gray-600 hover:border-green-400 hover:bg-green-50 font-semibold transition-all">
+                            <i class="fas fa-laptop text-green-700"></i> Electronics
+                        </button>
+                        <button type="button" onclick="selectCategory('hardware')" id="cat-btn-hardware"
+                            class="cat-select-btn flex items-center gap-2 px-4 py-3 rounded-xl border-2 border-gray-200 text-gray-600 hover:border-orange-400 hover:bg-orange-50 font-semibold transition-all">
+                            <i class="fas fa-tools text-orange-700"></i> Hardware
+                        </button>
+                        <button type="button" onclick="selectCategory('other')" id="cat-btn-other"
+                            class="cat-select-btn flex items-center gap-2 px-4 py-3 rounded-xl border-2 border-gray-200 text-gray-600 hover:border-purple-400 hover:bg-purple-50 font-semibold transition-all">
+                            <i class="fas fa-box text-purple-700"></i> Other
+                        </button>
+                    </div>
+                    <input type="hidden" id="inv-category">
+                </div>
+
+                <!-- Item Name -->
+                <div>
+                    <label class="block text-sm font-bold text-gray-700 mb-1">Item Name <span class="text-red-500">*</span></label>
+                    <input type="text" id="inv-item-name" class="w-full px-4 py-2.5 border-2 rounded-xl focus:ring-2 focus:ring-blue-400 focus:border-transparent outline-none text-gray-800"
+                        placeholder="e.g. Wooden Chair, Projector...">
+                </div>
+
+                <!-- Issuing Date -->
+                <div>
+                    <label class="block text-sm font-bold text-gray-700 mb-1">Issuing Date <span class="text-red-500">*</span></label>
+                    <input type="date" id="inv-issuing-date" class="w-full px-4 py-2.5 border-2 rounded-xl focus:ring-2 focus:ring-blue-400 focus:border-transparent outline-none text-gray-800">
+                </div>
+
+                <!-- Issuing Authority -->
+                <div>
+                    <label class="block text-sm font-bold text-gray-700 mb-1">Issuing Authority <span class="text-red-500">*</span></label>
+                    <input type="text" id="inv-issuing-authority" class="w-full px-4 py-2.5 border-2 rounded-xl focus:ring-2 focus:ring-blue-400 focus:border-transparent outline-none text-gray-800"
+                        placeholder="e.g. Principal, Government, Donation...">
+                </div>
+
+                <!-- Quantity -->
+                <div>
+                    <label class="block text-sm font-bold text-gray-700 mb-1">Quantity <span class="text-red-500">*</span></label>
+                    <input type="number" id="inv-quantity" min="1" class="w-full px-4 py-2.5 border-2 rounded-xl focus:ring-2 focus:ring-blue-400 focus:border-transparent outline-none text-gray-800"
+                        placeholder="e.g. 10">
+                </div>
+
+                <!-- Buttons -->
+                <div class="flex gap-3 pt-2">
+                    <button onclick="closeAddInventoryModal()" class="flex-1 bg-gray-100 text-gray-600 py-3 rounded-xl font-bold hover:bg-gray-200 transition-all">Cancel</button>
+                    <button onclick="saveInventoryItem()" id="save-inv-btn" class="flex-2 flex-1 bg-blue-900 text-white py-3 rounded-xl font-bold shadow-lg hover:bg-blue-800 transition-all">
+                        <i class="fas fa-save mr-2"></i>Save Item
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Confirm Modal -->
+    <div id="delete-inv-modal" class="hidden fixed inset-0 bg-black bg-opacity-60 z-[80] flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-sm w-full p-6 text-center">
+            <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <i class="fas fa-trash-alt text-red-600 text-2xl"></i>
+            </div>
+            <h3 class="text-lg font-bold text-gray-800 mb-2">Delete Item?</h3>
+            <p class="text-sm text-gray-500 mb-6">This action cannot be undone. The item will be permanently removed from inventory.</p>
+            <div class="flex gap-3">
+                <button onclick="closeDeleteInvModal()" class="flex-1 bg-gray-100 text-gray-700 py-2.5 rounded-xl font-bold hover:bg-gray-200">Cancel</button>
+                <button onclick="confirmDeleteInventoryItem()" class="flex-1 bg-red-600 text-white py-2.5 rounded-xl font-bold hover:bg-red-700">Delete</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Password Modal -->
+    <div id="change-password-modal" class="fixed inset-0 bg-black bg-opacity-70 hidden items-center justify-center z-[70] p-4 backdrop-blur-sm">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md" id="password-modal-content">
+            <div class="p-6">
+                <h2 class="text-xl font-bold text-gray-800 mb-6">Change Password</h2>
+                <form id="change-password-form" onsubmit="handlePasswordChange(event)" class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Current Password</label>
+                        <input type="password" id="current-password" required class="w-full px-4 py-2 border rounded-lg shadow-sm">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">New Password</label>
+                        <input type="password" id="new-password" required minlength="6" class="w-full px-4 py-2 border rounded-lg shadow-sm">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Confirm New Password</label>
+                        <input type="password" id="confirm-password" required minlength="6" class="w-full px-4 py-2 border rounded-lg shadow-sm">
+                    </div>
+                    <div class="flex gap-3 pt-4">
+                        <button type="button" onclick="closeChangePasswordModal()" class="flex-1 bg-gray-100 py-2.5 rounded-lg">Cancel</button>
+                        <button type="submit" id="save-password-btn" class="flex-1 bg-blue-900 text-white py-2.5 rounded-lg font-bold">Update Password</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ===== Tab Switching =====
+        function switchTab(tab) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+            document.getElementById(tab + '-tab').classList.add('active');
+            document.getElementById('tab-btn-' + tab).classList.add('active');
+        }
+
+        // ===== Category Selection =====
+        let selectedCategory = '';
+        const catColors = {
+            furniture: 'border-blue-500 bg-blue-50 text-blue-800',
+            electronics: 'border-green-500 bg-green-50 text-green-800',
+            hardware: 'border-orange-500 bg-orange-50 text-orange-800',
+            other: 'border-purple-500 bg-purple-50 text-purple-800',
+        };
+        function selectCategory(cat) {
+            selectedCategory = cat;
+            document.getElementById('inv-category').value = cat;
+            document.querySelectorAll('.cat-select-btn').forEach(btn => {
+                btn.className = 'cat-select-btn flex items-center gap-2 px-4 py-3 rounded-xl border-2 border-gray-200 text-gray-600 font-semibold transition-all';
+            });
+            const btn = document.getElementById('cat-btn-' + cat);
+            btn.className = `cat-select-btn flex items-center gap-2 px-4 py-3 rounded-xl border-2 font-semibold transition-all ${catColors[cat]}`;
+        }
+
+        // ===== Inventory Modal =====
+        function openAddInventoryModal() {
+            selectedCategory = '';
+            document.getElementById('inv-category').value = '';
+            document.getElementById('inv-item-name').value = '';
+            document.getElementById('inv-issuing-date').value = '';
+            document.getElementById('inv-issuing-authority').value = '';
+            document.getElementById('inv-quantity').value = '';
+            document.querySelectorAll('.cat-select-btn').forEach(btn => {
+                btn.className = 'cat-select-btn flex items-center gap-2 px-4 py-3 rounded-xl border-2 border-gray-200 text-gray-600 font-semibold transition-all';
+            });
+            document.getElementById('add-inventory-modal').classList.remove('hidden');
+        }
+        function closeAddInventoryModal() {
+            document.getElementById('add-inventory-modal').classList.add('hidden');
+        }
+
+        // ===== Save Inventory Item =====
+        async function saveInventoryItem() {
+            const category = document.getElementById('inv-category').value;
+            const itemName = document.getElementById('inv-item-name').value.trim();
+            const issuingDate = document.getElementById('inv-issuing-date').value;
+            const issuingAuthority = document.getElementById('inv-issuing-authority').value.trim();
+            const quantity = parseInt(document.getElementById('inv-quantity').value);
+
+            if (!category) { alert('Please select a category.'); return; }
+            if (!itemName) { alert('Please enter an item name.'); return; }
+            if (!issuingDate) { alert('Please enter an issuing date.'); return; }
+            if (!issuingAuthority) { alert('Please enter issuing authority.'); return; }
+            if (!quantity || quantity < 1) { alert('Please enter a valid quantity.'); return; }
+
+            const btn = document.getElementById('save-inv-btn');
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Saving...';
+            btn.disabled = true;
+
+            try {
+                const result = await window.firestoreHelper.addDocument('inventory', {
+                    category,
+                    itemName,
+                    issuingDate,
+                    issuingAuthority,
+                    quantity,
+                    createdAt: new Date().toISOString()
+                });
+                if (result.success) {
+                    closeAddInventoryModal();
+                    loadInventory();
+                    if (window.showNotification) showNotification('Item added successfully!', 'success');
+                    else alert('Item added successfully!');
+                } else {
+                    alert('Error saving item: ' + (result.error || 'Unknown error'));
+                }
+            } catch (e) {
+                alert('Error: ' + e.message);
+            } finally {
+                btn.innerHTML = '<i class="fas fa-save mr-2"></i>Save Item';
+                btn.disabled = false;
+            }
+        }
+
+        // ===== Load Inventory =====
+        let allInventoryItems = [];
+        let activeFilter = 'all';
+
+        async function loadInventory() {
+            document.getElementById('inventory-loading').classList.remove('hidden');
+            document.getElementById('inventory-sections').classList.add('hidden');
+            try {
+                const result = await window.firestoreHelper.getDocuments('inventory');
+                if (result.success) {
+                    allInventoryItems = result.data || [];
+                    renderInventory(allInventoryItems);
+                }
+            } catch (e) {
+                console.error('Failed to load inventory:', e);
+            } finally {
+                document.getElementById('inventory-loading').classList.add('hidden');
+                document.getElementById('inventory-sections').classList.remove('hidden');
+            }
+        }
+
+        function filterInventory(cat) {
+            activeFilter = cat;
+            // Update filter buttons
+            document.querySelectorAll('[id^="filter-"]').forEach(btn => {
+                btn.className = 'px-4 py-1.5 rounded-full text-sm font-bold bg-gray-100 text-gray-600';
+            });
+            document.getElementById('filter-' + cat).className = 'px-4 py-1.5 rounded-full text-sm font-bold bg-blue-900 text-white shadow';
+
+            const filtered = cat === 'all' ? allInventoryItems : allInventoryItems.filter(i => i.category === cat);
+            renderInventory(filtered);
+        }
+
+        function renderInventory(items) {
+            const categories = ['furniture', 'electronics', 'hardware', 'other'];
+            let totalVisible = 0;
+
+            categories.forEach(cat => {
+                const catItems = items.filter(i => i.category === cat);
+                const tbody = document.getElementById('tbody-' + cat);
+                const section = document.getElementById('section-' + cat);
+                const countEl = document.getElementById('count-' + cat);
+
+                countEl.textContent = catItems.length + ' item' + (catItems.length !== 1 ? 's' : '');
+
+                // Show/hide section based on filter
+                if (activeFilter !== 'all' && activeFilter !== cat) {
+                    section.style.display = 'none';
+                    return;
+                }
+                section.style.display = catItems.length > 0 ? 'block' : 'none';
+                totalVisible += catItems.length;
+
+                if (catItems.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="5" class="px-5 py-6 text-center text-gray-400 text-sm">No ${cat} items added yet.</td></tr>`;
+                    return;
+                }
+
+                tbody.innerHTML = catItems.map(item => `
+                    <tr class="hover:bg-gray-50 transition-colors">
+                        <td class="px-5 py-3 font-semibold text-gray-800">${item.itemName}</td>
+                        <td class="px-5 py-3 text-gray-600">${formatDate(item.issuingDate)}</td>
+                        <td class="px-5 py-3 text-gray-600">${item.issuingAuthority}</td>
+                        <td class="px-5 py-3 text-center">
+                            <span class="inline-block bg-blue-50 text-blue-800 font-bold px-3 py-0.5 rounded-full border border-blue-200">${item.quantity}</span>
+                        </td>
+                        <td class="px-5 py-3 text-center">
+                            <button onclick="deleteInventoryItem('${item.id}')" class="text-red-400 hover:text-red-600 transition-colors" title="Delete">
+                                <i class="fas fa-trash-alt"></i>
+                            </button>
+                        </td>
+                    </tr>
+                `).join('');
+            });
+
+            // Show empty state if nothing
+            const emptyEl = document.getElementById('inventory-empty');
+            if (totalVisible === 0) {
+                emptyEl.classList.remove('hidden');
+            } else {
+                emptyEl.classList.add('hidden');
+            }
+        }
+
+        function formatDate(dateStr) {
+            if (!dateStr) return '—';
+            try {
+                const d = new Date(dateStr);
+                return d.toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
+            } catch { return dateStr; }
+        }
+
+        // ===== Delete Inventory =====
+        let pendingDeleteId = null;
+        function deleteInventoryItem(id) {
+            pendingDeleteId = id;
+            document.getElementById('delete-inv-modal').classList.remove('hidden');
+        }
+        function closeDeleteInvModal() {
+            pendingDeleteId = null;
+            document.getElementById('delete-inv-modal').classList.add('hidden');
+        }
+        async function confirmDeleteInventoryItem() {
+            if (!pendingDeleteId) return;
+            try {
+                const result = await window.firestoreHelper.deleteDocument('inventory', pendingDeleteId);
+                closeDeleteInvModal();
+                if (result.success) {
+                    loadInventory();
+                    if (window.showNotification) showNotification('Item deleted.', 'success');
+                } else {
+                    alert('Error deleting item.');
+                }
+            } catch (e) {
+                alert('Error: ' + e.message);
+            }
+        }
+    </script>
+
+    <script type="module">
+        import { initDashboard } from '../assets/js/admin-dashboard.js?v=3';
+        window.addEventListener('load', async () => {
+            await initDashboard();
+            // firestoreHelper is now on window (set in admin-dashboard.js)
+            // Small delay to ensure Firebase auth state resolves
+            setTimeout(() => {
+                loadInventory();
+            }, 500);
+        });
+    </script>
+</body>
+</html>
+

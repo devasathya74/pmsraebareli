@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block title %}{{ school_name }}{% endblock %}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brass: "#b68b2d",
+                        ink: "#10233d",
+                        mist: "#eef3f8",
+                        pine: "#154f4a"
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="min-h-screen bg-slate-100 text-slate-900">
+    <div class="min-h-screen md:flex">
+        {% if current_user %}
+        <aside class="w-full bg-ink px-5 py-6 text-white md:w-72">
+            <div class="mb-8">
+                <p class="text-xs uppercase tracking-[0.3em] text-slate-300">Internal System</p>
+                <h1 class="mt-2 text-2xl font-bold">{{ school_name }}</h1>
+                <p class="mt-3 text-sm text-slate-300">{{ current_user.full_name }} | {{ current_user.role|title }}</p>
+            </div>
+            <nav class="space-y-2 text-sm">
+                {% if current_user.role == "admin" %}
+                <a class="block rounded-xl px-4 py-3 hover:bg-white/10" href="{{ url_for('admin.dashboard') }}">Dashboard</a>
+                <a class="block rounded-xl px-4 py-3 hover:bg-white/10" href="{{ url_for('admin.students') }}">Students</a>
+                <a class="block rounded-xl px-4 py-3 hover:bg-white/10" href="{{ url_for('admin.teachers') }}">Teachers</a>
+                <a class="block rounded-xl px-4 py-3 hover:bg-white/10" href="{{ url_for('admin.admissions') }}">Admissions</a>
+                <a class="block rounded-xl px-4 py-3 hover:bg-white/10" href="{{ url_for('admin.fees') }}">Fees</a>
+                <a class="block rounded-xl px-4 py-3 hover:bg-white/10" href="{{ url_for('admin.ledger') }}">Cash Ledger</a>
+                <a class="block rounded-xl px-4 py-3 hover:bg-white/10" href="{{ url_for('admin.attendance') }}">Attendance</a>
+                <a class="block rounded-xl px-4 py-3 hover:bg-white/10" href="{{ url_for('admin.results') }}">Academic Results</a>
+                <a class="block rounded-xl px-4 py-3 hover:bg-white/10" href="{{ url_for('admin.inventory') }}">Inventory</a>
+                <a class="block rounded-xl px-4 py-3 hover:bg-white/10" href="{{ url_for('admin.messages') }}">Tinker Messages</a>
+                <a class="block rounded-xl px-4 py-3 hover:bg-white/10" href="{{ url_for('admin.passwords') }}">Passwords</a>
+                {% else %}
+                <a class="block rounded-xl px-4 py-3 hover:bg-white/10" href="{{ url_for('teacher.dashboard') }}">Dashboard</a>
+                <a class="block rounded-xl px-4 py-3 hover:bg-white/10" href="{{ url_for('teacher.attendance') }}">Attendance</a>
+                <a class="block rounded-xl px-4 py-3 hover:bg-white/10" href="{{ url_for('teacher.results') }}">Academic Results</a>
+                <a class="block rounded-xl px-4 py-3 hover:bg-white/10" href="{{ url_for('teacher.fees') }}">Fee Status</a>
+                {% endif %}
+            </nav>
+            <form class="mt-8" method="post" action="{{ url_for('auth.logout') }}">
+                <button class="w-full rounded-xl bg-brass px-4 py-3 font-semibold text-ink" type="submit">Logout</button>
+            </form>
+        </aside>
+        {% endif %}
+        <main class="flex-1">
+            {% include "partials/flash.html" %}
+            {% block content %}{% endblock %}
+        </main>
+    </div>
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+</html>

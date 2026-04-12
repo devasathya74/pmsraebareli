@@ -1,0 +1,255 @@
+/* ========================================
+   Police Modern School - Custom Styles (Optimized)
+   ======================================== */
+
+:root {
+    --primary: #1e3a8a;
+    --secondary: #facc15;
+    --accent: #3b82f6;
+    --soft: #f3f4f6;
+}
+
+/* News Ticker */
+.news-ticker {
+    overflow: hidden;
+    white-space: nowrap;
+    position: relative;
+}
+
+.news-ticker-content {
+    display: inline-block;
+    padding-left: 100%;
+    animation: ticker 30s linear infinite;
+}
+
+.news-item {
+    display: inline-block;
+    padding: 0 50px;
+    font-weight: 500;
+    color: white !important;
+}
+
+.news-item a {
+    color: white !important;
+    text-decoration: none;
+}
+
+@keyframes ticker {
+    0% {
+        transform: translateX(0);
+    }
+
+    100% {
+        transform: translateX(-100%);
+    }
+}
+
+.news-ticker:hover .news-ticker-content {
+    animation-play-state: paused;
+}
+
+/* FAQ Accordion */
+.faq-item {
+    background: white;
+    border-radius: 12px;
+    margin-bottom: 15px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    transition: all 0.3s ease;
+}
+
+.faq-item:hover {
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+}
+
+.faq-question {
+    padding: 20px 25px;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-weight: 600;
+    user-select: none;
+}
+
+.faq-question:hover {
+    background: var(--soft);
+}
+
+.faq-icon {
+    transition: transform 0.3s ease;
+    color: var(--primary);
+}
+
+.faq-item.active .faq-icon {
+    transform: rotate(180deg);
+}
+
+.faq-answer {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease, padding 0.3s ease;
+    padding: 0 25px;
+    color: #6b7280;
+}
+
+.faq-item.active .faq-answer {
+    max-height: 500px;
+    padding: 0 25px 20px;
+}
+
+/* Testimonial Carousel */
+.testimonial-carousel {
+    position: relative;
+    overflow: hidden;
+}
+
+.testimonial-slide {
+    display: none;
+    text-align: center;
+    padding: 40px;
+    animation: slideIn 0.5s ease;
+}
+
+.testimonial-slide.active {
+    display: block;
+}
+
+.testimonial-avatar {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    margin: 0 auto 20px;
+    border: 4px solid var(--secondary);
+}
+
+.testimonial-stars {
+    color: var(--secondary);
+    font-size: 1.5rem;
+    margin-bottom: 15px;
+}
+
+/* Animations */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateX(50px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.animate-fade-in-up {
+    animation: fadeInUp 1s ease-out forwards;
+}
+
+[data-aos] {
+    transition-property: opacity, transform !important;
+}
+
+/* Hero Badge Blast */
+.firework-particle {
+    position: absolute;
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 20;
+    transform-origin: center;
+    box-shadow: 0 0 4px rgba(255, 255, 255, 0.8);
+}
+
+/* Overlap Gallery Slider */
+.gallery-wrapper {
+    position: relative;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    aspect-ratio: 20 / 5;
+    margin: 0 auto;
+}
+
+.slider-container {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+}
+
+.slide {
+    position: absolute;
+    width: 35%;
+    aspect-ratio: 3/2;
+    object-fit: cover;
+    border-radius: 15px;
+    transition: all 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+    opacity: 0;
+    pointer-events: none;
+    filter: brightness(0.4) blur(2px);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+}
+
+.slide.pos-1 {
+    transform: translateX(-65%) scale(0.85);
+    opacity: 0.6;
+    z-index: 10;
+    filter: brightness(0.6) blur(1px);
+    pointer-events: auto;
+}
+
+.slide.pos-2 {
+    transform: translateX(0) scale(1.1);
+    opacity: 1;
+    z-index: 30;
+    filter: brightness(1) blur(0);
+    pointer-events: auto;
+    border: 3px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8);
+}
+
+.slide.pos-3 {
+    transform: translateX(65%) scale(0.85);
+    opacity: 0.6;
+    z-index: 10;
+    filter: brightness(0.6) blur(1px);
+    pointer-events: auto;
+}
+
+.slide.hide-left {
+    transform: translateX(-150%) scale(0.5);
+    opacity: 0;
+    z-index: 5;
+}
+
+.slide.show-right {
+    transform: translateX(150%) scale(0.5);
+    opacity: 0;
+    z-index: 5;
+}
+
+@media (max-width: 768px) {
+    .gallery-wrapper {
+        aspect-ratio: 20 / 14 !important;
+    }
+
+    .slide {
+        width: 75% !important;
+    }
+}

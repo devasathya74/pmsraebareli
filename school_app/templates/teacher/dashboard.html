@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block title %}Teacher Dashboard{% endblock %}
+{% block content %}
+<div class="p-6 md:p-10">
+    <div class="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+        <div>
+            <p class="text-sm uppercase tracking-[0.3em] text-slate-500">Teacher Console</p>
+            <h2 class="mt-2 text-3xl font-black text-slate-900">{{ stats.class_name }}</h2>
+        </div>
+        <div class="rounded-2xl bg-white px-5 py-4 shadow-sm">
+            <p class="text-sm text-slate-500">Attendance, academic results, and fee visibility for your assigned class.</p>
+        </div>
+    </div>
+    <div class="mt-8 grid gap-4 md:grid-cols-4">
+        <div class="rounded-3xl bg-white p-5 shadow-sm"><p class="text-sm text-slate-500">Students</p><p class="mt-2 text-3xl font-black text-ink">{{ stats.students }}</p></div>
+        <div class="rounded-3xl bg-white p-5 shadow-sm"><p class="text-sm text-slate-500">Attendance Entries</p><p class="mt-2 text-3xl font-black text-ink">{{ stats.attendance_entries }}</p></div>
+        <div class="rounded-3xl bg-white p-5 shadow-sm"><p class="text-sm text-slate-500">Results</p><p class="mt-2 text-3xl font-black text-ink">{{ stats.results }}</p></div>
+        <div class="rounded-3xl bg-white p-5 shadow-sm"><p class="text-sm text-slate-500">Pending Fees</p><p class="mt-2 text-3xl font-black text-red-600">{{ stats.pending_fees }}</p></div>
+    </div>
+    <div class="mt-8 grid gap-6 lg:grid-cols-2">
+        <section class="rounded-3xl bg-white p-6 shadow-sm">
+            <h3 class="text-xl font-bold">Class Roster Snapshot</h3>
+            <div class="mt-5 space-y-3">
+                {% for student in students %}
+                <div class="rounded-2xl bg-slate-50 px-4 py-3">{{ student.name }} | {{ student.admission_no }}</div>
+                {% else %}
+                <p class="text-sm text-slate-500">No students assigned yet.</p>
+                {% endfor %}
+            </div>
+        </section>
+        <section class="rounded-3xl bg-white p-6 shadow-sm">
+            <h3 class="text-xl font-bold">Recent Fee Status</h3>
+            <div class="mt-5 space-y-3">
+                {% for item in fees %}
+                <div class="rounded-2xl bg-slate-50 px-4 py-3">{{ item.student_name }} | {{ item.status }} | {{ item.amount_paid }}/{{ item.amount_due }}</div>
+                {% else %}
+                <p class="text-sm text-slate-500">No fee records visible.</p>
+                {% endfor %}
+            </div>
+        </section>
+    </div>
+</div>
+{% endblock %}

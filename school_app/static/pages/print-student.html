@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Admission Form</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Times+New+Roman&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        html { font-size: 90%; }
+        body {
+            background-color: #f3f4f6;
+            display: flex;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .preview-document {
+            font-family: 'Times New Roman', Times, serif;
+            width: 210mm;
+            min-height: 297mm;
+            padding: 10mm;
+            background: white;
+            color: black;
+            border: 1px solid #ccc;
+            font-size: 11px;
+            line-height: 1.3;
+            position: relative;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+
+        .dotted-line {
+            border-bottom: 1px dotted #000;
+            display: inline-block;
+            min-width: 50px;
+            padding: 0 5px;
+            font-weight: bold;
+        }
+
+        .student-photo-placeholder {
+            width: 35mm;
+            /* Fixed print size */
+            height: 45mm;
+            border: 1px solid #000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            font-size: 10px;
+            overflow: hidden;
+            background-color: #f9f9f9;
+        }
+
+        @media print {
+            @page {
+                size: A4;
+                margin: 5mm;
+            }
+
+            body {
+                background: none;
+                padding: 0;
+                display: block;
+            }
+
+            /* Compact spacing for print */
+            .print-compact>*+* {
+                margin-top: 0.2rem !important;
+                /* Halved spacing */
+            }
+
+            .dotted-line {
+                border-bottom: 1px dashed #000;
+                /* Lighter dots for print */
+                padding-bottom: 0px;
+            }
+
+            .preview-document {
+                border: none;
+                box-shadow: none;
+                width: 100%;
+                min-height: auto;
+                margin: 0;
+                padding: 5mm 10mm;
+                font-size: 10.5pt;
+                line-height: 1.15;
+                /* Tighter line height */
+            }
+
+            .no-print {
+                display: none !important;
+            }
+
+            /* Compact spacing for print */
+            .print-compact>*+* {
+                margin-top: 0.5rem !important;
+                /* Reduce gap between paragraphs */
+            }
+
+            .print-mt-0 {
+                margin-top: 0 !important;
+            }
+
+            h1 {
+                font-size: 16pt !important;
+            }
+
+            h2 {
+                font-size: 14pt !important;
+            }
+
+            /* Adjust photo position */
+            .photo-box {
+                top: 40mm !important;
+                right: 5mm !important;
+            }
+        }
+            h1, h2, h3, h4, h5, h6 { font-family: 'Nunito', sans-serif; }
+    </style>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    </head>
+
+<body>
+
+    <div class="no-print fixed top-4 right-4 flex gap-2">
+        <button onclick="window.print()"
+            class="bg-blue-600 text-white px-4 py-2 rounded shadow hover:bg-blue-700 font-sans">
+            <i class="fas fa-print mr-2"></i>Print / Save PDF
+        </button>
+        <button onclick="window.close()"
+            class="bg-gray-500 text-white px-4 py-2 rounded shadow hover:bg-gray-600 font-sans">
+            Close
+        </button>
+    </div>
+
+    <div class="preview-document" id="form-container">
+        <!-- Loading State -->
+        <div id="loading" class="absolute inset-0 flex items-center justify-center bg-white z-10">
+            <div class="text-center font-sans">
+                <i class="fas fa-spinner fa-spin text-4xl text-blue-600 mb-4"></i>
+                <p>Loading Student Data...</p>
+            </div>
+        </div>
+
+        <!-- Dual Logos Header -->
+        <div class="flex items-center justify-between border-b-2 border-black pb-4 mb-6">
+            <img src="../assets/images/logo/logo1.png" alt="Left Logo" class="w-24 h-auto"
+                onerror="this.src='../assets/images/logo/logo.png'">
+
+            <div class="text-center flex-1">
+                <h1 class="text-xl font-bold uppercase">POLICE MODERN SCHOOL 25<sup>TH</sup> BN PAC RAEBARELI</h1>
+                <p class="font-bold text-sm">(Registration No.-568-71/2007-08)</p>
+                <div class="mt-3 inline-block border-2 border-black px-6 py-1">
+                    <h2 class="text-lg font-bold">APPLICATION FOR ADMISSION</h2>
+                </div>
+                <p class="italic text-[10px] mt-1">(To be filled by parents or guardian of the student to be admitted
+                    police Modern school)</p>
+            </div>
+
+            <img src="../assets/images/logo/logo1.png" alt="Right Logo" class="w-24 h-auto"
+                onerror="this.src='../assets/images/logo/logo.png'">
+        </div>
+
+        <!-- Photo Box -->
+        <div class="absolute right-10 top-52 photo-box">
+            <div id="photoPreview" class="student-photo-placeholder shadow-sm">
+                <span>PASTE PHOTOGRAPH HERE</span>
+            </div>
+        </div>
+
+        <!-- Document Content -->
+        <div class="space-y-4 pr-32 print-compact"> <!-- Added padding-right to avoid overlap with photo -->
+            <p>Name of Scholar <span id="p_scholarName" class="dotted-line min-w-[300px]"></span></p>
+            <p>Date of birth <span id="p_dob" class="dotted-line min-w-[300px]"></span></p>
+            <p>Class to which admission is sought <span id="p_targetClass" class="dotted-line min-w-[200px]"></span></p>
+            <p>Father's name <span id="p_fatherName" class="dotted-line min-w-[300px]"></span></p>
+            <p>Father's Occupation <span id="p_fatherOcc" class="dotted-line min-w-[300px]"></span></p>
+
+            <div class="pl-8 flex flex-wrap gap-4">
+                <span>(a). company <span id="p_fCompany" class="dotted-line min-w-[120px]"></span></span>
+                <span>Post <span id="p_fPost" class="dotted-line min-w-[100px]"></span></span>
+                <span>Mobile No. <span id="p_fMobile" class="dotted-line min-w-[120px]"></span></span>
+            </div>
+
+            <p>(b). Mother's name and occupation <span id="p_motherFull" class="dotted-line min-w-[350px]"></span></p>
+
+            <p class="font-bold mt-2">Father's address:-</p>
+            <div class="pl-8">
+                <p>(a). Permanent <span id="p_permAddress" class="dotted-line min-w-[400px]"></span></p>
+                <p>(b). Postal address <span id="p_postAddress" class="dotted-line min-w-[400px]"></span></p>
+            </div>
+
+            <p class="font-bold mt-2">Local guardian:-</p>
+            <div class="pl-8">
+                <p>(a). Name <span id="p_gName" class="dotted-line min-w-[400px]"></span></p>
+                <p>(b). Address <span id="p_gAddress" class="dotted-line min-w-[400px]"></span></p>
+                <p>(c). Relationship <span id="p_gRel" class="dotted-line min-w-[150px]"></span></p>
+            </div>
+
+            <p>Last Institution Attended <span id="p_lastInst" class="dotted-line min-w-[350px]"></span></p>
+            <p>Mother Tongue <span id="p_tongue" class="dotted-line min-w-[200px]"></span></p>
+            <p>Religion & caste <span id="p_religion" class="dotted-line min-w-[250px]"></span></p>
+            <p>Duration of stay of the scholar in U.P. <span id="p_stayUp" class="dotted-line min-w-[150px]"></span></p>
+
+
+            <div class="mt-8 pt-6 border-t border-black">
+                <p class="font-bold italic">If entry 7 is blank the following certificates must be signed:-</p>
+                <p class="mt-4 leading-8">I hereby certify that <span id="p_scholarName2"
+                        class="dotted-line min-w-[200px]"></span> has not previously attended any recognized school of
+                    institution.</p>
+
+                <div class="flex justify-end mt-10">
+                    <div class="text-center">
+                        <p class="mb-4">...................................................</p>
+                        <p class="font-bold">Signature of Parents/Guardian</p>
+                    </div>
+                </div>
+
+                <p class="mt-10 italic font-bold">I hereby certify that the date of the birth of scholar is correct and
+                    I agree to abide by the rules of the Police Modern School.</p>
+
+                <div class="flex justify-between items-end mt-16">
+                    <div>
+                        <p>Enclosure (if any):- ...................................</p>
+                    </div>
+                    <div class="text-center">
+                        <p class="mb-4">...................................................</p>
+                        <p class="font-bold">Signature of Parents/Guardian</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Script to Fetch and Populate -->
+    <script type="module">
+        import { firestoreHelper } from '../assets/js/firebase-config.js';
+
+        async function init() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const studentId = urlParams.get('id');
+
+            if (!studentId) {
+                alert('No student ID provided');
+                return;
+            }
+
+            try {
+                const result = await firestoreHelper.getDocument('students', studentId);
+                if (result.success && result.data) {
+                    const s = result.data;
+                    populateForm(s);
+                    document.getElementById('loading').style.display = 'none';
+
+                    // Small delay to ensure images render before printing
+                    setTimeout(() => {
+                        window.print();
+                    }, 1000);
+                } else {
+                    alert('Student not found');
+                }
+            } catch (error) {
+                console.error('Error fetching student:', error);
+                alert('Error loading data');
+            }
+        }
+
+        function populateForm(s) {
+            // Helper to safe set text
+            const setText = (id, val) => {
+                const el = document.getElementById(id);
+                if (el) el.textContent = val || '__________';
+            };
+
+            setText('p_scholarName', s.studentName);
+            setText('p_scholarName2', s.studentName);
+
+            // Format DOB
+            if (s.dob) {
+                const [y, m, d] = s.dob.split('-');
+                if (y && m && d) setText('p_dob', `${d}/${m}/${y}`);
+                else setText('p_dob', s.dob);
+            }
+
+            setText('p_targetClass', s.class);
+            setText('p_fatherName', s.fatherName);
+            setText('p_fatherOcc', s.fatherOccupation);
+            setText('p_fCompany', s.fatherCompany);
+            setText('p_fPost', s.fatherPost);
+            setText('p_fMobile', s.mobile);
+
+            // Combine Mother Name and Occupation
+            const motherInfo = `${s.motherName || ''} ${s.motherOccupation ? '(' + s.motherOccupation + ')' : ''}`;
+            setText('p_motherFull', motherInfo);
+
+            setText('p_permAddress', s.address);
+            setText('p_postAddress', s.postalAddress);
+
+            setText('p_gName', s.guardianName);
+            setText('p_gAddress', s.guardianAddress);
+            setText('p_gRel', s.guardianRelation);
+
+            setText('p_lastInst', s.lastSchool);
+            setText('p_tongue', s.motherTongue);
+            setText('p_religion', s.religion);
+            setText('p_stayUp', s.durationOfStay);
+
+            // Handle Photo
+            if (s.photo) {
+                const photoBox = document.getElementById('photoPreview');
+                photoBox.innerHTML = `<img src="${s.photo}" class="w-full h-full object-cover">`;
+            }
+        }
+
+        // Run
+        init();
+    </script>
+
+</body>
+
+</html>

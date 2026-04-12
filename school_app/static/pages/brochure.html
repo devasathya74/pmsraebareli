@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="hi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>विद्यालय विवरणिका - पुलिस मॉडर्न स्कूल, रायबरेली</title>
+
+    <!-- Favicons -->
+    <link rel="icon" type="image/png" sizes="32x32" href="/assets/images/logo/favicon-32x32.png">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Tiro+Devanagari+Hindi:ital@0;1&display=swap" rel="stylesheet">
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        :root {
+            --primary: #1e3a8a;
+            --secondary: #3b82f6;
+            --accent: #facc15;
+            --danger: #dc2626;
+            --success: #25d366;
+            --text-dark: #1f2937;
+            --text-light: #ffffff;
+            --bg-light: #f1f5f9;
+        }
+
+        html {
+            font-size: 100%;
+            /* Slightly less zoom for the 3D brochure to prevent overflow */
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', 'Tiro Devanagari Hindi', sans-serif;
+            background: #0f172a;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            perspective: 2500px;
+            overflow-x: hidden;
+        }
+
+        /* Splash Screen Updated */
+        .splash-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            /* School Building Background Image */
+            background: url('/assets/images/school-building.jpg') center/cover no-repeat;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: all 0.8s ease;
+        }
+
+        .splash-screen::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            /* Darker gradient for better text readability */
+            background: linear-gradient(rgba(15, 23, 42, 0.85), rgba(30, 58, 138, 0.75));
+            backdrop-filter: blur(4px);
+        }
+
+        .splash-screen.hidden {
+            opacity: 0;
+            visibility: hidden;
+            transform: scale(1.1);
+        }
+
+        .splash-card {
+            position: relative;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            padding: 50px 40px;
+            border-radius: 40px;
+            text-align: center;
+            color: white;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.6);
+            max-width: 550px;
+            width: 92%;
+            cursor: pointer;
+            animation: fadeIn 1s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Logo Styling */
+        .school-logo-container {
+            width: 120px;
+            height: 120px;
+            margin: 0 auto 25px;
+            background: white;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            border: 5px solid var(--accent);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .school-logo-container i {
+            font-size: 60px;
+            color: var(--primary);
+        }
+
+        .school-logo-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        /* Brochure Container */
+        .brochure-container {
+            width: 98vw;
+            height: 92vh;
+            max-width: 1350px;
+            display: flex;
+            transform-style: preserve-3d;
+            opacity: 0;
+            transition: opacity 0.5s;
+        }
+
+        .brochure-container.active {
+            opacity: 1;
+        }
+
+        .panel {
+            flex: 1;
+            height: 100%;
+            background: white;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 1.5s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4);
+            overflow: hidden;
+            border: 1px solid #e2e8f0;
+        }
+
+        .panel-left {
+            transform-origin: right;
+            transform: rotateY(175deg);
+            z-index: 3;
+        }
+
+        .panel-right {
+            transform-origin: left;
+            transform: rotateY(-175deg);
+            z-index: 3;
+        }
+
+        .panel-center {
+            z-index: 1;
+            background: url('/assets/images/school-building.jpg') center/cover no-repeat;
+        }
+
+        .panel-center::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: rgba(30, 58, 138, 0.65);
+            z-index: 1;
+        }
+
+        .active .panel-left,
+        .active .panel-right {
+            transform: rotateY(0deg);
+        }
+
+        .panel-content {
+            position: relative;
+            z-index: 10;
+            padding: 22px;
+            height: 100%;
+            overflow-y: auto;
+            scrollbar-width: thin;
+        }
+
+        .panel-header {
+            text-align: center;
+            border-bottom: 3px solid var(--accent);
+            margin-bottom: 18px;
+            padding-bottom: 8px;
+        }
+
+        .panel-header h2 {
+            color: var(--primary);
+            font-size: 1.4rem;
+        }
+
+        .feature-box {
+            background: var(--bg-light);
+            padding: 12px;
+            border-radius: 12px;
+            margin-bottom: 15px;
+            border-left: 5px solid var(--primary);
+        }
+
+        .feature-box h3 {
+            color: var(--primary);
+            font-size: 1rem;
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .feature-box p,
+        .feature-box li {
+            font-size: 0.85rem;
+            line-height: 1.5;
+            color: var(--text-dark);
+        }
+
+        .feature-box ul {
+            list-style: none;
+        }
+
+        .usp-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .usp-item {
+            background: #fff;
+            padding: 8px;
+            border-radius: 8px;
+            font-size: 0.75rem;
+            text-align: center;
+            border: 1px solid #e2e8f0;
+            font-weight: bold;
+        }
+
+        .center-wrapper {
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            color: white;
+            z-index: 2;
+            position: relative;
+        }
+
+        .admission-badge {
+            background: var(--danger);
+            padding: 12px 30px;
+            border-radius: 50px;
+            font-weight: bold;
+            margin: 20px 0;
+            font-size: 1.1rem;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.05);
+            }
+
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        .cta-box {
+            background: var(--accent);
+            color: var(--primary);
+            padding: 15px;
+            border-radius: 10px;
+            font-weight: bold;
+            text-align: center;
+            margin-top: 20px;
+            font-size: 1rem;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border-radius: 30px;
+            text-decoration: none;
+            color: white;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-call {
+            background: var(--primary);
+        }
+
+        .btn-wa {
+            background: var(--success);
+        }
+
+        @media (max-width: 900px) {
+            body {
+                overflow-y: auto;
+                perspective: none;
+            }
+
+            .brochure-container {
+                flex-direction: column;
+                height: auto;
+                padding: 10px;
+            }
+
+            .panel {
+                width: 100%;
+                min-height: 600px;
+                transform: none !important;
+                margin-bottom: 20px;
+                border-radius: 15px;
+            }
+        }
+            h1, h2, h3, h4, h5, h6 { font-family: 'Nunito', sans-serif; }
+    </style>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    </head>
+
+<body>
+
+    <!-- Updated Splash Screen -->
+    <div class="splash-screen" id="splashScreen" onclick="startExperience()">
+        <div class="splash-card">
+            <div class="school-logo-container">
+                <img src="/assets/images/logo/logo.png" alt="School Logo" class="school-logo-img">
+            </div>
+            <h1 style="font-size: 2.8rem; margin-bottom: 5px; text-shadow: 2px 2px 10px rgba(0,0,0,0.5);">पुलिस मॉडर्न
+                स्कूल</h1>
+            <p style="color: var(--accent); font-size: 1.4rem; font-weight: bold; letter-spacing: 2px;">रायबरेली</p>
+            <p style="margin-top: 20px; font-size: 1rem; opacity: 0.95; font-style: italic;">
+                "अनुशासन, संस्कार एवं आधुनिक शिक्षा का संगम"
+            </p>
+            <p style="margin-top: 10px; font-size: 0.9rem; opacity: 0.8;">
+                <i class="fas fa-map-marker-alt"></i> 25वीं वाहिनी पी.ए.सी. परिसर
+            </p>
+            <div
+                style="margin-top: 40px; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 3px; border: 1px solid rgba(255,255,255,0.4); padding: 10px 25px; border-radius: 50px; display: inline-block; background: rgba(255,255,255,0.1);">
+                देखने के लिए टैप करें
+            </div>
+        </div>
+    </div>
+
+    <!-- Brochure Container -->
+    <div class="brochure-container" id="brochureContainer">
+
+        <!-- Inside Left: About & USP -->
+        <div class="panel panel-left">
+            <div class="panel-content">
+                <div class="panel-header">
+                    <h2>हमारा स्कूल - आपकी पसंद</h2>
+                </div>
+
+                <div class="feature-box">
+                    <h3><i class="fas fa-award"></i> मुख्य विशेषताएं (USP)</h3>
+                    <div class="usp-grid">
+                        <div class="usp-item"><i class="fas fa-shield-alt"></i> सुरक्षित PAC कैंपस</div>
+                        <div class="usp-item"><i class="fas fa-user-check"></i> अनुशासित माहौल</div>
+                        <div class="usp-item"><i class="fas fa-users"></i> सीमित छात्र संख्या</div>
+                        <div class="usp-item"><i class="fas fa-user-tie"></i> व्यक्तिगत ध्यान</div>
+                    </div>
+                </div>
+
+                <div class="feature-box">
+                    <h3><i class="fas fa-user-graduate"></i> उत्कृष्ट शिक्षक टीम</h3>
+                    <p>हमारे पास उच्च योग्य और अनुभवी शिक्षकों की टीम है जो बच्चों के मानसिक और नैतिक विकास के लिए
+                        प्रतिबद्ध है। छात्र-शिक्षक अनुपात (Low Ratio) का विशेष ध्यान रखा जाता है।</p>
+                </div>
+
+                <div class="feature-box">
+                    <h3><i class="fas fa-bullseye"></i> शैक्षिक मजबूती</h3>
+                    <ul>
+                        <li><i class="fas fa-check-circle" style="color: var(--success);"></i> NCERT/CBSE पैटर्न आधारित
+                            शिक्षा</li>
+                        <li><i class="fas fa-check-circle" style="color: var(--success);"></i> Spoken English पर विशेष
+                            फोकस</li>
+                        <li><i class="fas fa-check-circle" style="color: var(--success);"></i> नियमित होमवर्क मॉनिटरिंग
+                            और PTM</li>
+                    </ul>
+                </div>
+
+                <img src="/assets/images/gallery/1.jpg" alt="Classroom View"
+                    style="width: 30%; border-radius: 12px; margin-top: 10px;">
+                <img src="/assets/images/gallery/2.jpg" alt="Classroom View"
+                    style="width: 30%; border-radius: 12px; margin-top: 10px;">
+                <img src="/assets/images/gallery/3.jpg" alt="Classroom View"
+                    style="width: 30%; border-radius: 12px; margin-top: 10px;">
+            </div>
+        </div>
+
+        <!-- Center Panel: Main Cover -->
+        <div class="panel panel-center">
+            <div class="center-wrapper">
+                <div
+                    style="background: rgba(255,255,255,0.1); padding: 30px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.2); backdrop-filter: blur(5px); width: 85%;">
+                    <i class="fas fa-graduation-cap fa-5x" style="color: var(--accent); margin-bottom: 20px;"></i>
+                    <h1 style="font-size: 2.8rem; text-shadow: 2px 4px 10px rgba(0,0,0,0.5);">पुलिस मॉडर्न स्कूल</h1>
+                    <p style="letter-spacing: 5px; color: var(--accent); font-weight: bold;">रायबरेली</p>
+
+                    <div class="admission-badge">प्रवेश प्रारंभ 2026-27</div>
+
+                    <p style="font-size: 1.4rem; font-weight: bold;">LKG से कक्षा 8वीं तक</p>
+                    <hr style="width: 60%; margin: 20px auto; opacity: 0.3;">
+                    <p style="font-size: 1rem; margin-bottom: 5px;">25वीं वाहिनी पी.ए.सी. परिसर, रायबरेली</p>
+                    <p style="font-size: 0.8rem; opacity: 0.8;">सम्बद्धता: राज्य शिक्षा बोर्ड (NCERT पैटर्न)</p>
+                </div>
+
+                <div class="cta-box" style="width: 80%; margin-top: 30px;">
+                    👉 "आज ही अपने बच्चे का भविष्य सुरक्षित करें"
+                </div>
+            </div>
+        </div>
+
+        <!-- Inside Right: Safety, Facilities & Contact -->
+        <div class="panel panel-right">
+            <div class="panel-content">
+                <div class="panel-header">
+                    <h2>सुविधाएं एवं सुरक्षा</h2>
+                </div>
+
+                <div class="feature-box" style="border-left-color: var(--danger);">
+                    <h3><i class="fas fa-user-shield"></i> सुरक्षा (Safety First)</h3>
+                    <ul>
+                        <li><i class="fas fa-video"></i> संपूर्ण कैंपस CCTV की निगरानी में</li>
+                        <li><i class="fas fa-door-closed"></i> मुख्य द्वार पर कड़ा सुरक्षा पहरा</li>
+                        <li><i class="fas fa-female"></i> छोटे बच्चों हेतु महिला स्टाफ की व्यवस्था</li>
+                        <li><i class="fas fa-first-aid"></i> फर्स्ट-एड एवं मेडिकल रूम सुविधा</li>
+                    </ul>
+                </div>
+
+                <div class="feature-box">
+                    <h3><i class="fas fa-bus"></i> परिवहन (Transport)</h3>
+                    <p>शहर के प्रमुख क्षेत्रों के लिए सुरक्षित स्कूल बस एवं वाहन सुविधा उपलब्ध है। अधिक जानकारी के लिए
+                        ऑफिस से संपर्क करें।</p>
+                </div>
+
+                <div class="feature-box">
+                    <h3><i class="fas fa-id-card"></i> प्रवेश हेतु जानकारी</h3>
+                    <p><strong>दस्तावेज:</strong> जन्म प्रमाण पत्र, आधार कार्ड, 4 फोटो, पिछली कक्षा की TC।</p>
+                    <p><strong>ऑफिस समय:</strong> सोम-शनि: 9AM-4PM</p>
+                </div>
+
+                <div style="text-align: center; margin-top: 10px;">
+                    <h3 style="color: var(--primary); font-size: 1.1rem; margin-bottom: 5px;">संवाद के लिए संपर्क करें:
+                    </h3>
+                    <div class="btn-group">
+                        <a href="tel:+919506170180" class="btn btn-call"><i class="fas fa-phone"></i> कॉल करें</a>
+                        <a href="https://wa.me/919506170180" class="btn btn-wa"><i class="fab fa-whatsapp"></i>
+                            व्हाट्सएप</a>
+                    </div>
+                    <p style="font-size: 0.75rem; margin-top: 15px; color: #64748b;">
+                        <i class="fas fa-envelope"></i> pmsraebareli@gmail.com<br>
+                        25वीं वाहिनी पी.ए.सी., रायबरेली
+                    </p>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        function startExperience() {
+            document.getElementById('splashScreen').classList.add('hidden');
+            setTimeout(() => {
+                document.getElementById('brochureContainer').classList.add('active');
+            }, 300);
+        }
+
+        if (window.innerWidth <= 900) {
+            document.getElementById('splashScreen').style.display = 'none';
+            document.getElementById('brochureContainer').classList.add('active');
+        }
+    </script>
+</body>
+
+</html>

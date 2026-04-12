@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% block title %}Teacher Results{% endblock %}
+{% block content %}
+<div class="p-6 md:p-10">
+    <div class="grid gap-6 xl:grid-cols-[0.95fr_1.05fr]">
+        <section class="rounded-3xl bg-white p-6 shadow-sm">
+            <h2 class="text-2xl font-bold">Upload Result | {{ assigned_class }}</h2>
+            <form class="mt-6 grid gap-4" method="post" enctype="multipart/form-data">
+                <select class="rounded-2xl border px-4 py-3" name="student_id" required>
+                    <option value="">Select Student</option>
+                    {% for student in students %}
+                    <option value="{{ student.id }}">{{ student.name }}</option>
+                    {% endfor %}
+                </select>
+                <input class="rounded-2xl border px-4 py-3" name="exam_name" placeholder="Exam Name" required>
+                <input class="rounded-2xl border px-4 py-3" name="subject" placeholder="Subject" required>
+                <input class="rounded-2xl border px-4 py-3" name="marks" type="number" step="0.01" placeholder="Marks" required>
+                <input class="rounded-2xl border px-4 py-3" name="max_marks" type="number" step="0.01" placeholder="Maximum Marks" required>
+                <input class="rounded-2xl border px-4 py-3" name="grade" placeholder="Grade">
+                <textarea class="rounded-2xl border px-4 py-3" name="remarks" placeholder="Remarks"></textarea>
+                <input class="rounded-2xl border px-4 py-3" name="attachment" type="file" accept=".pdf,.png,.jpg,.jpeg,.doc,.docx">
+                <button class="rounded-2xl bg-ink px-5 py-3 font-semibold text-white" type="submit">Upload Result</button>
+            </form>
+        </section>
+        <section class="rounded-3xl bg-white p-6 shadow-sm">
+            <h2 class="text-2xl font-bold">Class Results</h2>
+            <div class="mt-6 overflow-x-auto">
+                <table class="min-w-full text-left text-sm">
+                    <thead class="text-slate-500">
+                        <tr>
+                            <th class="pb-3">Student</th>
+                            <th class="pb-3">Exam</th>
+                            <th class="pb-3">Subject</th>
+                            <th class="pb-3">Marks</th>
+                            <th class="pb-3">Grade</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y">
+                        {% for item in records %}
+                        <tr>
+                            <td class="py-3">{{ item.student_name }}</td>
+                            <td class="py-3">{{ item.exam_name }}</td>
+                            <td class="py-3">{{ item.subject }}</td>
+                            <td class="py-3">{{ item.marks }}/{{ item.max_marks }}</td>
+                            <td class="py-3">{{ item.grade }}</td>
+                        </tr>
+                        {% else %}
+                        <tr><td class="py-4 text-slate-500" colspan="5">No results uploaded yet.</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </div>
+</div>
+{% endblock %}

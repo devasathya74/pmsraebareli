@@ -1,0 +1,5 @@
+[ ] Task 1: Implement Fee Card detailed view component in Admin Dashboard
+[ ] Task 2: Standardize "Fee" actions in dashboard (connect buttons to /admin/fees)
+[ ] Task 3: Implement search/filter for Fees by Student ID or Roll No
+[ ] Task 4: Verify Session Hardening across all modules
+[ ] Task 5: High-fidelity UI polish for all tables
