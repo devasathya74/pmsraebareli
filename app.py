@@ -1,14 +1,10 @@
-from flask import Flask
+from school_app import create_app
 import os
 
-app = Flask(__name__)
-
-@app.route("/")
-def home():
-    return "App is working"
+app = create_app()
 
 if __name__ == "__main__":
-    app.run(
-        host="0.0.0.0",
-        port=int(os.environ.get("PORT", 5000))
-    )
+    # Standard Flask runner for local development
+    # Railway will use Gunicorn from the Procfile/nixpacks.toml
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host="0.0.0.0", port=port)

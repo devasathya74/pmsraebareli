@@ -1,5 +1,9 @@
-# .env inclusion allowed by user request
+.env
+.venv/
 __pycache__/
 *.pyc
 data/
 uploads/
+school_app/static/uploads/
+.vscode/
+firebase-service-account.json

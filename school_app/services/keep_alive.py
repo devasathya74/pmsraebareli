@@ -19,7 +19,9 @@ def run_keep_alive_cycle(app):
             logger.info(f"Keep-Alive: Firestore ping successful (doc: {ping_id})")
 
         # 2. Supabase Ping (Storage)
-        if app.config.get("STORAGE_BACKEND") == "supabase":
+        # Only ping if we are actually using Supabase remote storage
+        from school_app.services.storage import SupabaseStorageService
+        if isinstance(app.storage_service, SupabaseStorageService):
             logger.info("Keep-Alive: Pinging Supabase Storage...")
             storage = app.storage_service
             
@@ -37,6 +39,8 @@ def run_keep_alive_cycle(app):
             # Delete
             storage.delete(object_name)
             logger.info(f"Keep-Alive: Supabase ping successful (obj: {object_name})")
+        else:
+            logger.info("Keep-Alive: Skipping Supabase ping (using LocalStorageService)")
 
     except Exception as e:
         logger.error(f"Keep-Alive error: {str(e)}")

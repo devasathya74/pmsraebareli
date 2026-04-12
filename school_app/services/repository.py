@@ -85,10 +85,11 @@ class FirestoreRepository(BaseRepository):
         if firebase_admin is None or credentials is None or firestore is None:
             raise RuntimeError("firebase-admin is required for Firestore mode.")
         if not firebase_admin._apps:
-            if credentials_path:
+            if credentials_path and Path(credentials_path).exists():
                 cred = credentials.Certificate(credentials_path)
-                firebase_admin.initialize_app(cred, {"projectId": project_id})
+                firebase_admin.initialize_app(cred)
             else:
+                # Fallback to default credentials or project ID if file missing
                 firebase_admin.initialize_app(options={"projectId": project_id})
         self.client = firestore.client()
         self.prefix = prefix.strip()
