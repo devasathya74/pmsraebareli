@@ -13,7 +13,10 @@
 
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Tiro+Devanagari+Hindi&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+Devanagari:wght@500;700&family=Tiro+Devanagari+Hindi&display=swap" rel="stylesheet">
+    
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
 
     <!-- Responsive CSS Framework -->
     <link rel="stylesheet" href="../assets/css/responsive.css">
@@ -149,6 +152,63 @@
         h5,
         h6 {
             font-family: 'Nunito', sans-serif;
+        }
+
+        /* Print Specific Styles */
+        @media print {
+            body.printing-modal {
+                background-color: white !important;
+                padding: 0 !important;
+            }
+            body.printing-modal #modal-container-inner {
+                box-shadow: none !important;
+                max-width: 100% !important;
+                border: none !important;
+                border-radius: 0 !important;
+            }
+            body.printing-modal #app-header-modal {
+                display: none !important;
+            }
+            body.printing-modal #fee-card-print-container {
+                padding: 0 !important;
+                margin: 0 !important;
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 210mm; /* A4 Width */
+                height: 297mm; /* A4 Height */
+                visibility: visible !important;
+                overflow: hidden !important;
+            }
+            body.printing-modal #fee-card-print-container * {
+                visibility: visible !important;
+            }
+            body.printing-modal footer, 
+            body.printing-modal header,
+            body.printing-modal aside,
+            body.printing-modal .no-print {
+                display: none !important;
+            }
+            @page { 
+                size: A4 portrait; 
+                margin: 0;
+            }
+        }
+
+        /* Custom Scrollbar for the Fee Card Modal */
+        #fee-card-print-container::-webkit-scrollbar {
+            width: 8px;
+        }
+        #fee-card-print-container::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 4px;
+        }
+        #fee-card-print-container::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+        #fee-card-print-container::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
         }
     </style>
     <link
@@ -448,11 +508,12 @@
                                     <th class="px-4 py-3 text-left font-bold text-gray-700 uppercase tracking-wider">
                                         Amount</th>
                                     <th class="px-4 py-3 text-right font-bold text-gray-700 uppercase tracking-wider">
-                                        Date</th>
+                                        Action</th>
                             <tbody id="recent-fees-tbody">
                                 <tr>
                                     <td colspan="4" class="px-6 py-4 text-center text-gray-500">Loading transactions...
                                     </td>
+                                </tr>
                                 </tr>
                             </tbody>
                         </table>
@@ -465,78 +526,187 @@
 
 
     <!-- Student Add/Edit Modal (From admin-students.html) -->
-    <div id="student-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4 overflow-y-auto">
+    <div id="student-modal"
+        class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4 overflow-y-auto">
         <div class="bg-white rounded-2xl shadow-2xl max-w-4xl w-full my-8 max-h-[90vh] overflow-y-auto">
-            <div class="sticky top-0 bg-blue-900 text-white px-6 py-4 rounded-t-2xl flex justify-between items-center z-10">
-                <h3 class="text-xl font-bold"><i class="fas fa-user-edit mr-2"></i><span id="student-modal-title">Edit Student</span></h3>
-                <button onclick="closeStudentModal()" class="text-white hover:text-gray-200"><i class="fas fa-times text-2xl"></i></button>
+            <div
+                class="sticky top-0 bg-blue-900 text-white px-6 py-4 rounded-t-2xl flex justify-between items-center z-10">
+                <h3 class="text-xl font-bold"><i class="fas fa-user-edit mr-2"></i><span id="student-modal-title">Edit
+                        Student</span></h3>
+                <button onclick="closeStudentModal()" class="text-white hover:text-gray-200"><i
+                        class="fas fa-times text-2xl"></i></button>
             </div>
             <form id="student-form" class="p-8 space-y-6" onsubmit="handleStudentSubmit(event)">
                 <input type="hidden" id="student-id">
-                <div class="flex items-baseline"><label class="w-48 font-bold">Student Name *</label><input type="text" id="student-name" required class="flex-1 px-3 py-1 border-b-2 border-gray-300 focus:border-blue-500 outline-none"></div>
+                <div class="flex items-baseline"><label class="w-48 font-bold">Student Name *</label><input type="text"
+                        id="student-name" required
+                        class="flex-1 px-3 py-1 border-b-2 border-gray-300 focus:border-blue-500 outline-none"></div>
                 <div class="grid grid-cols-2 gap-4">
-                    <div class="flex items-baseline"><label class="w-32 font-bold">Roll No *</label><input type="text" id="student-roll" required class="flex-1 border-b-2 border-gray-300 focus:border-blue-500 outline-none px-3 py-1"></div>
-                    <div class="flex items-baseline"><label class="w-24 font-bold">Class *</label><select id="student-class" required class="flex-1 border-b-2 border-gray-300 focus:border-blue-500 outline-none px-3 py-1"><option value="">Select</option><option value="lkg">LKG</option><option value="ukg">UKG</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="6">6</option><option value="7">7</option><option value="8">8</option></select></div>
+                    <div class="flex items-baseline"><label class="w-32 font-bold">Roll No *</label><input type="text"
+                            id="student-roll" required
+                            class="flex-1 border-b-2 border-gray-300 focus:border-blue-500 outline-none px-3 py-1">
+                    </div>
+                    <div class="flex items-baseline"><label class="w-24 font-bold">Class *</label><select
+                            id="student-class" required
+                            class="flex-1 border-b-2 border-gray-300 focus:border-blue-500 outline-none px-3 py-1">
+                            <option value="">Select</option>
+                            <option value="lkg">LKG</option>
+                            <option value="ukg">UKG</option>
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                            <option value="5">5</option>
+                            <option value="6">6</option>
+                            <option value="7">7</option>
+                            <option value="8">8</option>
+                        </select></div>
                 </div>
                 <div class="grid grid-cols-2 gap-4">
-                    <div class="flex items-baseline"><label class="w-32 font-bold">Date of Birth *</label><input type="date" id="student-dob" required class="flex-1 border-b-2 border-gray-300 focus:border-blue-500 outline-none px-3 py-1"></div>
-                    <div class="flex items-baseline"><label class="w-24 font-bold">Gender *</label><select id="student-gender" required class="flex-1 border-b-2 border-gray-300 focus:border-blue-500 outline-none px-3 py-1"><option value="">Select</option><option value="male">Male</option><option value="female">Female</option></select></div>
+                    <div class="flex items-baseline"><label class="w-32 font-bold">Date of Birth *</label><input
+                            type="date" id="student-dob" required
+                            class="flex-1 border-b-2 border-gray-300 focus:border-blue-500 outline-none px-3 py-1">
+                    </div>
+                    <div class="flex items-baseline"><label class="w-24 font-bold">Gender *</label><select
+                            id="student-gender" required
+                            class="flex-1 border-b-2 border-gray-300 focus:border-blue-500 outline-none px-3 py-1">
+                            <option value="">Select</option>
+                            <option value="male">Male</option>
+                            <option value="female">Female</option>
+                        </select></div>
                 </div>
-                <div class="flex items-baseline"><label class="w-48 font-bold">Father's Name *</label><input type="text" id="student-father" required class="flex-1 border-b-2 border-gray-300 focus:border-blue-500 outline-none px-3 py-1"></div>
+                <div class="flex items-baseline"><label class="w-48 font-bold">Father's Name *</label><input type="text"
+                        id="student-father" required
+                        class="flex-1 border-b-2 border-gray-300 focus:border-blue-500 outline-none px-3 py-1"></div>
                 <div class="grid grid-cols-2 gap-4">
-                    <div class="flex items-baseline"><label class="w-32 font-bold">Mobile *</label><input type="tel" id="student-mobile" required class="flex-1 border-b-2 border-gray-300 focus:border-blue-500 outline-none px-3 py-1"></div>
-                    <div class="flex items-baseline"><label class="w-24 font-bold">Email</label><input type="email" id="student-email" class="flex-1 border-b-2 border-gray-300 focus:border-blue-500 outline-none px-3 py-1"></div>
+                    <div class="flex items-baseline"><label class="w-32 font-bold">Mobile *</label><input type="tel"
+                            id="student-mobile" required
+                            class="flex-1 border-b-2 border-gray-300 focus:border-blue-500 outline-none px-3 py-1">
+                    </div>
+                    <div class="flex items-baseline"><label class="w-24 font-bold">Email</label><input type="email"
+                            id="student-email"
+                            class="flex-1 border-b-2 border-gray-300 focus:border-blue-500 outline-none px-3 py-1">
+                    </div>
                 </div>
-                <div><label class="font-bold block mb-2">Address *</label><textarea id="student-address" required class="w-full border-b-2 border-gray-300 focus:border-blue-500 outline-none px-3 py-1"></textarea></div>
-                <div class="flex gap-4 pt-4 border-t"><button type="submit" class="flex-1 bg-blue-900 text-white py-3 rounded-lg font-bold">Save Changes</button><button type="button" onclick="closeStudentModal()" class="px-8 bg-gray-300 py-3 rounded-lg font-bold">Cancel</button></div>
+                <div><label class="font-bold block mb-2">Address *</label><textarea id="student-address" required
+                        class="w-full border-b-2 border-gray-300 focus:border-blue-500 outline-none px-3 py-1"></textarea>
+                </div>
+                <div class="flex gap-4 pt-4 border-t"><button type="submit"
+                        class="flex-1 bg-blue-900 text-white py-3 rounded-lg font-bold">Save Changes</button><button
+                        type="button" onclick="closeStudentModal()"
+                        class="px-8 bg-gray-300 py-3 rounded-lg font-bold">Cancel</button></div>
             </form>
         </div>
     </div>
 
     <!-- Teacher Add/Edit Modal (From admin-students.html) -->
-    <div id="teacher-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4 overflow-y-auto">
+    <div id="teacher-modal"
+        class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4 overflow-y-auto">
         <div class="bg-white rounded-2xl shadow-2xl max-w-4xl w-full my-8">
             <div class="bg-blue-900 text-white px-6 py-4 rounded-t-2xl flex justify-between items-center z-10">
                 <h3 id="teacher-modal-title" class="text-xl font-bold">Add New Teacher</h3>
-                <button onclick="closeTeacherModal()" class="text-white hover:text-gray-200"><i class="fas fa-times text-2xl"></i></button>
+                <button onclick="closeTeacherModal()" class="text-white hover:text-gray-200"><i
+                        class="fas fa-times text-2xl"></i></button>
             </div>
             <form id="teacher-form" onsubmit="handleTeacherSubmit(event)" class="p-6">
                 <input type="hidden" id="teacher-id">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div><label class="block text-sm font-bold mb-1">Full Name *</label><input type="text" id="teacher-name" required class="w-full px-4 py-2 border rounded-lg"></div>
-                    <div><label class="block text-sm font-bold mb-1">Email Address *</label><input type="email" id="teacher-email" required class="w-full px-4 py-2 border rounded-lg"></div>
-                    <div><label class="block text-sm font-bold mb-1">Mobile Number *</label><input type="tel" id="teacher-mobile" required class="w-full px-4 py-2 border rounded-lg"></div>
-                    <div><label class="block text-sm font-bold mb-1">Password *</label><input type="password" id="teacher-password" class="w-full px-4 py-2 border rounded-lg"></div>
-                    <div><label class="block text-sm font-bold mb-1">Qualification</label><input type="text" id="teacher-qualification" class="w-full px-4 py-2 border rounded-lg"></div>
-                    <div><label class="block text-sm font-bold mb-1">Primary Subject</label><input type="text" id="teacher-subject" class="w-full px-4 py-2 border rounded-lg"></div>
-                    <div><label class="block text-sm font-bold mb-1">Assigned Class</label><select id="teacher-assigned-class" class="w-full px-4 py-2 border rounded-lg"><option value="">None / Multiple</option><option value="lkg">LKG</option><option value="ukg">UKG</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="6">6</option><option value="7">7</option><option value="8">8</option></select></div>
-                    <div><label class="block text-sm font-bold mb-1">Salary (Monthly ₹)</label><input type="number" id="teacher-salary" class="w-full px-4 py-2 border rounded-lg"></div>
-                    <div><label class="block text-sm font-bold mb-1">Joining Date</label><input type="date" id="teacher-joining-date" class="w-full px-4 py-2 border rounded-lg"></div>
+                    <div><label class="block text-sm font-bold mb-1">Full Name *</label><input type="text"
+                            id="teacher-name" required class="w-full px-4 py-2 border rounded-lg"></div>
+                    <div><label class="block text-sm font-bold mb-1">Email Address *</label><input type="email"
+                            id="teacher-email" required class="w-full px-4 py-2 border rounded-lg"></div>
+                    <div><label class="block text-sm font-bold mb-1">Mobile Number *</label><input type="tel"
+                            id="teacher-mobile" required class="w-full px-4 py-2 border rounded-lg"></div>
+                    <div><label class="block text-sm font-bold mb-1">Password *</label><input type="password"
+                            id="teacher-password" class="w-full px-4 py-2 border rounded-lg"></div>
+                    <div><label class="block text-sm font-bold mb-1">Qualification</label><input type="text"
+                            id="teacher-qualification" class="w-full px-4 py-2 border rounded-lg"></div>
+                    <div><label class="block text-sm font-bold mb-1">Primary Subject</label><input type="text"
+                            id="teacher-subject" class="w-full px-4 py-2 border rounded-lg"></div>
+                    <div><label class="block text-sm font-bold mb-1">Assigned Class</label><select
+                            id="teacher-assigned-class" class="w-full px-4 py-2 border rounded-lg">
+                            <option value="">None / Multiple</option>
+                            <option value="lkg">LKG</option>
+                            <option value="ukg">UKG</option>
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                            <option value="5">5</option>
+                            <option value="6">6</option>
+                            <option value="7">7</option>
+                            <option value="8">8</option>
+                        </select></div>
+                    <div><label class="block text-sm font-bold mb-1">Salary (Monthly ₹)</label><input type="number"
+                            id="teacher-salary" class="w-full px-4 py-2 border rounded-lg"></div>
+                    <div><label class="block text-sm font-bold mb-1">Joining Date</label><input type="date"
+                            id="teacher-joining-date" class="w-full px-4 py-2 border rounded-lg"></div>
                 </div>
-                <div class="flex gap-4 mt-8"><button type="submit" class="flex-1 bg-blue-900 text-white font-bold py-3 rounded-xl">Save Record</button><button type="button" onclick="closeTeacherModal()" class="px-8 bg-gray-200 font-bold py-3 rounded-xl text-black">Cancel</button></div>
+                <div class="flex gap-4 mt-8"><button type="submit"
+                        class="flex-1 bg-blue-900 text-white font-bold py-3 rounded-xl">Save Record</button><button
+                        type="button" onclick="closeTeacherModal()"
+                        class="px-8 bg-gray-200 font-bold py-3 rounded-xl text-black">Cancel</button></div>
             </form>
         </div>
     </div>
 
     <!-- Fee Record Modal (Reconstructed) -->
-    <div id="add-fee-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-[60] flex items-center justify-center p-4">
+    <div id="add-fee-modal"
+        class="hidden fixed inset-0 bg-black bg-opacity-50 z-[60] flex items-center justify-center p-4">
         <div class="bg-white rounded-2xl shadow-2xl max-w-lg w-full">
             <div class="bg-blue-900 text-white px-6 py-4 rounded-t-2xl flex justify-between items-center z-10">
                 <h3 class="text-xl font-bold">Add Fee Record</h3>
-                <button onclick="closeAddFeeModal()" class="text-white hover:text-gray-200"><i class="fas fa-times text-2xl"></i></button>
+                <button onclick="closeAddFeeModal()" class="text-white hover:text-gray-200"><i
+                        class="fas fa-times text-2xl"></i></button>
             </div>
             <form id="add-fee-form" class="p-6 space-y-4" onsubmit="handleFeeSubmit(event)">
-                <div><label class="block text-sm font-bold mb-1">Class *</label><select id="fee-class-select" required onchange="populateFeeStudentList()" class="w-full px-4 py-2 border rounded-lg"><option value="">Select Class</option><option value="lkg">LKG</option><option value="ukg">UKG</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="6">6</option><option value="7">7</option><option value="8">8</option></select></div>
-                <div><label class="block text-sm font-bold mb-1">Student *</label><select id="fee-student-id" required class="w-full px-4 py-2 border rounded-lg"><option value="">First Select Class</option></select></div>
+                <div><label class="block text-sm font-bold mb-1">Class *</label><select id="fee-class-select" required
+                        onchange="populateFeeStudentList()" class="w-full px-4 py-2 border rounded-lg">
+                        <option value="">Select Class</option>
+                        <option value="lkg">LKG</option>
+                        <option value="ukg">UKG</option>
+                        <option value="1">1</option>
+                        <option value="2">2</option>
+                        <option value="3">3</option>
+                        <option value="4">4</option>
+                        <option value="5">5</option>
+                        <option value="6">6</option>
+                        <option value="7">7</option>
+                        <option value="8">8</option>
+                    </select></div>
+                <div><label class="block text-sm font-bold mb-1">Student *</label><select id="fee-student-id" required
+                        class="w-full px-4 py-2 border rounded-lg">
+                        <option value="">First Select Class</option>
+                    </select></div>
                 <div class="grid grid-cols-2 gap-4">
-                    <div><label class="block text-sm font-bold mb-1">Year *</label><input type="number" id="fee-year" required class="w-full px-4 py-2 border rounded-lg"></div>
-                    <div><label class="block text-sm font-bold mb-1">Month *</label><select id="fee-month" required class="w-full px-4 py-2 border rounded-lg"><option value="January">January</option><option value="February">February</option><option value="March">March</option><option value="April">April</option><option value="May">May</option><option value="June">June</option><option value="July">July</option><option value="August">August</option><option value="September">September</option><option value="October">October</option><option value="November">November</option><option value="December">December</option></select></div>
+                    <div><label class="block text-sm font-bold mb-1">Year *</label><input type="number" id="fee-year"
+                            required class="w-full px-4 py-2 border rounded-lg"></div>
+                    <div><label class="block text-sm font-bold mb-1">Month *</label><select id="fee-month" required
+                            class="w-full px-4 py-2 border rounded-lg">
+                            <option value="January">January</option>
+                            <option value="February">February</option>
+                            <option value="March">March</option>
+                            <option value="April">April</option>
+                            <option value="May">May</option>
+                            <option value="June">June</option>
+                            <option value="July">July</option>
+                            <option value="August">August</option>
+                            <option value="September">September</option>
+                            <option value="October">October</option>
+                            <option value="November">November</option>
+                            <option value="December">December</option>
+                        </select></div>
                 </div>
                 <div class="grid grid-cols-2 gap-4">
-                    <div><label class="block text-sm font-bold mb-1">Amount (₹) *</label><input type="number" id="fee-amount" required class="w-full px-4 py-2 border rounded-lg"></div>
-                    <div><label class="block text-sm font-bold mb-1">Receipt Number</label><input type="text" id="fee-receipt" class="w-full px-4 py-2 border rounded-lg"></div>
+                    <div><label class="block text-sm font-bold mb-1">Amount (₹) *</label><input type="number"
+                            id="fee-amount" required class="w-full px-4 py-2 border rounded-lg"></div>
+                    <div><label class="block text-sm font-bold mb-1">Receipt Number</label><input type="text"
+                            id="fee-receipt" class="w-full px-4 py-2 border rounded-lg"></div>
                 </div>
-                <div class="flex gap-4 pt-4 mt-4"><button type="submit" id="save-fee-btn" class="flex-1 bg-blue-900 text-white font-bold py-3 rounded-xl">Save Fee</button><button type="button" onclick="closeAddFeeModal()" class="px-8 bg-gray-200 font-bold py-3 rounded-xl text-black">Cancel</button></div>
+                <div class="flex gap-4 pt-4 mt-4"><button type="submit" id="save-fee-btn"
+                        class="flex-1 bg-blue-900 text-white font-bold py-3 rounded-xl">Save Fee</button><button
+                        type="button" onclick="closeAddFeeModal()"
+                        class="px-8 bg-gray-200 font-bold py-3 rounded-xl text-black">Cancel</button></div>
             </form>
         </div>
     </div>
@@ -583,8 +753,8 @@
                     <select id="view-fee-session" onchange="handleFeeHistoryFilter()"
                         class="w-full px-3 py-2 border-2 border-emerald-100 rounded-lg focus:border-emerald-600 outline-none font-bold text-gray-700 bg-white">
                         <option value="">All Sessions</option>
-                        <option value="2025-26" selected>2025-26</option>
-                        <option value="2026-27">2026-27</option>
+                        <option value="2026-27" selected>2026-27</option>
+                        <option value="2025-26">2025-26</option>
                         <option value="2024-25">2024-25</option>
                     </select>
                 </div>
@@ -633,10 +803,9 @@
                         </thead>
                         <tbody id="fee-history-tbody">
                             <tr>
-                                <td colspan="6" class="px-6 py-20 text-center text-gray-400">
+                                <td colspan="7" class="px-6 py-20 text-center text-gray-400">
                                     <i class="fas fa-search-dollar text-6xl mb-4 opacity-10"></i>
-                                    <p class="text-lg font-bold">Select parameters and click "Submit" to load students
-                                    </p>
+                                    <p class="text-lg font-bold">Select parameters and click "Submit" to load history</p>
                                 </td>
                             </tr>
                         </tbody>
@@ -964,6 +1133,137 @@
                         </button>
                     </div>
                 </form>
+            </div>
+        </div>
+    </div>
+    <!-- Fee Card Print Modal -->
+    <!-- Fee Card Print Modal -->
+    <div id="fee-card-modal" class="hidden fixed inset-0 bg-black bg-opacity-60 backdrop-blur-sm z-[100] flex items-center justify-center p-4">
+        <!-- Main Modal Container -->
+        <div id="modal-container-inner" class="bg-white w-full max-w-4xl rounded-2xl shadow-2xl overflow-hidden border border-slate-200 flex flex-col animate-fade-in max-h-[95vh]">
+            
+            <!-- Top App Header -->
+            <div id="app-header-modal" class="bg-gradient-to-r from-blue-600 to-indigo-700 text-white px-6 py-4 flex justify-between items-center no-print flex-shrink-0">
+                <div class="flex items-center gap-3">
+                    <i data-lucide="contact" class="w-6 h-6 text-blue-100"></i>
+                    <h1 class="font-semibold text-lg tracking-wide">Student Fee Card</h1>
+                </div>
+                <div class="flex items-center gap-4">
+                    <button onclick="printFeeCardModal()" class="flex items-center gap-2 bg-blue-600 hover:bg-blue-500 transition-colors px-4 py-2 rounded-lg text-sm font-medium shadow-sm border border-blue-500">
+                        <i data-lucide="printer" class="w-4 h-4"></i>
+                        Print
+                    </button>
+                    <button onclick="closeFeeCardModal()" class="text-blue-100 hover:text-white transition-colors bg-blue-800 hover:bg-blue-700 p-2 rounded-lg">
+                        <i data-lucide="x" class="w-5 h-5"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Printable Card Area -->
+            <div id="fee-card-print-container" class="p-4 md:p-8 bg-white overflow-y-auto">
+                
+                <!-- School Header Section -->
+                <div class="flex justify-between items-center mb-8">
+                    <!-- Logo -->
+                    <div class="w-24 h-28 flex-shrink-0 bg-white border-2 border-slate-100 rounded-lg shadow-sm flex items-center justify-center overflow-hidden p-2">
+                        <img src="../assets/images/logo/logo.png" alt="School Logo" class="w-full h-full object-contain opacity-90" onerror="this.src='https://ui-avatars.com/api/?name=PMS&background=1e3a8a&color=fff&size=100&font-size=0.33'">
+                    </div>
+
+                    <!-- Center Text -->
+                    <div class="text-center flex-1 px-4">
+                        <h2 class="font-hindi text-3xl font-bold text-slate-900 mb-1">पुलिस मॉडर्न स्कूल, रायबरेली</h2>
+                        <h3 class="font-sans text-lg font-semibold text-slate-700 tracking-wider mb-2 uppercase">POLICE MODERN SCHOOL</h3>
+                        <p class="font-sans text-[10px] text-slate-600 font-medium">25वीं वाहिनी पीएसी, रायबरेली | REG. NO. 568-71/2007-08</p>
+                    
+                        <div class="mt-4">
+                            <span id="fc-session-title" class="bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-5 py-1.5 rounded-full text-[10px] font-bold tracking-widest shadow-sm uppercase">
+                                FEE CARD 2025-26
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Student Photo -->
+                    <div class="w-28 h-32 flex-shrink-0 bg-slate-50 border-2 border-indigo-100 rounded-xl shadow-sm overflow-hidden p-1 relative">
+                        <img id="fc-student-photo" src="" alt="Student Photo" class="w-full h-full object-cover rounded-lg hidden">
+                        <div id="fc-photo-placeholder" class="w-full h-full flex flex-col items-center justify-center bg-slate-100 text-slate-400">
+                             <i data-lucide="user" class="w-8 h-8 mb-1"></i>
+                             <span class="text-[8px] font-bold uppercase">No Photo</span>
+                        </div>
+                    </div>
+                </div>
+
+                <hr class="border-slate-200 mb-8">
+
+                <!-- Student Details Grid -->
+                <div class="bg-blue-50/50 border border-blue-100 rounded-xl p-6 mb-8 shadow-sm">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-y-5 gap-x-4">
+                        <div>
+                            <p class="text-[10px] text-blue-500 uppercase tracking-wide font-bold mb-1">Student Name</p>
+                            <p id="fc-student-name" class="text-base font-bold text-slate-900 uppercase">---</p>
+                        </div>
+                        <div>
+                            <p class="text-[10px] text-blue-500 uppercase tracking-wide font-bold mb-1">Reg. No</p>
+                            <p id="fc-reg-no" class="text-base font-bold text-slate-900 uppercase">---</p>
+                        </div>
+                        <div class="flex gap-8">
+                            <div>
+                                <p class="text-[10px] text-blue-500 uppercase tracking-wide font-bold mb-1">Class</p>
+                                <p id="fc-class" class="text-base font-bold text-slate-900 uppercase">---</p>
+                            </div>
+                            <div>
+                                <p class="text-[10px] text-blue-500 uppercase tracking-wide font-bold mb-1">Roll No</p>
+                                <p id="fc-roll-no" class="text-base font-bold text-slate-900">---</p>
+                            </div>
+                        </div>
+                        <div>
+                            <p class="text-[10px] text-blue-500 uppercase tracking-wide font-bold mb-1">Father's Name</p>
+                            <p id="fc-father-name" class="text-base font-bold text-slate-900 uppercase">---</p>
+                        </div>
+                        <div>
+                            <p class="text-[10px] text-blue-500 uppercase tracking-wide font-bold mb-1">Mobile</p>
+                            <p id="fc-mobile" class="text-base font-bold text-slate-900 font-mono">---</p>
+                        </div>
+                        <!-- Address Section -->
+                        <div class="md:col-span-3 border-t border-blue-100/80 pt-4 mt-1">
+                            <p class="text-[10px] text-blue-500 uppercase tracking-wide font-bold mb-1">Address</p>
+                            <p id="fc-address" class="text-base font-bold text-slate-800 capitalize">---</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Fee Status Section -->
+                <div class="mb-10">
+                    <div class="bg-gradient-to-r from-indigo-50 to-blue-50 border border-indigo-100 text-indigo-800 text-center py-2.5 rounded-lg font-bold tracking-wider text-sm mb-6 shadow-sm uppercase">
+                        MONTHLY FEE STATUS & RECEIPT LOG
+                    </div>
+
+                    <div id="fc-months-container" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                         <!-- Dynamically populated via JS -->
+                    </div>
+                </div>
+
+                <!-- Signatures Section -->
+                <div class="flex justify-between items-end mt-16 pt-8 border-t border-slate-100">
+                    <div class="text-center w-40">
+                        <div class="border-b-2 border-slate-800 mb-2"></div>
+                        <p class="font-bold text-slate-800 text-[10px] uppercase">TEACHER SIGN</p>
+                    </div>
+                    
+                    <div class="text-center flex-1">
+                        <p class="font-bold text-slate-800 text-[10px] uppercase">OFFICE STAMP</p>
+                    </div>
+                    
+                    <div class="text-center w-40">
+                        <div class="border-b-2 border-slate-800 mb-2"></div>
+                        <p class="font-bold text-slate-800 text-[10px] uppercase">PRINCIPAL SIGN</p>
+                    </div>
+                </div>
+
+                <!-- Footer -->
+                <div class="mt-12 text-center">
+                    <p class="text-[10px] font-bold text-slate-300 tracking-[0.2em] uppercase">PMS MANAGEMENT SYSTEM – DIGITAL FEE CARD – RAYBARELI</p>
+                </div>
+
             </div>
         </div>
     </div>

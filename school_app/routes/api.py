@@ -606,6 +606,21 @@ def fees_create():
     return _resource_create("fees", payload)
 
 
+@api_bp.get("/fees/<doc_id>")
+def fees_get(doc_id: str):
+    return _resource_get("fees", doc_id)
+
+
+@api_bp.put("/fees/<doc_id>")
+def fees_put(doc_id: str):
+    return _resource_put("fees", doc_id, request.get_json(silent=True) or {})
+
+
+@api_bp.delete("/fees/<doc_id>")
+def fees_delete(doc_id: str):
+    return _resource_delete("fees", doc_id)
+
+
 @api_bp.post("/expenses/list")
 def expenses_list():
     return _resource_list("expenses")
@@ -618,6 +633,21 @@ def expenses_create():
     if error_response:
         return error_response
     return _resource_create("expenses", data.model_dump())
+
+
+@api_bp.get("/expenses/<doc_id>")
+def expenses_get(doc_id: str):
+    return _resource_get("expenses", doc_id)
+
+
+@api_bp.put("/expenses/<doc_id>")
+def expenses_put(doc_id: str):
+    return _resource_put("expenses", doc_id, request.get_json(silent=True) or {})
+
+
+@api_bp.delete("/expenses/<doc_id>")
+def expenses_delete(doc_id: str):
+    return _resource_delete("expenses", doc_id)
 
 
 @api_bp.post("/salary-slips/list")

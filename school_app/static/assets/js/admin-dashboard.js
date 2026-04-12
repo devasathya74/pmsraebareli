@@ -2015,10 +2015,26 @@ window.handleFeeSubmit = async function (e) {
     const studentName = getStudentDisplayName(student);
 
     try {
-        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Checking...';
         btn.disabled = true;
 
-        // Use REST API helper (not Firebase SDK addDoc)
+        // 1. DUPLICATE CHECK: Check if fee for this student+month+year already exists
+        const checkResult = await firestoreHelper.getDocuments('fees', [
+            where('studentId', '==', studentId),
+            where('month', '==', month),
+            where('year', '==', year)
+        ]);
+        
+        if (checkResult.success && checkResult.data && checkResult.data.length > 0) {
+            window.showToast('error', `Fee already paid for ${month} ${year}! Refer to receipt: ${checkResult.data[0].receiptNumber || 'N/A'}`);
+            btn.innerHTML = originalText;
+            btn.disabled = false;
+            return;
+        }
+
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+
+        // 2. SAVE RECORD
         const saveResult = await firestoreHelper.addDocument('fees', {
             studentId,
             studentName,
@@ -2043,6 +2059,26 @@ window.handleFeeSubmit = async function (e) {
     } finally {
         btn.innerHTML = originalText;
         btn.disabled = false;
+    }
+};
+
+window.deleteFeeRecord = async function (id, fromModal = false) {
+    if (!confirm('Are you sure you want to PERMANENTLY delete this fee record? This action cannot be undone.')) return;
+
+    try {
+        const result = await firestoreHelper.deleteDocument('fees', id);
+        if (!result.success) throw new Error(result.error || 'Delete failed');
+        
+        window.showToast('success', 'Fee Record Deleted Successfully!');
+        
+        // Refresh appropriate views
+        loadRecentFees();
+        if (fromModal) {
+            loadFeeHistory();
+        }
+    } catch (error) {
+        console.error("Error deleting fee:", error);
+        window.showToast('error', 'Error: ' + error.message);
     }
 };
 
@@ -2112,12 +2148,18 @@ window.renderFeeHistory = function (records) {
                     ₹${(f.amount || 0).toLocaleString()}
                 </td>
                 <td class="px-4 py-4 text-center">
-                    <a href="fee-card-print.html?id=${f.studentId}" target="_blank"
-                        onclick="event.stopPropagation();"
-                        class="bg-emerald-600 text-white px-4 py-1.5 rounded-md text-[10px] font-black hover:bg-emerald-700 transition-all shadow-sm flex items-center justify-center mx-auto gap-2 select-none"
-                        style="background-color: #059669 !important; text-decoration: none;">
-                        <i class="fas fa-eye"></i> CARD
-                    </a>
+                    <div class="flex items-center justify-center gap-2">
+                        <a href="#" onclick="event.preventDefault(); event.stopPropagation(); viewFeeCard('${f.studentId}', determineSession('${f.year}', '${f.month}'));"
+                            class="bg-emerald-600 text-white px-3 py-1.5 rounded-md text-[10px] font-black hover:bg-emerald-700 transition-all shadow-sm flex items-center gap-1 select-none"
+                            style="background-color: #059669 !important; text-decoration: none;">
+                            <i class="fas fa-eye"></i> CARD
+                        </a>
+                        <button onclick="event.stopPropagation(); deleteFeeRecord('${f.id}', true);" 
+                            class="bg-red-50 text-red-600 w-8 h-8 rounded-md flex items-center justify-center hover:bg-red-600 hover:text-white transition-all shadow-sm border border-red-100"
+                            title="Delete Record">
+                            <i class="fas fa-trash-alt text-[10px]"></i>
+                        </button>
+                    </div>
                 </td>
             </tr>
         `;
@@ -2161,15 +2203,165 @@ window.handleFeeHistoryFilter = function (event) {
     renderFeeHistory(records);
 };
 
-window.viewFeeCard = function (studentId, session) {
-    console.log(`[FeeAction] Opening card for Student: ${studentId}, Session: ${session}`);
-    const url = `fee-card-print.html?id=${studentId}&session=${session}`;
-    const win = window.open(url, '_blank');
-    if (win) {
-        win.focus();
+window.determineSession = function(yearStr, monthStr) {
+    let yr = parseInt(yearStr);
+    if (isNaN(yr)) yr = new Date().getFullYear();
+    const isLateMonth = ['January', 'February', 'March'].includes(monthStr || '');
+    if (isLateMonth) {
+        return (yr - 1) + '-' + yr.toString().substring(2);
     } else {
-        alert("Please allow popups for this website to view the fee card.");
+        return yr + '-' + (yr + 1).toString().substring(2);
     }
+};
+
+window.viewFeeCard = async function (studentId, session) {
+    if(!session) session = '2025-26';
+    console.log(`[FeeAction] Opening modern modal card for Student: ${studentId}, Session: ${session}`);
+    
+    document.getElementById('fee-card-modal').classList.remove('hidden');
+    document.getElementById('fc-session-title').textContent = `FEE CARD ${session}`;
+    
+    // reset UI
+    document.getElementById('fc-student-name').textContent = 'Loading...';
+    const monthsContainer = document.getElementById('fc-months-container');
+    if (monthsContainer) monthsContainer.innerHTML = '<div class="col-span-2 py-10 text-center text-gray-400"><i class="fas fa-spinner fa-spin mr-2"></i>Loading fee records...</div>';
+
+    try {
+        // use local array allStudents if possible, otherwise use API
+        let s = window.allStudents ? window.allStudents.find(x => x.id === studentId) : null;
+        if (!s) {
+            const sResp = await fetch(`/api/public/students/${studentId}`);
+            const sRes = await sResp.json();
+            if (sRes.success) s = sRes.data;
+        }
+        
+        if (!s) throw new Error("Student not found");
+
+        document.getElementById('fc-student-name').textContent = s.studentName || s.name || '-';
+        document.getElementById('fc-reg-no').textContent = s.serialNumber || s.admissionId || s.registrationNumber || '-';
+        document.getElementById('fc-roll-no').textContent = s.rollNumber || '-';
+        document.getElementById('fc-father-name').textContent = s.fatherName || '-';
+        document.getElementById('fc-class').textContent = s.class || '-';
+        document.getElementById('fc-mobile').textContent = s.mobile || '-';
+        document.getElementById('fc-address').textContent = s.address || '-';
+
+        const photoUrl = s.photo || s.avatar_url || s.imageUrl;
+        const img = document.getElementById('fc-student-photo');
+        const placeholder = document.getElementById('fc-photo-placeholder');
+        if (photoUrl) {
+            img.src = photoUrl;
+            img.classList.remove('hidden');
+            if (placeholder) placeholder.classList.add('hidden');
+        } else {
+            img.classList.add('hidden');
+            if (placeholder) placeholder.classList.remove('hidden');
+        }
+
+        // fetch fees
+        let studentFees = [];
+        if (window.allFeeRecords) {
+            studentFees = window.allFeeRecords.filter(f => f.studentId === studentId);
+        } else {
+            const fResp = await fetch(`/api/public/fees/${studentId}`);
+            const fRes = await fResp.json();
+            studentFees = fRes.data || [];
+        }
+        
+        // Sort newest first
+        studentFees.sort((a, b) => {
+            const dA = a.submittedAt ? new Date(a.submittedAt) : (a.paymentDate ? new Date(a.paymentDate) : new Date(0));
+            const dB = b.submittedAt ? new Date(b.submittedAt) : (b.paymentDate ? new Date(b.paymentDate) : new Date(0));
+            return dB - dA;
+        });
+
+        const startYear = parseInt(session.split('-')[0]) || 2025;
+        const academicMonths = [
+            { name: 'April', year: startYear }, { name: 'May', year: startYear }, 
+            { name: 'June', year: startYear }, { name: 'July', year: startYear },
+            { name: 'August', year: startYear }, { name: 'September', year: startYear },
+            { name: 'October', year: startYear }, { name: 'November', year: startYear },
+            { name: 'December', year: startYear }, { name: 'January', year: startYear + 1 },
+            { name: 'February', year: startYear + 1 }, { name: 'March', year: startYear + 1 }
+        ];
+
+        function renderPremiumMonthBox(m) {
+            const record = studentFees.find(f => 
+                f.month.toLowerCase() === m.name.toLowerCase() && 
+                parseInt(f.year) === m.year
+            );
+            
+            const isPaid = !!record;
+            const paidAt = record?.submittedAt ? new Date(record.submittedAt) : (record?.paymentDate ? new Date(record.paymentDate) : null);
+            let dateStr = '', timeStr = '';
+            if (paidAt && !isNaN(paidAt)) {
+                dateStr = paidAt.toLocaleDateString('en-IN', { day: '2-digit', month: '2-digit', year: '2-digit' });
+                timeStr = paidAt.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', hour12: true }).toUpperCase();
+            } else if (record?.paymentDate) {
+                dateStr = record.paymentDate;
+                timeStr = record.paymentTime || '';
+            }
+            
+            const rNo = record?.receiptNumber || record?.receiptNo || record?.receipt_no || record?.receipt_number || record?.id?.substring(0,6) || '---';
+
+            if (isPaid) {
+                return `
+                    <div class="bg-white border-2 border-green-100 rounded-xl p-4 flex justify-between items-center shadow-sm relative overflow-hidden group hover:border-green-300 transition-colors">
+                        <div class="absolute left-0 top-0 bottom-0 w-1 bg-green-500"></div>
+                        <div>
+                            <div class="flex items-center gap-2 mb-1">
+                                <h4 class="font-bold text-slate-800 uppercase text-xs">${m.name} ${m.year}</h4>
+                            </div>
+                            <div class="flex items-center gap-2 text-xs">
+                                <span class="text-blue-600 font-bold bg-blue-50 px-2 py-0.5 rounded">R: ${rNo}</span>
+                            </div>
+                        </div>
+                        <div class="text-right flex flex-col items-end">
+                            <div class="bg-green-100 text-green-700 px-3 py-1 rounded-full text-[10px] font-bold flex items-center gap-1 mb-1">
+                                <i data-lucide="check-circle-2" class="w-3 h-3"></i> Paid
+                            </div>
+                            <p class="text-[9px] font-bold text-slate-500">${dateStr}</p>
+                            <p class="text-[9px] text-slate-400 font-medium">${timeStr}</p>
+                        </div>
+                    </div>
+                `;
+            } else {
+                return `
+                    <div class="bg-white border border-slate-200 rounded-xl p-4 flex justify-between items-center hover:border-amber-200 hover:shadow-md transition-all">
+                        <div>
+                            <h4 class="font-bold text-slate-800 uppercase text-xs">${m.name} <span class="text-slate-400 font-medium">${m.year}</span></h4>
+                        </div>
+                        <div class="bg-amber-100 text-amber-700 px-3 py-1 rounded-full text-[10px] font-bold uppercase">
+                            Pending
+                        </div>
+                    </div>
+                `;
+            }
+        }
+
+        if (monthsContainer) {
+            monthsContainer.innerHTML = academicMonths.map(m => renderPremiumMonthBox(m)).join('');
+            // Initialize Lucide icons
+            if (window.lucide) {
+                window.lucide.createIcons();
+            }
+        }
+
+    } catch (err) { 
+        console.error(err); 
+        if (monthsContainer) monthsContainer.innerHTML = `<div class="col-span-2 p-10 text-center text-red-500 font-bold uppercase tracking-widest bg-red-50 rounded-xl border-2 border-dashed border-red-100">Error loading card data: ${err.message}</div>`;
+    }
+};
+
+window.closeFeeCardModal = function () {
+    document.getElementById('fee-card-modal').classList.add('hidden');
+};
+
+window.printFeeCardModal = function () {
+    document.body.classList.add('printing-modal');
+    window.print();
+    setTimeout(() => {
+        document.body.classList.remove('printing-modal');
+    }, 1000);
 };
 
 // Deprecated filterFeeHistory - replaced by handleFeeHistoryFilter
@@ -2202,15 +2394,25 @@ window.loadRecentFees = async function () {
         }
 
         container.innerHTML = fees.map(f => `
-            <tr class="border-b hover:bg-gray-50">
+            <tr class="border-b last:border-0 hover:bg-gray-50 group">
                 <td class="px-4 py-3">
                     <div class="font-bold text-gray-800">${f.studentName || 'Unknown Student'}</div>
                     <div class="text-xs text-gray-500 uppercase">Class ${f.class || '-'}</div>
                 </td>
-                <td class="px-4 py-3 text-gray-600">${f.month || '-'} ${f.year || ''}</td>
-                <td class="px-4 py-3 font-bold text-green-600">₹${(f.amount || 0).toLocaleString()}</td>
-                <td class="px-4 py-3 text-right text-xs text-gray-400">
-                    ${f.submittedAt ? new Date(f.submittedAt).toLocaleDateString('en-IN') : '-'}
+                <td class="px-4 py-3 text-gray-600 font-medium">
+                    <span class="text-blue-900">${f.month || '-'}</span> ${f.year || ''}
+                    <div class="text-[10px] text-gray-400 font-mono">R: ${f.receiptNumber || '---'}</div>
+                </td>
+                <td class="px-4 py-3 font-bold text-green-700">₹${(f.amount || 0).toLocaleString()}</td>
+                <td class="px-4 py-3 text-right">
+                    <div class="flex items-center justify-end gap-3">
+                        <span class="text-[10px] text-gray-400 font-bold">${f.submittedAt ? new Date(f.submittedAt).toLocaleDateString('en-IN') : '-'}</span>
+                        <button onclick="deleteFeeRecord('${f.id}')" 
+                            class="opacity-0 group-hover:opacity-100 bg-red-50 text-red-600 w-7 h-7 rounded-lg flex items-center justify-center hover:bg-red-600 hover:text-white transition-all border border-red-100"
+                            title="Delete Record">
+                            <i class="fas fa-trash-alt text-[10px]"></i>
+                        </button>
+                    </div>
                 </td>
             </tr>
         `).join('');
