@@ -45,6 +45,7 @@ def build_repository(config) -> "BaseRepository":
     return FirestoreRepository(
         project_id=config["FIREBASE_PROJECT_ID"],
         credentials_path=config["FIREBASE_CREDENTIALS_PATH"],
+        credentials_json=config["FIREBASE_CREDENTIALS_JSON"],
         prefix=config["FIRESTORE_COLLECTION_PREFIX"],
     )
 
@@ -81,16 +82,28 @@ class BaseRepository:
 
 
 class FirestoreRepository(BaseRepository):
-    def __init__(self, project_id: str, credentials_path: str, prefix: str):
+    def __init__(self, project_id: str, credentials_path: str, prefix: str, credentials_json: str = ""):
         if firebase_admin is None or credentials is None or firestore is None:
             raise RuntimeError("firebase-admin is required for Firestore mode.")
         if not firebase_admin._apps:
-            if credentials_path and Path(credentials_path).exists():
-                cred = credentials.Certificate(credentials_path)
-                firebase_admin.initialize_app(cred)
-            else:
-                # Fallback to default credentials or project ID if file missing
-                firebase_admin.initialize_app(options={"projectId": project_id})
+            if credentials_json:
+                # 1. Try loading from JSON string (priority for Cloud/Railway)
+                try:
+                    cred_info = json.loads(credentials_json)
+                    cred = credentials.Certificate(cred_info)
+                    firebase_admin.initialize_app(cred)
+                except Exception as e:
+                    print(f"Error initializing Firebase from JSON: {e}")
+                    # Fallback to other methods if JSON fail
+            
+            if not firebase_admin._apps:
+                if credentials_path and Path(credentials_path).exists():
+                    # 2. Try loading from local file
+                    cred = credentials.Certificate(credentials_path)
+                    firebase_admin.initialize_app(cred)
+                else:
+                    # 3. Fallback to default credentials or project ID
+                    firebase_admin.initialize_app(options={"projectId": project_id})
         self.client = firestore.client()
         self.prefix = prefix.strip()
 
