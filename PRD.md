@@ -31,8 +31,14 @@ The **Ralph Loop** is the specialized operation protocol for autonomous sub-agen
 1.  **SENSE**: Review `progress.txt` to identify the highest priority `[ ]` task.
 2.  **ORIENT**: Analyze the existing codebase and dependencies related to the task.
 3.  **DECIDE**: Formulate an implementation strategy that maintains high-fidelity design tokens.
-4.  **ACT**: Implement the changes, verify correctness, and commit with a single logical intent.
-5.  **FINISH**: Mark the task as `[x]` in `progress.txt` and push to `main`.
+4.  **ACT**: Implement changes, verify correctness, and commit with a single logical intent.
+5.  **FINISH**: 
+    - Create a descriptive **feature branch** (e.g., `feature/module-name`).
+    - Open a **Pull Request** targeting `main`.
+    - Trigger **CI/Tests** and ensure all checks pass.
+    - Request at least one **human reviewer**.
+    - **Merge** only after passing all checks and receiving explicit approval.
+    - Mark the task as `[x]` in `progress.txt`.
 
 ---
 

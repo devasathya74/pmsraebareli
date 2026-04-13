@@ -1,0 +1,24 @@
+# CodeRabbit Configuration
+# High-Fidelity Review Settings for Police Modern School Management
+
+reviews:
+  profile: "premium"
+  request_review_label: "review-requested"
+  
+  instructions: |
+    As an AI reviewer for the Police Modern School (PMS) portal, you must enforce the following standards:
+    1. **Architecture**: Ensure all persistence uses the Cloud-First model (Firestore for metadata, Supabase for files). Reject any local storage or SQLite fallback logic.
+    2. **Security**: Validate that all POST/PUT/DELETE routes have CSRF protection and appropriate auth guards.
+    3. **UI/UX**: Maintain the premium "Glassmorphism" design ethos. Check that new components use the established Tailwind utility patterns.
+    4. **Localization**: PMS is a multilingual portal. Ensure Hindi strings use the 'Tiro Devanagari Hindi' font family and follow proper grammar.
+    5. **SSR Compliance**: Verify that new pages are implemented as Flask templates, not static HTML files.
+
+  tools:
+    shellcheck:
+      enabled: true
+    labeler:
+      enabled: true
+      
+chat:
+  enabled: true
+  auto_reply: true
