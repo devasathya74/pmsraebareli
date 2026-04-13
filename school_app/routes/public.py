@@ -12,31 +12,26 @@ from school_app.utils import normalize_role
 public_bp = Blueprint("public", __name__)
 
 
-PUBLIC_PAGES = {
-    "login.html",
-    "admission.html",
-    "admission-terms-pdf.html",
-    "brochure.html",
-    "fee-structure.html",
-    "fee-structure-pdf.html",
-}
+@public_bp.get("/admission")
+def admission():
+    return render_template("public/admission.html")
 
-ADMIN_PAGES = {
-    "admin-dashboard.html",
-    "fee-card-print.html",
-    "admin-inventory.html",
-    "admin-messages.html",
-    "admin-monitor.html",
-    "admin-students.html",
-}
 
-TEACHER_PAGES = {
-    "teacher-dashboard.html",
-}
+@public_bp.get("/print/fee-card")
+def print_fee_card():
+    return render_template("print/fee-card.html")
 
-STAFF_PAGES = {
-    "print-student.html",
-}
+
+@public_bp.get("/print/student-profile")
+def print_student_profile():
+    return render_template("print/student-profile.html")
+
+
+@public_bp.get("/print/fee-structure")
+def print_fee_structure():
+    return render_template("print/fee-structure.html")
+
+
 
 
 @public_bp.get("/")
@@ -82,25 +77,8 @@ def english_alias():
 
 @public_bp.get("/pages/<path:page_name>")
 def legacy_page(page_name: str):
-    static_pages = Path(current_app.static_folder) / "pages"
-    target = static_pages / page_name
-    if not target.exists() or target.suffix.lower() != ".html":
-        return redirect(url_for("public.index"))
-
-    effective_role = normalize_role((g.current_user or {}).get("role"))
-    if effective_role == "principal":
-        effective_role = "admin"
-
-    if page_name in ADMIN_PAGES and effective_role != "admin":
-        return redirect(url_for("public.legacy_page", page_name="login.html"))
-    if page_name in TEACHER_PAGES and effective_role != "teacher":
-        return redirect(url_for("public.legacy_page", page_name="login.html"))
-    if page_name in STAFF_PAGES and effective_role not in {"admin", "teacher"}:
-        return redirect(url_for("public.legacy_page", page_name="login.html"))
-    if page_name not in PUBLIC_PAGES | ADMIN_PAGES | TEACHER_PAGES | STAFF_PAGES:
-        return redirect(url_for("public.index"))
-
-    return send_from_directory(static_pages, page_name)
+    """Redirect legacy page requests to the home page since all pages have been migrated."""
+    return redirect(url_for("public.index"))
 
 
 @public_bp.get("/api/public/notifications")

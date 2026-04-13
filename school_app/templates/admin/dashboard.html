@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="hi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard | {{ school_name }}</title>
+    <meta name="csrf-token" content="{{ session.csrf_token }}">
+
+    <!-- Favicons -->
+    <link rel="icon" type="image/png" sizes="32x32" href="{{ url_for('static', filename='assets/images/logo/logo.png') }}">
+    <link rel="icon" type="image/png" sizes="16x16" href="{{ url_for('static', filename='assets/images/logo/logo.png') }}">
+    <link rel="apple-touch-icon" href="{{ url_for('static', filename='assets/images/logo/logo.png') }}">
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+Devanagari:wght@500;700&family=Tiro+Devanagari+Hindi&display=swap" rel="stylesheet">
+    
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <!-- Responsive CSS Framework -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='assets/css/responsive.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='assets/css/main.css') }}">
+    <style>
+        html { font-size: 90%; }
+        body { font-family: 'Poppins', 'Tiro Devanagari Hindi', sans-serif; line-height: 1.8; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        .tab-btn.active { background: #1e3a8a !important; color: white !important; }
+        h1, h2, h3, h4, h5, h6 { font-family: 'Nunito', sans-serif; }
+        
+        .page-nav-btn {
+            padding: 1rem 1.5rem;
+            font-weight: 600;
+            color: #4b5563;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s;
+            white-space: nowrap;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .page-nav-btn:hover { background-color: #f9fafb; color: #1e3a8a; }
+        .page-nav-btn.active { color: #1e3a8a; border-bottom-color: #1e3a8a; background-color: #eff6ff; }
+    </style>
+</head>
+
+<body class="bg-gray-50">
+
+    <!-- Header -->
+    <header class="bg-blue-900 text-white shadow-lg sticky top-0 z-50">
+        <div class="container mx-auto px-6 py-4">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h1 class="text-xl md:text-2xl font-bold">Admin Dashboard</h1>
+                    <p class="text-blue-200 text-sm">{{ school_name }}</p>
+                </div>
+                <div class="flex items-center gap-4">
+                    <div class="relative">
+                        <button onclick="toggleUserDropdown()" class="flex items-center gap-2 focus:outline-none">
+                            <span id="user-name" class="text-sm font-semibold hidden md:block text-blue-100">Loading...</span>
+                            <div class="w-8 h-8 rounded-full bg-blue-700 flex items-center justify-center border-2 border-blue-400">
+                                <i class="fas fa-user text-sm"></i>
+                            </div>
+                            <i class="fas fa-chevron-down text-xs text-blue-300"></i>
+                        </button>
+                        <div id="user-dropdown" class="hidden absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-xl z-50 border border-gray-100 py-1">
+                            <div class="px-4 py-3 border-b border-gray-100">
+                                <p id="dropdown-user-email" class="text-sm font-medium text-gray-900 truncate">...</p>
+                            </div>
+                            <a href="#" onclick="authHelper.logout()" class="block px-4 py-2 text-sm text-red-600 hover:bg-red-50">
+                                <i class="fas fa-sign-out-alt w-4 text-red-400 mr-2"></i>Logout
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Page Group Navigation -->
+    <div class="bg-white border-b shadow-sm sticky top-[72px] z-40 overflow-x-auto no-scrollbar">
+        <div class="container mx-auto px-6 flex">
+            <a href="{{ url_for('admin.dashboard') }}" class="page-nav-btn active">
+                <i class="fas fa-th-large"></i> Main
+            </a>
+            <a href="{{ url_for('admin.students') }}" class="page-nav-btn">
+                <i class="fas fa-users"></i> Students
+            </a>
+            <a href="{{ url_for('admin.messages') }}" class="page-nav-btn">
+                <i class="fas fa-envelope"></i> Communication
+            </a>
+            <a href="{{ url_for('admin.monitor') }}" class="page-nav-btn">
+                <i class="fas fa-desktop"></i> Monitor
+            </a>
+            <a href="{{ url_for('admin.inventory') }}" class="page-nav-btn">
+                <i class="fas fa-boxes"></i> Inventory
+            </a>
+        </div>
+    </div>
+
+    <div class="container mx-auto px-6 py-8">
+        <!-- Welcome Message -->
+        <div class="bg-white rounded-xl shadow-lg p-6 mb-8 flex items-center justify-between">
+            <div>
+                <h2 class="text-2xl font-bold text-gray-800 mb-2">
+                    <i class="fas fa-user-shield text-blue-900 mr-2"></i>
+                    स्वागत है, <span id="admin-name">Admin</span>!
+                </h2>
+                <p class="text-gray-600">आप Admin/Principal के रूप में लॉगिन हैं।</p>
+            </div>
+        </div>
+
+        <!-- Stats Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            <div class="bg-gradient-to-br from-blue-500 to-blue-700 rounded-xl shadow-lg p-6 text-white text-center">
+                <p class="text-blue-100 text-sm">Total Admissions</p>
+                <p class="text-4xl font-bold" id="total-admissions">0</p>
+            </div>
+            <div class="bg-gradient-to-br from-yellow-500 to-yellow-700 rounded-xl shadow-lg p-6 text-white text-center">
+                <p class="text-yellow-100 text-sm">Pending</p>
+                <p class="text-4xl font-bold" id="pending-admissions">0</p>
+            </div>
+            <div class="bg-gradient-to-br from-green-500 to-green-700 rounded-xl shadow-lg p-6 text-white text-center">
+                <p class="text-green-100 text-sm">Messages</p>
+                <p class="text-4xl font-bold" id="total-contacts">0</p>
+            </div>
+            <div class="bg-gradient-to-br from-purple-500 to-purple-700 rounded-xl shadow-lg p-6 text-white text-center">
+                <p class="text-purple-100 text-sm">Total Students</p>
+                <p class="text-4xl font-bold" id="total-students">0</p>
+            </div>
+        </div>
+
+        <!-- Tabs -->
+        <div class="bg-white rounded-xl shadow-lg mb-8 overflow-hidden">
+            <div class="flex overflow-x-auto border-b">
+                <button onclick="switchTab('dashboard')" class="tab-btn active px-8 py-4 font-bold whitespace-nowrap">Dashboard</button>
+                <button onclick="switchTab('admissions')" class="tab-btn px-8 py-4 font-bold whitespace-nowrap">Admissions</button>
+                <button onclick="switchTab('fees')" class="tab-btn px-8 py-4 font-bold whitespace-nowrap">Fees</button>
+            </div>
+
+            <div id="dashboard-tab" class="tab-content active p-6">
+                <!-- Content handled by JS -->
+                <div id="recent-activity" class="space-y-4">Loading...</div>
+            </div>
+            <div id="admissions-tab" class="tab-content p-6">
+                <div id="admissions-list" class="space-y-4">Loading...</div>
+            </div>
+            <div id="fees-tab" class="tab-content p-6">
+                <div id="recent-fees-tbody" class="overflow-x-auto">Loading...</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modals -->
+    <!-- Financial Ledger Modal (Global) -->
+    <div id="ledger-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-[60] flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-5xl w-full max-h-[90vh] flex flex-col scale-100">
+            <div class="bg-blue-900 text-white px-6 py-4 rounded-t-2xl flex justify-between items-center flex-shrink-0">
+                <h3 class="text-xl font-bold"><i class="fas fa-book-open mr-2"></i>School Financial Ledger</h3>
+                <button onclick="document.getElementById('ledger-modal').classList.add('hidden')" class="text-white hover:text-gray-200">
+                    <i class="fas fa-times text-2xl"></i>
+                </button>
+            </div>
+
+            <div class="p-6 border-b bg-gray-50">
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                    <div class="bg-white p-4 rounded-lg border shadow-sm text-center">
+                        <p class="text-xs font-bold text-gray-500 uppercase">Annual Income</p>
+                        <p id="ledger-total-income" class="text-xl font-bold text-green-700">₹0</p>
+                    </div>
+                    <div class="bg-white p-4 rounded-lg border shadow-sm text-center">
+                        <p class="text-xs font-bold text-gray-500 uppercase">Salaries (Annual)</p>
+                        <p id="ledger-total-expense" class="text-xl font-bold text-red-700">₹0</p>
+                    </div>
+                    <div class="bg-white p-4 rounded-lg border shadow-sm text-center">
+                        <p class="text-xs font-bold text-gray-500 uppercase">Other Expenses</p>
+                        <p id="ledger-other-expense" class="text-xl font-bold text-orange-700">₹0</p>
+                    </div>
+                    <div class="bg-white p-4 rounded-lg border shadow-sm text-center">
+                        <p class="text-xs font-bold text-gray-500 uppercase">Net Balance</p>
+                        <p id="ledger-net-balance" class="text-xl font-bold">₹0</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex-1 overflow-y-auto p-6">
+                <h4 class="font-bold text-gray-700 mb-4 uppercase text-sm tracking-wider">Class-wise Income Breakdown</h4>
+                <div class="bg-white rounded-xl border border-gray-200 overflow-hidden">
+                    <table class="w-full text-sm">
+                        <thead class="bg-gray-50 border-b">
+                            <tr>
+                                <th class="px-4 py-3 text-left font-bold text-gray-600 uppercase">Class</th>
+                                <th class="px-4 py-3 text-right font-bold text-gray-600 uppercase">Students</th>
+                                <th class="px-4 py-3 text-right font-bold text-gray-600 uppercase">Monthly Fee</th>
+                                <th class="px-4 py-3 text-right font-bold text-gray-600 uppercase">Misc (Annual)</th>
+                                <th class="px-4 py-3 text-right font-bold text-gray-600 uppercase">Annual Income</th>
+                            </tr>
+                        </thead>
+                        <tbody id="ledger-class-body">
+                            <!-- JS populated -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Other Modals placeholders (JS still expects them) -->
+    <div id="admission-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4 overflow-y-auto"></div>
+    <div id="student-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4"></div>
+    <div id="add-fee-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4"></div>
+
+    <script type="module" src="{{ url_for('static', filename='assets/js/admin-dashboard.js') }}"></script>
+    <script>
+        function toggleUserDropdown() {
+            const dropdown = document.getElementById('user-dropdown');
+            dropdown.classList.toggle('hidden');
+        }
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(tabId + '-tab').classList.add('active');
+            event.currentTarget.classList.add('active');
+            
+            // Trigger load functions if needed
+            if(tabId === 'fees') window.loadRecentFees();
+            if(tabId === 'admissions') window.loadAdmissions();
+        }
+    </script>
+</body>
+</html>

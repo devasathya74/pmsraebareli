@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+
+{% block title %}Communication | Admin{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-6 py-8">
+    <div class="bg-white rounded-xl shadow-lg mb-8 overflow-hidden">
+        <div class="flex overflow-x-auto no-scrollbar border-b">
+            <button onclick="switchTab('messages')" class="tab-btn active px-8 py-4 font-bold transition-colors hover:bg-gray-50 whitespace-nowrap">
+                <i class="fas fa-envelope mr-2"></i>Website Messages
+            </button>
+            <button onclick="switchTab('notifications')" class="tab-btn px-8 py-4 font-bold transition-colors hover:bg-gray-50 whitespace-nowrap">
+                <i class="fas fa-bell mr-2"></i>Global Notifications
+            </button>
+        </div>
+
+        <!-- Messages Tab -->
+        <div id="messages-tab" class="tab-content active p-6">
+            <div class="flex items-center justify-between mb-6">
+                <h3 class="text-xl font-bold text-gray-800">Contact Inquiries</h3>
+                <select id="message-filter" onchange="filterMessages()" class="px-4 py-2 border rounded-lg outline-none">
+                    <option value="all">All Messages</option>
+                    <option value="new">Unread Only</option>
+                    <option value="read">Archived</option>
+                </select>
+            </div>
+            <div id="messages-list" class="space-y-4">
+                <!-- Populated by JS -->
+            </div>
+        </div>
+
+        <!-- Notifications Tab -->
+        <div id="notifications-tab" class="tab-content p-6">
+            <h3 class="text-xl font-bold text-gray-800 mb-6">Create New Notification</h3>
+            <form id="notification-form" class="bg-blue-50 p-6 rounded-xl border border-blue-100 mb-8 max-w-2xl">
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-bold mb-1">Select Icon</label>
+                        <select id="notif-icon" class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
+                            <option value="fa-bell">🔔 Bell (General)</option>
+                            <option value="fa-bullhorn">📢 Bullhorn (Announcement)</option>
+                            <option value="fa-exclamation-triangle">⚠️ Warning (Urgent)</option>
+                            <option value="fa-info-circle">ℹ️ Info (Update)</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-bold mb-1">Message Detail *</label>
+                        <textarea id="notif-message" required rows="3" class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" placeholder="Enter notification content..."></textarea>
+                    </div>
+                    <button type="submit" class="w-full bg-blue-900 text-white font-bold py-3 rounded-lg hover:bg-blue-800 shadow-md">
+                        Post Notification
+                    </button>
+                </div>
+            </form>
+
+            <h3 class="text-xl font-bold text-gray-800 mb-4">Active Notifications</h3>
+            <div id="notifications-list" class="space-y-3">
+                <!-- Populated by JS -->
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="module">
+    import { initDashboard } from "{{ url_for('static', filename='assets/js/admin-dashboard.js') }}";
+    window.addEventListener('load', () => {
+        initDashboard();
+    });
+</script>
+{% endblock %}

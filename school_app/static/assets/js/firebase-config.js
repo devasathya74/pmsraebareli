@@ -110,16 +110,31 @@ const stopSessionMonitor = () => {
 };
 
 const ensureCsrfToken = async (force = false) => {
+    // 1. Try meta tag first if not already set or if forcing
+    if (!csrfToken || force) {
+        const meta = document.querySelector('meta[name="csrf-token"]');
+        if (meta && meta.content) {
+            csrfToken = meta.content;
+            if (!force) return csrfToken;
+        }
+    }
+
+    // 2. Fallback to API if still empty or forcing refresh
     if (csrfToken && !force) {
         return csrfToken;
     }
-    const response = await fetch("/api/security/csrf", {
-        headers: { Accept: "application/json" },
-        credentials: "same-origin"
-    });
-    const payload = await parseJson(response);
-    if (payload?.success) {
-        csrfToken = payload.csrf_token || "";
+    
+    try {
+        const response = await fetch("/api/security/csrf", {
+            headers: { Accept: "application/json" },
+            credentials: "same-origin"
+        });
+        const payload = await parseJson(response);
+        if (payload?.success && payload.csrf_token) {
+            csrfToken = payload.csrf_token;
+        }
+    } catch (e) {
+        console.error("[CSRF] Failed to fetch token:", e);
     }
     return csrfToken;
 };
@@ -285,8 +300,8 @@ const authHelper = {
         lastVerifiedPassword = "";
         notifyAuthListeners();
         const path = window.location.pathname;
-        if (!path.endsWith("/pages/login.html") && !path.endsWith("/auth/login")) {
-            window.location.href = "/pages/login.html";
+        if (!path.endsWith("/auth/login")) {
+            window.location.href = "/auth/login";
         }
         return { success: true };
     },
@@ -440,6 +455,22 @@ const admissionHelper = {
         try {
             const studentName = formData.student_name || formData.scholarName || "student";
             const sanitizedName = studentName.toLowerCase().replace(/[^a-z0-9\s]/g, "").replace(/\s+/g, "_").substring(0, 50);
+            const registrationNumber = `PMS-${Math.floor(10000 + Math.random() * 90000)}`;
+            
+            // 1. Save metadata first to Firestore
+            const initialData = {
+                ...formData,
+                documents: {},
+                status: "pending",
+                submittedAt: new Date().toISOString(),
+                registrationNumber,
+                id: registrationNumber
+            };
+            
+            const saveResult = await firestoreHelper.setDocument("admissions", registrationNumber, initialData);
+            if (!saveResult.success) throw new Error(saveResult.error || "admission-save-failed");
+
+            // 2. Upload files if any exist
             const uploadedFiles = {};
             const uploaders = [
                 ["birthCertificate", "birth_certificate", storageHelper.uploadAdmissionDocument.bind(storageHelper)],
@@ -448,28 +479,32 @@ const admissionHelper = {
                 ["domicileCertificate", "domicile_certificate", storageHelper.uploadAdmissionDocument.bind(storageHelper)],
                 ["photo", "photo", storageHelper.uploadAdmissionImage.bind(storageHelper)]
             ];
+
             for (const [key, suffix, uploader] of uploaders) {
                 const file = files[key];
-                if (!file) continue;
-                const extension = file.name.split(".").pop();
+                if (!file || !(file instanceof File)) continue;
+                
+                const extension = (file.name || "").split(".").pop() || "jpg";
                 const result = await uploader(file, `${sanitizedName}_${suffix}.${extension}`);
-                if (result.success) uploadedFiles[key] = result.url;
+                if (result.success) {
+                    uploadedFiles[key] = result.url;
+                }
             }
+
+            // Normalise legacy keys
             if (uploadedFiles.casteCertificate) uploadedFiles.casteCert = uploadedFiles.casteCertificate;
             if (uploadedFiles.domicileCertificate) uploadedFiles.domicileCert = uploadedFiles.domicileCertificate;
-            const registrationNumber = `PMS-${Math.floor(10000 + Math.random() * 90000)}`;
-            const admissionData = {
-                ...formData,
-                documents: uploadedFiles,
-                status: "pending",
-                submittedAt: new Date().toISOString(),
-                registrationNumber,
-                id: registrationNumber
-            };
-            const saveResult = await firestoreHelper.setDocument("admissions", registrationNumber, admissionData);
-            if (!saveResult.success) throw new Error(saveResult.error || "admission-save-failed");
+
+            // 3. Update Firestore record with document URLs
+            if (Object.keys(uploadedFiles).length > 0) {
+                await firestoreHelper.updateDocument("admissions", registrationNumber, {
+                    documents: uploadedFiles
+                });
+            }
+
             return { success: true, id: registrationNumber };
         } catch (error) {
+            console.error("Admission submission failed:", error);
             return { success: false, error: error.message || "admission-submit-failed" };
         }
     },

@@ -108,7 +108,7 @@ export async function initDashboard() {
 
             if (role !== 'admin' && role !== 'principal') {
                 alert('Access Denied! आपके पास इस पेज को देखने की अनुमति नहीं है।');
-                window.location.href = '../index.html';
+                window.location.href = '/';
                 return;
             }
 
@@ -121,7 +121,7 @@ export async function initDashboard() {
         } else {
             alert('User data not found!');
             await authHelper.logout();
-            window.location.href = 'login.html';
+            window.location.href = '/auth/login';
         }
     });
 
@@ -714,7 +714,7 @@ function displayStudents(students, append = false) {
                 </span>
             </td>
             <td class="px-6 py-4 text-center">
-                <button onclick="window.open('print-student.html?id=${student.id}', '_blank')" class="text-green-600 hover:text-green-800 mr-3" title="Download Form PDF">
+                <button onclick="window.open('/print/student-profile?id=${student.id}', '_blank')" class="text-green-600 hover:text-green-800 mr-3" title="Download Form PDF">
                     <i class="fas fa-file-pdf"></i>
                 </button>
                 <button onclick="editStudent('${student.id}')" class="text-blue-600 hover:text-blue-800 mr-3" title="Edit">
@@ -736,7 +736,7 @@ function displayStudents(students, append = false) {
 
 window.openAddStudentModal = function () {
     // Redirect to admission form with source parameter
-    window.location.href = 'admission.html?source=admin';
+    window.location.href = '/admission?source=admin';
 };
 
 window.closeStudentModal = function () {
@@ -746,7 +746,7 @@ window.closeStudentModal = function () {
 
 window.editStudent = async function (id) {
     // Redirect to admission form with student ID for editing
-    window.location.href = `admission.html?source=admin&studentId=${id}`;
+    window.location.href = `/admission?source=admin&studentId=${id}`;
 };
 
 window.handleStudentSubmit = async function (e) {

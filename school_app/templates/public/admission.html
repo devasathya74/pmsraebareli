@@ -1,0 +1,324 @@
+{% extends "base.html" %}
+
+{% block title %}Admission Form | Police Modern School Raebareli{% endblock %}
+
+{% block styles %}
+<style>
+    body { background-color: #f0f2f5; padding-top: 100px; line-height: 1.8; }
+    .step-content { display: none; }
+    .step-content.active { display: block; }
+    .preview-document {
+        font-family: 'Times New Roman', Times, serif;
+        width: 210mm;
+        min-height: 297mm;
+        padding: 10mm;
+        margin: auto;
+        background: white;
+        color: black;
+        border: 1px solid #ccc;
+        font-size: 11px;
+        line-height: 1.3;
+    }
+    .dotted-line {
+        border-bottom: 1px dotted #000;
+        display: inline-block;
+        min-width: 100px;
+        padding: 0 5px;
+        font-weight: bold;
+    }
+    .student-photo-placeholder {
+        width: 120px; height: 150px; border: 1px solid #000;
+        display: flex; align-items: center; justify-content: center;
+        text-align: center; font-size: 10px; background-color: #f9f9f9;
+        overflow: hidden;
+    }
+    .step-photo-preview {
+        width: 100px; height: 120px; border: 2px dashed #cbd5e1;
+        display: flex; align-items: center; justify-content: center;
+        border-radius: 8px; overflow: hidden; background: #fff;
+    }
+    .bg-primary { background-color: #1e3a8a !important; }
+    .text-primary { color: #1e3a8a !important; }
+    @media print {
+        body * { visibility: hidden; }
+        #finalPreviewPage, #finalPreviewPage * { visibility: visible; }
+        #finalPreviewPage { position: absolute; left: 0; top: 0; width: 100%; border: none; }
+        .no-print { display: none; }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="px-4 py-8 md:px-8">
+    <!-- Language Switcher -->
+    <div class="fixed top-20 right-4 z-40 no-print">
+        <button onclick="toggleLanguage()" class="bg-blue-800 text-white px-4 py-2 rounded-full shadow-lg font-bold hover:bg-blue-900 transition flex items-center gap-2 border-2 border-white">
+            <i class="fas fa-language"></i>
+            <span id="langLabel">हिन्दी</span>
+        </button>
+    </div>
+
+    <div class="max-w-4xl mx-auto">
+        <!-- Progress Bar -->
+        <div class="mb-8 no-print" id="progressContainer">
+            <div class="flex justify-between mb-2">
+                <span class="text-xs font-semibold inline-block py-1 px-2 uppercase rounded-full text-blue-600 bg-blue-200" id="stepIndicator">Step 1 of 8</span>
+                <span class="text-xs font-semibold inline-block py-1 px-2 uppercase rounded-full text-blue-600 bg-blue-200" id="stepName">Scholar Details</span>
+            </div>
+            <div class="overflow-hidden h-2 mb-4 text-xs flex rounded bg-blue-200">
+                <div id="progressBar" style="width: 14.28%" class="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-blue-600 transition-all duration-500"></div>
+            </div>
+        </div>
+
+        <form id="admission-form" class="bg-white p-8 rounded-2xl shadow-xl no-print">
+            <!-- STEP 1: Scholar Details -->
+            <div class="step-content active" id="step1">
+                <h2 class="text-2xl font-bold mb-6 text-blue-900 border-b pb-2" data-key="s1_title">Step 1: Scholar Details</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700" data-key="scholar_name">1:- Name of Scholar <span class="text-red-500">*</span></label>
+                            <input type="text" name="scholarName" required class="mt-1 block w-full p-3 border border-gray-300 rounded-lg outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700" data-key="dob">Date of Birth <span class="text-red-500">*</span></label>
+                            <input type="date" name="dob" required class="mt-1 block w-full p-3 border border-gray-300 rounded-lg outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700" data-key="gender">Gender <span class="text-red-500">*</span></label>
+                            <select name="gender" required class="mt-1 block w-full p-3 border border-gray-300 rounded-lg outline-none cursor-pointer">
+                                <option value="" data-key="select_gender">-- Select Gender --</option>
+                                <option value="Male">Male</option>
+                                <option value="Female">Female</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700" data-key="target_class">Class Requested <span class="text-red-500">*</span></label>
+                            <select name="targetClass" required class="mt-1 block w-full p-3 border border-gray-300 rounded-lg outline-none cursor-pointer">
+                                <option value="" data-key="select_class">-- Select Class --</option>
+                                <option value="LKG">LKG</option><option value="UKG">UKG</option>
+                                <option value="1">1</option><option value="2">2</option><option value="3">3</option>
+                                <option value="4">4</option><option value="5">5</option><option value="6">6</option>
+                                <option value="7">7</option><option value="8">8</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="flex flex-col items-center justify-center border-l pl-6">
+                        <div id="instantPhotoPreview" class="step-photo-preview mb-4 shadow-inner">
+                            <span class="text-gray-400 text-xs text-center p-2" data-key="no_photo">No photo selected</span>
+                        </div>
+                        <input type="file" id="studentPhotoInput" name="photo" accept=".jpg, .jpeg, .png" class="text-xs text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 cursor-pointer" onchange="handleInstantPreview(this)">
+                        <p class="text-[10px] text-red-500 mt-2 font-semibold">Max 800KB. JPG/PNG only.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- STEP 2: Parents Details -->
+            <div class="step-content" id="step2">
+                <h2 class="text-2xl font-bold mb-6 text-blue-900 border-b pb-2" data-key="s2_title">Step 2: Parents Details</h2>
+                <div class="space-y-6">
+                    <div class="bg-gray-50 p-6 rounded-xl border">
+                        <h3 class="font-bold text-gray-800 mb-4" data-key="father_head">Father's Information</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700" data-key="father_name">Father's Name <span class="text-red-500">*</span></label>
+                                <input type="text" name="fatherName" required class="mt-1 block w-full p-3 border border-gray-300 rounded-lg">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700" data-key="father_occupation">Occupation <span class="text-red-500">*</span></label>
+                                <input type="text" name="fatherOcc" required class="mt-1 block w-full p-3 border border-gray-300 rounded-lg">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700" data-key="mobile">Mobile No. <span class="text-red-500">*</span></label>
+                                <input type="text" name="fMobile" required class="mt-1 block w-full p-3 border border-gray-300 rounded-lg">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">Email ID</label>
+                                <input type="email" name="parentEmail" class="mt-1 block w-full p-3 border border-gray-300 rounded-lg">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Simplified for space, adding required logic points -->
+            <div class="step-content" id="step3">
+                <h2 class="text-2xl font-bold mb-6 text-blue-900 border-b pb-2" data-key="s3_title">Step 3: Address</h2>
+                <textarea name="permAddress" required class="w-full p-3 border rounded-lg" placeholder="Address..."></textarea>
+            </div>
+            
+            <div class="step-content" id="step4">
+                <h2 class="text-2xl font-bold mb-6 text-blue-900 border-b pb-2" data-key="s4_title">Step 4: Local Guardian</h2>
+                <input type="text" name="gName" class="w-full p-3 border rounded-lg" placeholder="Guardian Name">
+            </div>
+
+            <div class="step-content" id="step5">
+                <h2 class="text-2xl font-bold mb-6 text-blue-900 border-b pb-2" data-key="s5_title">Step 5: Other Info</h2>
+                <input type="text" name="lastInst" id="lastInstInput" class="w-full p-3 border rounded-lg" placeholder="Last Institution" oninput="handleLastInstChange()">
+            </div>
+
+            <div class="step-content" id="step6">
+                <h2 class="text-2xl font-bold mb-6 text-blue-900 border-b pb-2" data-key="s6_title">Step 6: Documents</h2>
+                <div class="space-y-4">
+                    <input type="file" name="birthCert" onchange="handleDocumentUpload(this, 'birthCertPreview')" class="w-full text-sm">
+                    <div id="birthCertPreview"></div>
+                    <input type="file" name="aadharCard" onchange="handleDocumentUpload(this, 'aadharCardPreview')" class="w-full text-sm">
+                    <div id="aadharCardPreview"></div>
+                </div>
+            </div>
+
+            <div class="step-content" id="step7">
+                <h2 class="text-2xl font-bold mb-6 text-blue-900 border-b pb-2" data-key="s7_title">Step 7: Declaration</h2>
+                <div class="space-y-4">
+                    <label class="flex items-center gap-2"><input type="checkbox" id="cert1" required> <span data-key="cert_msg1">Not previously attended school.</span></label>
+                    <label class="flex items-center gap-2"><input type="checkbox" id="cert2" required> <span data-key="cert_msg2">DOB is correct, I agree to rules.</span></label>
+                </div>
+            </div>
+
+            <div class="flex justify-between mt-10">
+                <button type="button" id="prevBtn" onclick="changeStep(-1)" class="invisible bg-gray-200 text-gray-700 px-8 py-3 rounded-xl font-bold hover:bg-gray-300 transition">Back</button>
+                <button type="button" id="nextBtn" onclick="changeStep(1)" class="bg-blue-600 text-white px-8 py-3 rounded-xl font-bold hover:bg-blue-700 transition shadow-lg">Next</button>
+            </div>
+        </form>
+
+        <div id="finalPreviewPage" class="hidden">
+            <div id="preview-content" class="bg-white p-8 rounded-2xl shadow-xl">
+                 <h2 class="text-2xl font-bold mb-6 text-blue-900 border-b pb-2">Application Preview</h2>
+                 <div id="formDataPreview" class="grid grid-cols-2 gap-4"></div>
+            </div>
+            <div class="flex justify-center gap-4 mt-8 no-print pb-10">
+                <button type="button" onclick="editForm()" class="bg-gray-500 text-white px-8 py-3 rounded-xl font-bold">Edit</button>
+                <button type="button" onclick="handleFinalSubmit()" id="btn_submit" class="bg-green-600 text-white px-10 py-4 rounded-xl font-bold">Final Submit</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    let currentStep = 1;
+    const totalSteps = 7;
+    const translations = {
+        en: { 
+            label: "हिन्दी", 
+            s1_title: "Step 1: Scholar Details",
+            scholar_name: "Name of Scholar",
+            no_photo: "No photo selected",
+            cert_msg1: "I certify that the scholar has not previously attended any recognized school.",
+            cert_msg2: "I certify that the date of birth is correct.",
+            stepNames: ["Details", "Parents", "Address", "Guardian", "Education", "Documents", "Declaration"]
+        },
+        hi: { 
+            label: "English", 
+            s1_title: "चरण 1: छात्र का विवरण",
+            scholar_name: "छात्र का नाम",
+            no_photo: "कोई फोटो नहीं चुनी गई",
+            cert_msg1: "मैं प्रमाणित करता/करती हूँ कि छात्र ने पहले किसी मान्यता प्राप्त स्कूल में शिक्षा प्राप्त नहीं की है।",
+            cert_msg2: "मैं प्रमाणित करता/करती हूँ कि छात्र की जन्मतिथि सही है।",
+            stepNames: ["विवरण", "माता-पिता", "पता", "अभिभावक", "शिक्षा", "दस्तावेज़", "घोषणा"]
+        }
+    };
+    let currentLang = 'en';
+
+    function toggleLanguage() {
+        currentLang = currentLang === 'en' ? 'hi' : 'en';
+        document.getElementById('langLabel').innerText = translations[currentLang].label;
+        document.querySelectorAll('[data-key]').forEach(el => {
+            const key = el.getAttribute('data-key');
+            if (translations[currentLang][key]) el.innerText = translations[currentLang][key];
+        });
+    }
+
+    function changeStep(n) {
+        if (n === 1 && !validateStep(currentStep)) return;
+        
+        document.getElementById(`step${currentStep}`).classList.remove('active');
+        currentStep += n;
+        
+        if (currentStep > totalSteps) { showPreview(); return; }
+        
+        document.getElementById(`step${currentStep}`).classList.add('active');
+        updateUI();
+    }
+
+    function validateStep(step) {
+        const activeStep = document.getElementById(`step${step}`);
+        const inputs = activeStep.querySelectorAll('input[required], select[required], textarea[required]');
+        for (let input of inputs) {
+            if (!input.value && !input.checked && input.type !== 'file') {
+                input.focus();
+                alert('Please fill all required fields.');
+                return false;
+            }
+        }
+        return true;
+    }
+
+    function updateUI() {
+        document.getElementById('progressBar').style.width = (currentStep/totalSteps * 100) + '%';
+        document.getElementById('stepIndicator').innerText = `Step ${currentStep} of ${totalSteps}`;
+        document.getElementById('prevBtn').style.visibility = currentStep === 1 ? 'hidden' : 'visible';
+        document.getElementById('nextBtn').innerText = currentStep === totalSteps ? 'Preview' : 'Next';
+    }
+
+    function showPreview() {
+        document.getElementById('admission-form').classList.add('hidden');
+        document.getElementById('progressContainer').classList.add('hidden');
+        document.getElementById('finalPreviewPage').classList.remove('hidden');
+        
+        const formData = new FormData(document.getElementById('admission-form'));
+        let html = '';
+        for (let [key, value] of formData.entries()) {
+            if (value && typeof value === 'string') {
+                html += `<div><p class="text-xs text-gray-500 uppercase">${key}</p><p class="font-bold">${value}</p></div>`;
+            }
+        }
+        document.getElementById('formDataPreview').innerHTML = html;
+        window.scrollTo(0, 0);
+    }
+
+    function editForm() {
+        document.getElementById('finalPreviewPage').classList.add('hidden');
+        document.getElementById('admission-form').classList.remove('hidden');
+        document.getElementById('progressContainer').classList.remove('hidden');
+        currentStep = totalSteps;
+        document.getElementById(`step${currentStep}`).classList.add('active');
+        updateUI();
+    }
+
+    function handleInstantPreview(input) {
+        const preview = document.getElementById('instantPhotoPreview');
+        if (input.files[0]) {
+            const reader = new FileReader();
+            reader.onload = e => preview.innerHTML = `<img src="${e.target.result}" class="w-full h-full object-cover">`;
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+
+    function handleDocumentUpload(input, previewId) {
+        if (input.files[0]) {
+            document.getElementById(previewId).innerHTML = `<span class="text-green-600 text-xs">✓ ${input.files[0].name}</span>`;
+        }
+    }
+
+    function handleLastInstChange() {
+        const val = document.getElementById('lastInstInput').value;
+        const cert1 = document.getElementById('cert1');
+        if (val.trim() !== '') {
+             cert1.checked = false;
+             cert1.parentElement.classList.add('hidden');
+             cert1.required = false;
+        } else {
+             cert1.parentElement.classList.remove('hidden');
+             cert1.required = true;
+        }
+    }
+
+    async function handleFinalSubmit() {
+        const form = document.getElementById('admission-form');
+        const submitEvent = new Event('submit', { bubbles: true, cancelable: true });
+        form.dispatchEvent(submitEvent);
+    }
+</script>
+<script type="module" src="{{ url_for('static', filename='assets/js/admission-form.js') }}"></script>
+{% endblock %}

@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+
+{% block title %}Fee Structure | Police Modern School Raebareli{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-6 py-12">
+    <!-- Header -->
+    <div class="bg-blue-900 text-white p-8 rounded-2xl shadow-xl mb-8 flex flex-col md:flex-row justify-between items-center text-center md:text-left">
+        <div>
+            <h1 class="text-3xl font-bold mb-2">शुल्क संरचना 2026-27</h1>
+            <p class="text-blue-200">अकादमिक सत्र के लिए कक्षावार शुल्क विवरण</p>
+        </div>
+        <div class="mt-4 md:mt-0">
+             <a href="/" class="bg-white text-blue-900 px-6 py-2 rounded-xl font-bold hover:bg-gray-100 transition shadow-lg">
+                <i class="fas fa-home mr-2"></i>मुख्य पृष्ठ
+            </a>
+        </div>
+    </div>
+
+    <!-- Important Notice -->
+    <div class="bg-yellow-50 border-l-4 border-yellow-500 p-6 mb-8 rounded-xl shadow-sm">
+        <div class="flex items-start">
+            <i class="fas fa-info-circle text-yellow-500 text-2xl mr-4 mt-1"></i>
+            <div>
+                <h3 class="font-bold text-gray-800 mb-2">महत्वपूर्ण सूचना (Important Notes)</h3>
+                <ul class="text-gray-700 space-y-2 text-sm">
+                    <li>• शुल्क त्रैमासिक (Quarterly) आधार पर जमा किया जाता है।</li>
+                    <li>• देरी से भुगतान करने पर निर्धारित विलंब शुल्क (Fine) देय होगा।</li>
+                    <li>• पुलिस एवं पी.ए.सी. कर्मियों के बच्चों के लिए विशेष रियायत उपलब्ध है।</li>
+                    <li>• एक बार जमा किया गया शुल्क किसी भी परिस्थिति में वापस नहीं होगा।</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Fee Table -->
+    <div class="bg-white rounded-2xl shadow-lg border overflow-hidden mb-12">
+        <div class="overflow-x-auto">
+            <table class="w-full text-left">
+                <thead class="bg-slate-50 text-slate-700">
+                    <tr>
+                        <th class="px-6 py-4 font-bold border-b">Class / कक्षा</th>
+                        <th class="px-6 py-4 font-bold border-b text-right">Reg. Fee (Once)</th>
+                        <th class="px-6 py-4 font-bold border-b text-right">Exam Fee</th>
+                        <th class="px-6 py-4 font-bold border-b text-right">Monthly Tuition</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100">
+                    {% set fees = [
+                        ('LKG/UKG', '1,500', '500', '600'),
+                        ('Class 1-3', '1,500', '500', '700'),
+                        ('Class 4-5', '1,500', '500', '800'),
+                        ('Class 6-8', '2,000', '600', '950')
+                    ] %}
+                    {% for class, reg, exam, monthly in fees %}
+                    <tr class="hover:bg-blue-50/50 transition-colors">
+                        <td class="px-6 py-4 font-semibold text-slate-800">{{ class }}</td>
+                        <td class="px-6 py-4 text-right">₹{{ reg }}</td>
+                        <td class="px-6 py-4 text-right">₹{{ exam }}</td>
+                        <td class="px-6 py-4 text-right font-bold text-blue-900">₹{{ monthly }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Additional Information -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
+        <div class="bg-white p-6 rounded-2xl shadow-md border-t-4 border-green-500">
+            <h3 class="font-bold text-slate-800 mb-4 flex items-center">
+                <i class="fas fa-gift text-green-500 mr-2"></i>छूट (Discounts)
+            </h3>
+            <p class="text-sm text-slate-600">भाई-बहन (Siblings) के प्रवेश पर विशेष छूट एवं पुलिस कर्मियों हेतु नियमानुसार रियायत देय है।</p>
+        </div>
+        <div class="bg-white p-6 rounded-2xl shadow-md border-t-4 border-blue-500">
+            <h3 class="font-bold text-slate-800 mb-4 flex items-center">
+                <i class="fas fa-bus text-blue-500 mr-2"></i>परिवहन (Transport)
+            </h3>
+            <p class="text-sm text-slate-600">दूरी के अनुसार वाहन शुल्क अलग से देय होगा। विस्तृत जानकारी ऑफिस से प्राप्त करें।</p>
+        </div>
+        <div class="bg-white p-6 rounded-2xl shadow-md border-t-4 border-purple-500">
+            <h3 class="font-bold text-slate-800 mb-4 flex items-center">
+                <i class="fas fa-credit-card text-purple-500 mr-2"></i>भुगतान (Payment)
+            </h3>
+            <p class="text-sm text-slate-600">नकद (Cash), UPI, या चेक के माध्यम से शुल्क का भुगतान काउंटर पर किया जा सकता है।</p>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,146 @@
+{% extends "base.html" %}
+
+{% block title %}Monitoring & Exams | Admin{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-6 py-8">
+    <div class="bg-white rounded-xl shadow-lg mb-8 overflow-hidden">
+        <div class="flex overflow-x-auto no-scrollbar border-b">
+            <button onclick="switchTab('monitoring')"
+                class="tab-btn active px-8 py-4 font-bold transition-colors hover:bg-gray-50 whitespace-nowrap">
+                <i class="fas fa-user-check mr-2"></i>Live Attendance
+            </button>
+            <button onclick="switchTab('exams')"
+                class="tab-btn px-8 py-4 font-bold transition-colors hover:bg-gray-50 whitespace-nowrap">
+                <i class="fas fa-file-signature mr-2"></i>Examination Records
+            </button>
+        </div>
+
+        <!-- Monitoring Tab -->
+        <div id="monitoring-tab" class="tab-content active p-6">
+            <div class="flex flex-wrap items-center justify-between gap-4 mb-6">
+                <h3 class="text-xl font-bold text-gray-800">Attendance Tracker</h3>
+                <div class="flex flex-wrap gap-2">
+                    <select id="monitor-class-select" class="px-4 py-2 border rounded-lg outline-none">
+                        <option value="">Select Class</option>
+                        <option value="lkg">LKG</option>
+                        <option value="ukg">UKG</option>
+                        {% for i in range(1, 9) %}
+                        <option value="{{ i }}">{{ i }}</option>
+                        {% endfor %}
+                    </select>
+                    <input type="date" id="monitor-date" class="px-4 py-2 border rounded-lg outline-none">
+                    <button onclick="loadClassAttendance()"
+                        class="bg-blue-900 text-white px-6 py-2 rounded-lg hover:bg-blue-800">
+                        <i class="fas fa-sync-alt mr-2"></i>View Attendance
+                    </button>
+                </div>
+            </div>
+
+            <div class="overflow-x-auto rounded-lg border">
+                <table class="w-full text-left">
+                    <thead class="bg-gray-100 text-gray-700 font-bold">
+                        <tr>
+                            <th class="px-6 py-4">Student Name</th>
+                            <th class="px-6 py-4">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="monitor-attendance-body">
+                        <tr>
+                            <td colspan="2" class="px-6 py-10 text-center text-gray-500">Please select class and
+                                date to view logs</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Exams Tab -->
+        <div id="exams-tab" class="tab-content p-6">
+            <div class="flex flex-wrap items-center justify-between gap-4 mb-6">
+                <h3 class="text-xl font-bold text-gray-800">Examination Results</h3>
+                <div class="flex flex-wrap gap-2">
+                    <select id="exam-class-select" onchange="loadClassResults()"
+                        class="px-4 py-2 border rounded-lg outline-none bg-blue-50 font-bold border-blue-200">
+                        <option value="">Select Class</option>
+                        <option value="lkg">LKG</option>
+                        <option value="ukg">UKG</option>
+                        {% for i in range(1, 9) %}
+                        <option value="{{ i }}">{{ i }}</option>
+                        {% endfor %}
+                    </select>
+                    <select id="exam-type-select" onchange="loadClassResults()"
+                        class="px-4 py-2 border rounded-lg outline-none">
+                        <option value="unit1">Unit Test 1</option>
+                        <option value="unit2">Unit Test 2</option>
+                        <option value="half-yearly">Half Yearly</option>
+                        <option value="annual">Annual Exam</option>
+                    </select>
+                    <button onclick="openExamConfigModal()"
+                        class="bg-blue-100 text-blue-900 border border-blue-200 px-6 py-2 rounded-lg hover:bg-blue-200 shadow-sm font-bold">
+                        <i class="fas fa-cog mr-2"></i>Configure Schedule
+                    </button>
+                    <button onclick="loadClassResults()"
+                        class="bg-blue-900 text-white px-6 py-2 rounded-lg hover:bg-blue-800 shadow-md">
+                        <i class="fas fa-sync-alt mr-2"></i>Refresh List
+                    </button>
+                    <button onclick="bulkPrintAdmitCards()"
+                        class="bg-green-700 text-white px-6 py-2 rounded-lg hover:bg-green-800 shadow-md font-bold">
+                        <i class="fas fa-print mr-2"></i>Bulk Print Admit Cards
+                    </button>
+                </div>
+            </div>
+
+            <div class="overflow-x-auto rounded-lg border">
+                <table class="w-full text-left">
+                    <thead class="bg-gray-100 text-gray-700 font-bold">
+                        <tr>
+                            <th class="px-6 py-4">Student Name</th>
+                            <th class="px-6 py-4 text-center">Exam Type</th>
+                            <th class="px-6 py-4 text-center">Marks/Grade</th>
+                            <th class="px-6 py-4 text-center">Academic Result</th>
+                            <th class="px-6 py-4 text-center">Exam Admit Card</th>
+                        </tr>
+                    </thead>
+                    <tbody id="monitor-results-body">
+                        <tr>
+                            <td colspan="5" class="px-6 py-10 text-center text-gray-500">Select parameters to view
+                                results</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modals -->
+<div id="result-view-modal" style="z-index: 99999;" class="hidden fixed inset-0 bg-black bg-opacity-70 flex justify-center items-start pt-20 pb-10 px-4 backdrop-blur-sm overflow-y-auto">
+    <!-- Content handled by JS -->
+</div>
+
+<div id="admit-card-modal" class="hidden fixed inset-0 bg-black bg-opacity-70 z-[70] flex items-center justify-center p-4">
+    <!-- Admit Card Content -->
+</div>
+
+<div id="exam-config-modal" class="fixed inset-0 bg-black bg-opacity-70 hidden items-center justify-center z-[80] p-4 backdrop-blur-sm">
+</div>
+
+<style>
+    @media print {
+        @page { size: A4 landscape; margin: 0; }
+        body > *:not(#bulk-print-wrapper) { display: none !important; }
+        #bulk-print-wrapper { display: block !important; position: absolute; left: 0; top: 0; width: 100%; background: white !important; }
+    }
+    #bulk-print-wrapper { display: none; }
+</style>
+
+<div id="bulk-print-wrapper"></div>
+
+<script type="module">
+    import { initDashboard } from "{{ url_for('static', filename='assets/js/admin-dashboard.js') }}";
+    window.addEventListener('load', () => {
+        initDashboard();
+    });
+</script>
+{% endblock %}

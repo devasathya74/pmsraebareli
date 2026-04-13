@@ -1,43 +1,157 @@
 {% extends "base.html" %}
-{% block title %}Teacher Dashboard{% endblock %}
+
+{% block title %}Teacher Dashboard - PMS{% endblock %}
+
+{% block styles %}
+<style>
+    .sidebar-active {
+        background-color: rgba(255, 255, 255, 0.1);
+        border-left: 4px solid #FCD34D;
+    }
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
+</style>
+{% endblock %}
+
 {% block content %}
-<div class="p-6 md:p-10">
-    <div class="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
-        <div>
-            <p class="text-sm uppercase tracking-[0.3em] text-slate-500">Teacher Console</p>
-            <h2 class="mt-2 text-3xl font-black text-slate-900">{{ stats.class_name }}</h2>
-        </div>
-        <div class="rounded-2xl bg-white px-5 py-4 shadow-sm">
-            <p class="text-sm text-slate-500">Attendance, academic results, and fee visibility for your assigned class.</p>
-        </div>
-    </div>
-    <div class="mt-8 grid gap-4 md:grid-cols-4">
-        <div class="rounded-3xl bg-white p-5 shadow-sm"><p class="text-sm text-slate-500">Students</p><p class="mt-2 text-3xl font-black text-ink">{{ stats.students }}</p></div>
-        <div class="rounded-3xl bg-white p-5 shadow-sm"><p class="text-sm text-slate-500">Attendance Entries</p><p class="mt-2 text-3xl font-black text-ink">{{ stats.attendance_entries }}</p></div>
-        <div class="rounded-3xl bg-white p-5 shadow-sm"><p class="text-sm text-slate-500">Results</p><p class="mt-2 text-3xl font-black text-ink">{{ stats.results }}</p></div>
-        <div class="rounded-3xl bg-white p-5 shadow-sm"><p class="text-sm text-slate-500">Pending Fees</p><p class="mt-2 text-3xl font-black text-red-600">{{ stats.pending_fees }}</p></div>
-    </div>
-    <div class="mt-8 grid gap-6 lg:grid-cols-2">
-        <section class="rounded-3xl bg-white p-6 shadow-sm">
-            <h3 class="text-xl font-bold">Class Roster Snapshot</h3>
-            <div class="mt-5 space-y-3">
-                {% for student in students %}
-                <div class="rounded-2xl bg-slate-50 px-4 py-3">{{ student.name }} | {{ student.admission_no }}</div>
-                {% else %}
-                <p class="text-sm text-slate-500">No students assigned yet.</p>
-                {% endfor %}
+<div class="flex h-screen overflow-hidden bg-gray-100">
+    <!-- Sidebar -->
+    <aside class="w-64 bg-blue-900 text-white hidden md:flex flex-col">
+        <div class="p-6 border-b border-blue-800">
+            <div class="flex items-center gap-3">
+                <img id="sidebar-profile-img" src="{{ url_for('static', filename='assets/images/logo/logo.png') }}" alt="Logo" class="w-10 h-10 rounded-full bg-white p-1">
+                <div>
+                    <h1 class="text-lg font-bold">Teacher Panel</h1>
+                    <p class="text-xs text-blue-300" id="teacher-name-sidebar">Loading...</p>
+                </div>
             </div>
-        </section>
-        <section class="rounded-3xl bg-white p-6 shadow-sm">
-            <h3 class="text-xl font-bold">Recent Fee Status</h3>
-            <div class="mt-5 space-y-3">
-                {% for item in fees %}
-                <div class="rounded-2xl bg-slate-50 px-4 py-3">{{ item.student_name }} | {{ item.status }} | {{ item.amount_paid }}/{{ item.amount_due }}</div>
-                {% else %}
-                <p class="text-sm text-slate-500">No fee records visible.</p>
-                {% endfor %}
+        </div>
+
+        <nav class="flex-1 overflow-y-auto py-4">
+            <ul class="space-y-1">
+                <li><a href="#" onclick="switchTab('overview')" id="nav-overview" class="flex items-center px-6 py-3 hover:bg-blue-800 transition-colors sidebar-active"><i class="fas fa-home w-6"></i><span>Overview</span></a></li>
+                <li><a href="#" onclick="switchTab('students')" id="nav-students" class="flex items-center px-6 py-3 hover:bg-blue-800 transition-colors"><i class="fas fa-user-graduate w-6"></i><span>My Class</span></a></li>
+                <li><a href="#" onclick="switchTab('attendance')" id="nav-attendance" class="flex items-center px-6 py-3 hover:bg-blue-800 transition-colors"><i class="fas fa-calendar-check w-6"></i><span>Attendance</span></a></li>
+                <li><a href="#" onclick="switchTab('progress')" id="nav-progress" class="flex items-center px-6 py-3 hover:bg-blue-800 transition-colors"><i class="fas fa-chart-line w-6"></i><span>Academic Progress</span></a></li>
+                <li><a href="#" onclick="switchTab('reports')" id="nav-reports" class="flex items-center px-6 py-3 hover:bg-blue-800 transition-colors"><i class="fas fa-paper-plane w-6"></i><span>Send Reports</span></a></li>
+                <li><a href="#" onclick="switchTab('salary')" id="nav-salary" class="flex items-center px-6 py-3 hover:bg-blue-800 transition-colors"><i class="fas fa-file-invoice-dollar w-6"></i><span>My Salary Slip</span></a></li>
+            </ul>
+        </nav>
+
+        <div class="p-4 border-t border-blue-800">
+            <button onclick="authHelper.logout()" class="flex items-center w-full px-4 py-2 text-sm text-red-300 hover:text-red-100 hover:bg-red-900/30 rounded-lg transition-colors">
+                <i class="fas fa-sign-out-alt w-5"></i><span>Logout</span>
+            </button>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <div class="flex-1 flex flex-col overflow-hidden">
+        <!-- Header -->
+        <header class="bg-white shadow px-6 py-4 flex justify-between items-center z-10">
+            <div class="flex items-center gap-4">
+                <button onclick="toggleSidebar()" class="md:hidden text-gray-600"><i class="fas fa-bars text-xl"></i></button>
+                <h2 class="text-xl font-bold text-gray-800" id="header-title">Teacher Dashboard</h2>
             </div>
-        </section>
+            <div class="flex items-center gap-4">
+                <div class="relative ml-4">
+                    <button onclick="toggleUserDropdown()" class="flex items-center gap-3 focus:outline-none group">
+                        <div class="hidden md:block text-right">
+                            <p class="text-sm font-semibold text-gray-800" id="teacher-name-header">Teacher</p>
+                            <p class="text-xs text-gray-500">Class Teacher</p>
+                        </div>
+                        <div class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-700"><i class="fas fa-chalkboard-teacher"></i></div>
+                    </button>
+                    <!-- User Dropdown -->
+                    <div id="user-dropdown" class="hidden absolute right-0 mt-2 w-56 bg-white rounded-xl shadow-xl z-50 border py-2">
+                        <div class="px-5 py-3 border-b"><p id="dropdown-user-email" class="text-sm font-semibold text-gray-800 truncate">teacher@example.com</p></div>
+                        <a href="#" onclick="openChangePasswordModal()" class="flex items-center px-5 py-2.5 text-sm text-gray-700 hover:bg-blue-50 transition-colors">Change Password</a>
+                        <div class="border-t my-1"></div>
+                        <a href="#" onclick="authHelper.logout()" class="flex items-center px-5 py-2.5 text-sm text-red-600 hover:bg-red-50 transition-colors">Logout</a>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Content Area -->
+        <main class="flex-1 overflow-x-hidden overflow-y-auto p-6">
+            <!-- Overview Section -->
+            <div id="section-overview" class="tab-content active">
+                <h2 class="text-2xl font-bold text-gray-800 mb-6">Class Overview - <span id="class-name-header">...</span></h2>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                    <div class="bg-white p-6 rounded-xl shadow-sm border-l-4 border-blue-500">
+                        <p class="text-sm text-gray-500 font-semibold mb-1">Total Students</p>
+                        <h3 class="text-3xl font-bold text-gray-800" id="stat-total-students">-</h3>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow-sm border-l-4 border-green-500">
+                        <p class="text-sm text-gray-500 font-semibold mb-1">Present Today</p>
+                        <h3 class="text-3xl font-bold text-gray-800" id="stat-present-today">-</h3>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Other sections (Students, Attendance, etc.) simplified for breadcrumb migration -->
+            <div id="section-students" class="tab-content">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-2xl font-bold text-gray-800">My Class List</h2>
+                    <button onclick="loadStudents()" class="bg-blue-100 text-blue-700 px-4 py-2 rounded-lg">Refresh</button>
+                </div>
+                <div class="bg-white rounded-xl shadow-sm overflow-hidden"><table class="w-full text-left"><thead class="bg-gray-50 border-b"><tr><th class="p-4">Name</th><th class="p-4">Roll No</th><th class="p-4">Mobile</th><th class="p-4">Actions</th></tr></thead><tbody id="students-table-body" class="divide-y"></tbody></table></div>
+            </div>
+
+            <div id="section-attendance" class="tab-content">
+                 <h2 class="text-2xl font-bold text-gray-800 mb-6">Mark Attendance</h2>
+                 <div class="flex gap-4 mb-4">
+                    <input type="date" id="attendance-date" class="px-3 py-2 border rounded-lg">
+                    <button onclick="saveAttendance()" class="bg-green-600 text-white px-4 py-2 rounded-lg">Save</button>
+                 </div>
+                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4" id="attendance-list"></div>
+            </div>
+            
+            <div id="section-progress" class="tab-content">
+                 <h2 class="text-2xl font-bold text-gray-800 mb-6">Academic Progress</h2>
+                 <div class="bg-white rounded-xl p-6"><table class="w-full text-left"><thead class="bg-gray-50 border-b"><tr><th>Student</th><th>Marks (%)</th><th>Action</th></tr></thead><tbody id="progress-table-body"></tbody></table></div>
+            </div>
+
+            <div id="section-reports" class="tab-content">
+                 <h2 class="text-2xl font-bold text-gray-800 mb-6">Send Report</h2>
+                 <div class="bg-white p-6 rounded-xl max-w-2xl">
+                    <form onsubmit="sendReport(event)" class="space-y-4">
+                        <input type="text" id="report-subject" placeholder="Subject" class="w-full p-2 border rounded">
+                        <textarea id="report-message" placeholder="Message" rows="5" class="w-full p-2 border rounded"></textarea>
+                        <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded">Send</button>
+                    </form>
+                 </div>
+            </div>
+
+            <div id="section-salary" class="tab-content">
+                <h2 class="text-2xl font-bold text-gray-800 mb-6">Salary Slips</h2>
+                <div id="salary-slips-tbody"></div>
+            </div>
+        </main>
     </div>
 </div>
+
+<!-- Modal structures preserved from static version -->
+<div id="student-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-[100] flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl w-full max-w-2xl p-6">
+        <h3 class="text-xl font-bold border-b pb-2 mb-4">Student Profile</h3>
+        <div id="student-modal-content"></div>
+        <button onclick="closeModal('student-modal')" class="mt-4 bg-gray-500 text-white px-4 py-2 rounded">Close</button>
+    </div>
+</div>
+
+<script>
+    function switchTab(tabId) {
+        document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+        document.querySelectorAll('nav a').forEach(el => el.classList.remove('sidebar-active'));
+        document.getElementById(`section-${tabId}`).classList.add('active');
+        document.getElementById(`nav-${tabId}`).classList.add('sidebar-active');
+        document.getElementById('header-title').innerText = tabId.charAt(0).toUpperCase() + tabId.slice(1);
+    }
+    function toggleSidebar() { document.querySelector('aside').classList.toggle('hidden'); }
+    function toggleUserDropdown() { document.getElementById('user-dropdown').classList.toggle('hidden'); }
+    function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
+</script>
+<script type="module" src="{{ url_for('static', filename='assets/js/teacher-dashboard.js') }}"></script>
 {% endblock %}

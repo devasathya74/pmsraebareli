@@ -14,7 +14,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             currentUser = user;
             await loadTeacherProfile(user.email);
         } else {
-            window.location.href = 'login.html';
+            window.location.href = '/auth/login';
         }
     });
 });

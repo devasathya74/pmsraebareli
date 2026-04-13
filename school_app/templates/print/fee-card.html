@@ -73,26 +73,17 @@
     </style>
 </head>
 <body class="py-6">
-
-    <!-- Print Controls -->
     <div class="fixed top-4 right-4 flex gap-2 no-print z-50">
-        <button onclick="window.close()" class="bg-gray-800 text-white px-4 py-1.5 rounded-lg text-sm font-bold shadow-lg hover:bg-gray-700 transition-all">
-            <i class="fas fa-times mr-1"></i> Close
-        </button>
-        <button onclick="window.print()" class="bg-blue-600 text-white px-6 py-1.5 rounded-lg text-sm font-bold shadow-lg hover:bg-blue-700 transition-all">
-            <i class="fas fa-print mr-1"></i> Print Card
-        </button>
+        <button onclick="window.close()" class="bg-gray-800 text-white px-4 py-1.5 rounded-lg text-sm font-bold shadow-lg hover:bg-gray-700 transition-all">Close</button>
+        <button onclick="window.print()" class="bg-blue-600 text-white px-6 py-1.5 rounded-lg text-sm font-bold shadow-lg hover:bg-blue-700 transition-all">Print Card</button>
     </div>
 
-    <!-- Official Card Container -->
     <div class="max-w-3xl mx-auto bg-white p-8 shadow-xl print-container border border-gray-200 rounded-sm">
-        
-        <!-- Compact Header -->
         <div class="flex items-start gap-4 border-b-[3px] border-black pb-4 mb-6">
-            <img src="../assets/images/logo/logo.png" alt="School Logo" class="w-16 h-16 object-contain">
+            <img src="{{ url_for('static', filename='assets/images/logo/logo.png') }}" alt="School Logo" class="w-16 h-16 object-contain">
             <div class="text-center flex-1">
                 <h1 class="text-2xl font-black text-black leading-none">पुलिस मॉडर्न स्कूल, रायबरेली</h1>
-                <h2 class="text-lg font-bold text-gray-800 uppercase tracking-tighter mt-1">POLICE MODERN SCHOOL</h2>
+                <h2 class="text-lg font-bold text-gray-800 uppercase mt-1 tracking-tighter">POLICE MODERN SCHOOL</h2>
                 <p class="text-[10px] font-black mt-1 uppercase tracking-tight">25वीं वाहिनी पीएसी, रायबरेली | Reg. No. 568-71/2007-08</p>
                 <div class="mt-2 inline-block border-2 border-black px-4 py-0.5 bg-black text-white">
                     <span class="text-sm font-black uppercase tracking-widest" id="session-title">FEE CARD 2025-26</span>
@@ -100,118 +91,64 @@
             </div>
             <div class="w-24 h-24 border-2 border-black flex items-center justify-center bg-gray-50 overflow-hidden rounded-sm relative">
                 <img id="p-student-photo" src="" alt="Student Photo" class="w-full h-full object-cover hidden">
-                <div id="p-photo-placeholder" class="text-[8px] font-black text-gray-400 text-center p-1 uppercase leading-tight">
-                    PASTE<br>PHOTO<br>HERE
-                </div>
+                <div id="p-photo-placeholder" class="text-[8px] font-black text-gray-400 text-center p-1 uppercase leading-tight">PASTE<br>PHOTO<br>HERE</div>
             </div>
         </div>
 
-        <!-- Compact Student Information -->
         <div class="space-y-4 mb-8">
-            <div class="flex items-baseline">
-                <span class="info-label">Student Name:</span>
-                <span id="p-student-name" class="dotted-line text-base"></span>
-            </div>
-            
+            <div class="flex items-baseline"><span class="info-label">Student Name:</span><span id="p-student-name" class="dotted-line text-base"></span></div>
             <div class="grid grid-cols-3 gap-6">
-                <div class="flex items-baseline">
-                    <span class="info-label min-w-max mr-2">Reg. No:</span>
-                    <span id="p-reg-no" class="dotted-line"></span>
-                </div>
-                <div class="flex items-baseline">
-                    <span class="info-label min-w-max mr-2">Class:</span>
-                    <span id="p-class" class="dotted-line uppercase"></span>
-                </div>
-                <div class="flex items-baseline">
-                    <span class="info-label min-w-max mr-2">Roll No:</span>
-                    <span id="p-roll-no" class="dotted-line"></span>
-                </div>
+                <div class="flex items-baseline"><span class="info-label min-w-max mr-2">Reg. No:</span><span id="p-reg-no" class="dotted-line"></span></div>
+                <div class="flex items-baseline"><span class="info-label min-w-max mr-2">Class:</span><span id="p-class" class="dotted-line uppercase"></span></div>
+                <div class="flex items-baseline"><span class="info-label min-w-max mr-2">Roll No:</span><span id="p-roll-no" class="dotted-line"></span></div>
             </div>
-
             <div class="grid grid-cols-2 gap-8">
-                <div class="flex items-baseline">
-                    <span class="info-label">Father's Name:</span>
-                    <span id="p-father-name" class="dotted-line"></span>
-                </div>
-                <div class="flex items-baseline">
-                    <span class="info-label min-w-max mr-2">Mobile:</span>
-                    <span id="p-mobile" class="dotted-line"></span>
-                </div>
+                <div class="flex items-baseline"><span class="info-label">Father's Name:</span><span id="p-father-name" class="dotted-line"></span></div>
+                <div class="flex items-baseline"><span class="info-label min-w-max mr-2">Mobile:</span><span id="p-mobile" class="dotted-line"></span></div>
             </div>
         </div>
 
-        <!-- Compact Monthly Grid -->
         <div class="mt-2">
-            <div class="bg-gray-100 border-x-2 border-t-2 border-black px-4 py-1 text-center font-black text-xs uppercase tracking-tighter">
-                Monthly Fee Status & Receipt Log
-            </div>
-            <div class="fee-grid border-2 border-black p-2 bg-white" id="month-grid">
-                <!-- Populated by JS -->
-            </div>
+            <div class="bg-gray-100 border-x-2 border-t-2 border-black px-4 py-1 text-center font-black text-xs uppercase tracking-tighter">Monthly Fee Status & Receipt Log</div>
+            <div class="fee-grid border-2 border-black p-2 bg-white" id="month-grid"></div>
         </div>
 
-        <!-- Compact Footers -->
         <div class="mt-12 flex justify-between px-4">
-            <div class="text-center">
-                <div class="w-32 border-b border-black mb-1"></div>
-                <span class="text-[8px] font-black uppercase">Teacher Sign</span>
-            </div>
-            <div class="text-center">
-                <i class="fas fa-stamp text-gray-100 text-3xl mb-1 block"></i>
-                <span class="text-[8px] font-black uppercase">Office Stamp</span>
-            </div>
-            <div class="text-center">
-                <div class="w-32 border-b border-black mb-1"></div>
-                <span class="text-[8px] font-black uppercase">Principal Sign</span>
-            </div>
+            <div class="text-center"><div class="w-32 border-b border-black mb-1"></div><span class="text-[8px] font-black uppercase">Teacher Sign</span></div>
+            <div class="text-center"><i class="fas fa-stamp text-gray-100 text-3xl mb-1 block"></i><span class="text-[8px] font-black uppercase">Office Stamp</span></div>
+            <div class="text-center"><div class="w-32 border-b border-black mb-1"></div><span class="text-[8px] font-black uppercase">Principal Sign</span></div>
         </div>
-
-        <div class="mt-10 pt-2 border-t border-gray-100 text-center">
-            <p class="text-[8px] text-gray-400 font-bold uppercase">PMS Management System - Digital Fee Card - Raybareli</p>
-        </div>
+        <div class="mt-10 pt-2 border-t border-gray-100 text-center"><p class="text-[8px] text-gray-400 font-bold uppercase">PMS Management System - Digital Fee Card - Raybareli</p></div>
     </div>
 
     <script type="module">
-        import { firestoreHelper } from '../assets/js/firebase-config.js';
-
+        import { firestoreHelper } from '{{ url_for("static", filename="assets/js/firebase-config.js") }}';
         async function loadCardData() {
             const params = new URLSearchParams(window.location.search);
             const studentId = params.get('id');
             const session = params.get('session') || '2025-26';
-
             if (!studentId) return;
-
             document.getElementById('session-title').textContent = `FEE CARD ${session}`;
-
             try {
-                // 1. Fetch Student Details (Using Public Endpoint)
                 const sResp = await fetch(`/api/public/students/${studentId}`);
                 const sRes = await sResp.json();
-                if (!sRes.success) throw new Error("Student not found or access denied");
+                if (!sRes.success) throw new Error("Student not found");
                 const s = sRes.data;
-
-                document.getElementById('p-student-name').textContent = s.studentName || s.name || '-';
-                document.getElementById('p-reg-no').textContent = s.serialNumber || s.admissionId || '-';
+                document.getElementById('p-student-name').textContent = s.studentName || '-';
+                document.getElementById('p-reg-no').textContent = s.admissionId || '-';
                 document.getElementById('p-roll-no').textContent = s.rollNumber || '-';
                 document.getElementById('p-father-name').textContent = s.fatherName || '-';
                 document.getElementById('p-class').textContent = s.class || '-';
                 document.getElementById('p-mobile').textContent = s.mobile || '-';
-
-                // 2. Photo fetch
-                const photoUrl = s.photo || s.avatar_url || s.imageUrl;
-                if (photoUrl) {
+                if (s.photo) {
                     const img = document.getElementById('p-student-photo');
-                    img.src = photoUrl;
+                    img.src = s.photo;
                     img.classList.remove('hidden');
                     document.getElementById('p-photo-placeholder').classList.add('hidden');
                 }
-
-                // 3. Payments fetch (Using Public Endpoint)
                 const fResp = await fetch(`/api/public/fees/${studentId}`);
                 const fRes = await fResp.json();
                 const studentFees = fRes.data || [];
-
-                // 4. Grid generation
                 const startYear = parseInt(session.split('-')[0]) || 2025;
                 const monthsList = [
                     { name: 'April', year: startYear }, { name: 'May', year: startYear }, 
@@ -221,47 +158,21 @@
                     { name: 'December', year: startYear }, { name: 'January', year: startYear + 1 },
                     { name: 'February', year: startYear + 1 }, { name: 'March', year: startYear + 1 }
                 ];
-
                 const grid = document.getElementById('month-grid');
                 grid.innerHTML = monthsList.map(m => {
-                    const record = studentFees.find(f => 
-                        f.month.toLowerCase() === m.name.toLowerCase() && 
-                        parseInt(f.year) === m.year
-                    );
-                    
+                    const record = studentFees.find(f => f.month.toLowerCase() === m.name.toLowerCase() && parseInt(f.year) === m.year);
                     const isPaid = !!record;
-                    const paidAt = record?.submittedAt ? new Date(record.submittedAt) : (record?.paymentDate ? new Date(record.paymentDate) : null);
+                    const paidAt = record?.submittedAt ? new Date(record.submittedAt) : null;
                     const dateStr = paidAt ? paidAt.toLocaleDateString('en-IN', { day: '2-digit', month: '2-digit', year: '2-digit' }) : '';
-                    const timeStr = paidAt ? paidAt.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' }) : '';
-                    
-                    // Robust receipt number retrieval
-                    const rNo = record?.receiptNumber || record?.receiptNo || record?.receipt_no || '---';
-
-                    return `
-                        <div class="month-box ${isPaid ? 'bg-green-50' : 'bg-gray-50 opacity-60'}">
-                            <span class="month-name">${m.name}</span>
-                            
-                            <div class="check-box">
-                                ${isPaid ? '<div class="ticked"></div>' : ''}
-                            </div>
-
-                            ${isPaid ? `
-                                <div class="text-center leading-none mt-1">
-                                    <div class="text-[8px] font-black text-blue-800">R: ${rNo}</div>
-                                    <div class="text-[7px] font-bold text-gray-500 mt-0.5">${dateStr} | ${timeStr}</div>
-                                </div>
-                            ` : `
-                                <span class="text-[7px] font-black text-gray-300 uppercase">Pending</span>
-                            `}
-                            
-                            <span class="text-[8px] font-bold text-gray-400 mt-auto opacity-50">${m.year}</span>
-                        </div>
-                    `;
-                }).join('');
-
+                    const rNo = record?.receiptNumber || '---';
+                    return `<div class="month-box ${isPaid ? 'bg-green-50' : 'bg-gray-50 opacity-60'}">
+                        <span class="month-name">${m.name}</span>
+                        <div class="check-box">${isPaid ? '<div class="ticked"></div>' : ''}</div>
+                        ${isPaid ? `<div class="text-center leading-none mt-1"><div class="text-[8px] font-black text-blue-800">R: ${rNo}</div><div class="text-[7px] font-bold text-gray-500 mt-0.5">${dateStr}</div></div>` : `<span class="text-[7px] font-black text-gray-300 uppercase">Pending</span>`}
+                        <span class="text-[8px] font-bold text-gray-400 mt-auto opacity-50">${m.year}</span>
+                    </div>`;}).join('');
             } catch (err) { console.error(err); }
         }
-
         window.onload = loadCardData;
     </script>
 </body>

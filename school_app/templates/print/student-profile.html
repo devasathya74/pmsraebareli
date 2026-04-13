@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Admission Form</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Times+New+Roman&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body { background-color: #f3f4f6; display: flex; justify-content: center; padding: 20px; font-family: 'Times New Roman', serif; }
+        .preview-document { width: 210mm; min-height: 297mm; padding: 10mm; background: white; border: 1px solid #ccc; font-size: 11px; line-height: 1.3; position: relative; }
+        .dotted-line { border-bottom: 1px dotted #000; display: inline-block; min-width: 50px; padding: 0 5px; font-weight: bold; }
+        .student-photo-placeholder { width: 35mm; height: 45mm; border: 1px solid #000; display: flex; align-items: center; justify-content: center; text-align: center; font-size: 10px; background-color: #f9f9f9; overflow: hidden; }
+        @media print {
+            @page { size: A4; margin: 5mm; }
+            body { background: none; padding: 0; display: block; }
+            .preview-document { border: none; box-shadow: none; width: 100%; padding: 5mm 10mm; font-size: 10.5pt; line-height: 1.15; }
+            .no-print { display: none !important; }
+        }
+    </style>
+</head>
+<body>
+    <div class="no-print fixed top-4 right-4 flex gap-2">
+        <button onclick="window.print()" class="bg-blue-600 text-white px-4 py-2 rounded shadow hover:bg-blue-700">Print</button>
+        <button onclick="window.close()" class="bg-gray-500 text-white px-4 py-2 rounded shadow hover:bg-gray-600">Close</button>
+    </div>
+
+    <div class="preview-document" id="form-container">
+        <div id="loading" class="absolute inset-0 flex items-center justify-center bg-white z-10">
+            <div class="text-center"><i class="fas fa-spinner fa-spin text-4xl text-blue-600 mb-4"></i><p>Loading Data...</p></div>
+        </div>
+
+        <div class="flex items-center justify-between border-b-2 border-black pb-4 mb-6">
+            <img src="{{ url_for('static', filename='assets/images/logo/logo.png') }}" alt="Logo" class="w-24 h-auto">
+            <div class="text-center flex-1">
+                <h1 class="text-xl font-bold uppercase">POLICE MODERN SCHOOL RAEBARELI</h1>
+                <p class="font-bold text-sm">(Reg. No.-568-71/2007-08)</p>
+                <div class="mt-3 inline-block border-2 border-black px-6 py-1"><h2 class="text-lg font-bold uppercase">STUDENT PROFILE</h2></div>
+            </div>
+            <img src="{{ url_for('static', filename='assets/images/logo/logo.png') }}" alt="Logo" class="w-24 h-auto">
+        </div>
+
+        <div class="absolute right-10 top-52">
+            <div id="photoPreview" class="student-photo-placeholder"><span>PASTE PHOTOGRAPH HERE</span></div>
+        </div>
+
+        <div class="space-y-4 pr-32">
+            <p>Name of Scholar <span id="p_scholarName" class="dotted-line min-w-[300px]"></span></p>
+            <p>Date of birth <span id="p_dob" class="dotted-line min-w-[300px]"></span></p>
+            <p>Class <span id="p_class" class="dotted-line min-w-[200px]"></span></p>
+            <p>Father's name <span id="p_fatherName" class="dotted-line min-w-[300px]"></span></p>
+            <p>Occupation <span id="p_fatherOcc" class="dotted-line min-w-[300px]"></span></p>
+            <p>Mobile <span id="p_mobile" class="dotted-line min-w-[120px]"></span></p>
+            <p>Mother's name <span id="p_motherName" class="dotted-line min-w-[350px]"></span></p>
+            <p>Address <span id="p_address" class="dotted-line min-w-[400px]"></span></p>
+        </div>
+    </div>
+
+    <script type="module">
+        import { firestoreHelper } from '{{ url_for("static", filename="assets/js/firebase-config.js") }}';
+        async function init() {
+            const params = new URLSearchParams(window.location.search);
+            const studentId = params.get('id');
+            if (!studentId) return;
+            try {
+                const result = await firestoreHelper.getDocument('students', studentId);
+                if (result.success && result.data) {
+                    const s = result.data;
+                    document.getElementById('p_scholarName').textContent = s.studentName || '-';
+                    document.getElementById('p_dob').textContent = s.dob || '-';
+                    document.getElementById('p_class').textContent = s.class || '-';
+                    document.getElementById('p_fatherName').textContent = s.fatherName || '-';
+                    document.getElementById('p_fatherOcc').textContent = s.fatherOccupation || '-';
+                    document.getElementById('p_mobile').textContent = s.mobile || '-';
+                    document.getElementById('p_motherName').textContent = s.motherName || '-';
+                    document.getElementById('p_address').textContent = s.address || '-';
+                    if (s.photo) document.getElementById('photoPreview').innerHTML = `<img src="${s.photo}" class="w-full h-full object-cover">`;
+                    document.getElementById('loading').style.display = 'none';
+                    setTimeout(() => window.print(), 1000);
+                }
+            } catch (err) { console.error(err); }
+        }
+        init();
+    </script>
+</body>
+</html>

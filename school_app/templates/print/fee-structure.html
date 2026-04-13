@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>शुल्क संरचना - पुलिस मॉडर्न स्कूल, रायबरेली</title>
+    <link href="https://fonts.googleapis.com/css2?family=Tiro+Devanagari+Hindi&family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @page { size: A4; margin: 10mm; }
+        body { font-family: 'Poppins', 'Tiro Devanagari Hindi', sans-serif; width: 210mm; margin: 0 auto; background: white; padding: 15px; }
+        .header { background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%); padding: 20px; border-radius: 8px; color: white; margin-bottom: 20px; text-align: center; }
+        .session-badge { background: #facc15; color: #1e3a8a; padding: 10px; margin-bottom: 20px; border-radius: 8px; font-weight: bold; text-align: center; }
+        table { width: 100%; border-collapse: collapse; border: 2px solid #1e3a8a; }
+        th { background: #1e3a8a; color: white; padding: 10px; border: 1px solid #1e3a8a; }
+        td { padding: 8px; text-align: center; border: 1px solid #cbd5e1; }
+        @media print { .no-print { display: none !important; } }
+    </style>
+</head>
+<body>
+    <div class="no-print fixed top-4 right-4 flex gap-2">
+        <button onclick="window.print()" class="bg-blue-600 text-white px-4 py-2 rounded shadow">Print</button>
+        <button onclick="window.close()" class="bg-gray-500 text-white px-4 py-2 rounded shadow">Close</button>
+    </div>
+
+    <div class="header">
+        <h1 class="text-3xl font-bold uppercase">POLICE MODERN SCHOOL RAEBARELI</h1>
+        <p class="text-lg">Fee Structure 2024-25 | शुल्क संरचना: शैक्षणिक सत्र 2024-25</p>
+    </div>
+
+    <div class="session-badge">शैक्षणिक सत्र 2024-25 के लिए आधिकारिक शुल्क विवरणी</div>
+
+    <div class="p-4 bg-yellow-50 border-l-4 border-yellow-400 mb-6">
+        <ul class="text-xs list-disc pl-5">
+            <li>शुल्क त्रैमासिक जमा करना होगा। (Fees must be paid quarterly)</li>
+            <li>देरी से भुगतान पर ₹50 विलंब शुल्क लगेगा। (Late fee ₹50/month)</li>
+        </ul>
+    </div>
+
+    <table class="mb-10">
+        <thead>
+            <tr><th>कक्षा (Class)</th><th>प्रवेश शुल्क (Admission)</th><th>मासिक शुल्क (Monthly)</th></tr>
+        </thead>
+        <tbody>
+            <tr><td><strong>LKG - UKG</strong></td><td>₹1,500</td><td>₹600</td></tr>
+            <tr><td><strong>1 - 3</strong></td><td>₹1,500</td><td>₹700</td></tr>
+            <tr><td><strong>4 - 5</strong></td><td>₹1,500</td><td>₹800</td></tr>
+            <tr><td><strong>6 - 8</strong></td><td>₹1,800</td><td>₹900</td></tr>
+        </tbody>
+    </table>
+
+    <div class="grid grid-cols-2 gap-6">
+        <div class="p-4 bg-gray-50 border rounded-lg">
+            <h3 class="font-bold text-blue-900 border-b mb-2">परिवहन शुल्क (Transport)</h3>
+            <div class="flex justify-between text-xs py-1"><span>0-5 KM</span><span>₹300/Month</span></div>
+            <div class="flex justify-between text-xs py-1"><span>5-10 KM</span><span>₹500/Month</span></div>
+            <div class="flex justify-between text-xs py-1"><span>10-15 KM</span><span>₹800/Month</span></div>
+        </div>
+        <div class="p-4 bg-green-50 border rounded-lg">
+            <h3 class="font-bold text-green-900 border-b mb-2">छूट योजनाएं (Discounts)</h3>
+            <p class="text-[10px]">Small Brother/Sister Discount: 20% on Tution Fee</p>
+            <p class="text-[10px]">Staff Kid: 33% Discount</p>
+        </div>
+    </div>
+
+    <div class="mt-20 border-t pt-4 text-center">
+        <p class="text-[10px] text-gray-500">© Police Modern School, Raybareli | For any query contact: +91 9506170180</p>
+    </div>
+</body>
+</html>
