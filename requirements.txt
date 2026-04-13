@@ -4,3 +4,4 @@ firebase-admin==6.6.0
 supabase==2.15.0
 pydantic==2.12.5
 gunicorn
+python-dotenv
