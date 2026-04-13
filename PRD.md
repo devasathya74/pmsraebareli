@@ -1,36 +1,71 @@
-# Police Modern School Management System - PRD
+# 🏢 Police Modern School Management System (PMS)
+> **High-Fidelity, Cloud-First Management Portal**
 
-## Overview
-A comprehensive school management system for Police Modern School, Raebareli. The application manages student admissions, staff records, fee collection, attendance, and academic results.
+## 🌟 Overview
+The Police Modern School Management System is a premium, secure, and highly-mobile-responsive web application designed to streamline the administrative and academic workflows of **Police Modern School, Raebareli**. 
 
-## Tech Stack
-- **Frontend**: HTML5, Tailwind CSS, JavaScript (ES6 Modules)
-- **Backend (API)**: Python Flask
-- **Database**: Firebase Firestore (Main Storage) / SQLite (Local Fallback)
-- **File Storage**: Supabase Storage / Local Storage
-- **Authentication**: Firebase Authentication with Math CAPTCHA
+The system focuses on a **High-Fidelity UI/UX**, robust **Data Integrity**, and a **Cloud-Native** persistence model.
 
-## Core Modules
+---
 
-### 1. Admin Dashboard
-- **Stats**: Total students, teachers, admissions, pending fees.
-- **Student Management**: CRUD operations for student records.
-- **Admission Management**: Reviewing and approving new admission applications.
-- **Fee Collection**: Recording payments, viewing history, and generating ledgers.
-- **Inventory**: Tracking school assets.
-- **Communication**: Sending notifications/messages to users.
+## 🛠️ Technology Stack
 
-### 2. Teacher Dashboard
-- **Attendance**: Marking and viewing class attendance.
-- **Results**: Entry and viewing of academic marks.
-- **Messages**: Viewing admin communications.
+### Core Architecture (SSR)
+- **Framework**: Python Flask (Server-Side Rendering)
+- **Persistence**: Firebase Firestore (Direct CRUD & API-Wrapped)
+- **Object Storage**: Supabase Storage (`school-files` bucket)
+- **Security**: Flask session-management + Global CSRF protection
 
-## Current State & Priorities (RALPH LOOP)
-1.  **Fee Management Refinement**: The current fee module is functional but needs better UI consistency and a "Fee Card" detailed view.
-2.  **Dashboard Integration**: Ensuring all dashboard tabs are fully linked to backend services.
-3.  **Security**: Hardening session management and auto-logout logic.
+### Frontend (Modern Vanilla)
+- **Styling**: Tailwind CSS + Custom Micro-Animations
+- **Logic**: Vanilla JavaScript (ES6 Modules)
+- **Icons**: FontAwesome 6.4 + Lucide Icons
+- **Typography**: Inter (UI) & Tiro Devanagari (Hindi Content)
 
-## Design Aesthetic
-- Premium, modern, and vibrant.
-- Glassmorphism and smooth transitions.
-- "High-fidelity" management portal.
+---
+
+## 🔄 The Ralph Loop (Autonomous Workflow)
+The **Ralph Loop** is the specialized operation protocol for autonomous sub-agents working on this repository. It ensures atomic, verifiable progress through a continuous cycle of execution.
+
+### 🧭 Execution Protocol
+1.  **SENSE**: Review `progress.txt` to identify the highest priority `[ ]` task.
+2.  **ORIENT**: Analyze the existing codebase and dependencies related to the task.
+3.  **DECIDE**: Formulate an implementation strategy that maintains high-fidelity design tokens.
+4.  **ACT**: Implement the changes, verify correctness, and commit with a single logical intent.
+5.  **FINISH**: Mark the task as `[x]` in `progress.txt` and push to `main`.
+
+---
+
+## 🏗️ Core Modules
+
+### 👑 Admin Suite
+- **Dynamic Dashboards**: Real-time stats and activity monitoring.
+- **Student Lifecycle**: Optimized admission-to-alumni management.
+- **Financial Ledger**: Automated annual income/expense tracking and class-wise breakdown.
+- **Public Communication**: Contact/Message management for school outreach.
+
+### 🍎 Teacher Suite
+- **Class Management**: Digital attendance marking with historical lookup.
+- **Academic Engine**: Comprehensive result entry for all exam types (Unit, Half-Yearly, Annual).
+- **Salary Portal**: Secure access to monthly salary slips.
+
+### 📝 Admission Portal
+- **Multilingual Support**: Hindi/English adaptive forms.
+- **Secure Submissions**: Firestore-first data persistence with Supabase document mapping.
+
+---
+
+## 🎨 Design Ethos
+- **Glassmorphism**: Subtle translucency and blurred backdrops for a premium feel.
+- **Vibrant Professionalism**: Blue-900 (Primary), Green-600 (Success), Amber-600 (Warning) palette.
+- **Micro-Animations**: Smooth transitions (`0.3s`) and hover effects on all interactive elements.
+- **Hindi Serif Optimization**: Dedicated typography for official Hindi documents.
+
+---
+
+## 🚀 Roadmap (Pending Tasks)
+*Refer to `progress.txt` for the current execution queue.*
+
+1.  **Fee Management Refinement**: Interactive "Fee Card" components in the dashboard.
+2.  **High-Fidelity Polish**: Consistent table layouts and loading states across all sub-modules.
+3.  **Search & Intelligence**: Enhanced filtering and global search for student and staff records.
