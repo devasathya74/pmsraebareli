@@ -115,15 +115,106 @@
 </div>
 
 <!-- Modals -->
-<div id="result-view-modal" style="z-index: 99999;" class="hidden fixed inset-0 bg-black bg-opacity-70 flex justify-center items-start pt-20 pb-10 px-4 backdrop-blur-sm overflow-y-auto">
-    <!-- Content handled by JS -->
+<div id="result-view-modal" style="z-index: 99999; backdrop-filter: blur(8px); padding-top: var(--ledger-top-offset, 120px);" 
+    class="hidden fixed inset-0 bg-black bg-opacity-70 flex justify-center items-start pb-10 px-4 overflow-y-auto">
+    <div class="bg-white rounded-2xl shadow-2xl max-w-lg w-full max-h-[94vh] transform transition-all scale-100 flex flex-col shadow-blue-900/10">
+        <div class="bg-blue-900 text-white px-6 py-4 rounded-t-2xl flex justify-between items-center flex-shrink-0">
+            <h3 class="text-xl font-bold"><i class="fas fa-file-contract mr-2"></i>Academic Result</h3>
+            <button onclick="document.getElementById('result-view-modal').classList.add('hidden')" class="text-white hover:text-gray-200 focus:outline-none">
+                <i class="fas fa-times text-2xl"></i>
+            </button>
+        </div>
+        <div class="p-6 bg-gray-50 flex-1 overflow-y-auto" id="result-view-content">
+            <!-- Content populated by JS -->
+        </div>
+    </div>
 </div>
 
-<div id="admit-card-modal" class="hidden fixed inset-0 bg-black bg-opacity-70 z-[70] flex items-center justify-center p-4">
-    <!-- Admit Card Content -->
+<div id="admit-card-modal"
+    class="hidden fixed inset-0 bg-black bg-opacity-70 z-[70] flex items-start justify-center p-4 overflow-y-auto"
+    style="backdrop-filter: blur(8px); padding-top: var(--ledger-top-offset, 120px);">
+    <div class="bg-white rounded-2xl shadow-2xl max-w-4xl w-full max-h-[94vh] flex flex-col shadow-blue-900/20">
+        <div class="sticky top-0 bg-blue-900 text-white px-6 py-4 flex justify-between items-center z-10 rounded-t-2xl">
+            <h3 class="text-xl font-bold"><i class="fas fa-id-card mr-2"></i>Examination Admit Card</h3>
+            <div class="flex gap-2">
+                <button onclick="printAdmitCard()"
+                    class="bg-white text-blue-900 px-4 py-1.5 rounded-lg font-bold hover:bg-gray-100 transition-colors">
+                    <i class="fas fa-print mr-2"></i>Print Card
+                </button>
+                <button onclick="document.getElementById('admit-card-modal').classList.add('hidden')" class="text-white hover:text-gray-200">
+                    <i class="fas fa-times text-2xl"></i>
+                </button>
+            </div>
+        </div>
+
+        <div class="p-8 bg-gray-100 flex-1 overflow-y-auto" id="admit-card-content">
+            <!-- Admit Card Printable Format -->
+            <div class="bg-white p-3 shadow-2xl mx-auto font-sans text-gray-800 relative overflow-hidden transition-all flex flex-col"
+                style="border: 3px solid #1e3a8a; width: 650px; min-height: 500px; height: auto; box-sizing: border-box;">
+                <div class="absolute inset-0 flex items-center justify-center pointer-events-none" style="opacity: 0.10;">
+                    <img src="{{ url_for('static', filename='assets/images/logo/logo.png') }}" alt="Watermark" class="w-64">
+                </div>
+
+                <div class="flex items-center justify-between pb-1 mb-1 relative z-10" style="border-bottom: 3px solid #1e3a8a;">
+                    <img src="{{ url_for('static', filename='assets/images/logo/logo.png') }}" alt="Logo" class="w-14 h-14 object-contain">
+                    <div class="flex-1 text-center px-2">
+                        <h1 class="text-base font-black uppercase text-blue-900 tracking-tighter leading-none m-0" style="line-height: 1.1;">Police Modern School</h1>
+                        <p class="text-[7px] font-bold text-gray-500 uppercase tracking-widest mt-0.5">{{ school_address|default('Raebareli, Uttar Pradesh') }}</p>
+                        <div class="inline-block bg-blue-900 text-white text-[8px] px-3 py-0.5 rounded-full mt-1 font-bold tracking-widest uppercase">Admit Card</div>
+                    </div>
+                    <div class="w-14 h-16 border-2 border-dashed border-gray-400 flex items-center justify-center text-[7px] text-gray-400 text-center bg-gray-50 rounded">
+                        Affix<br>Photo
+                    </div>
+                </div>
+
+                <div class="text-center mb-1 relative z-10">
+                    <h2 class="text-xs font-black text-blue-900 uppercase tracking-tight m-0" id="admit-exam-title">Examination 2024-25</h2>
+                </div>
+
+                <div class="grid grid-cols-2 gap-x-6 gap-y-1 mb-2 text-[10px] relative z-10">
+                    <div class="border-b border-gray-200 pb-0.5"><p class="text-[7px] uppercase font-bold text-gray-500 tracking-tighter mb-0.5">Student Name</p><p class="font-black text-gray-900 uppercase truncate" id="admit-student-name">---</p></div>
+                    <div class="border-b border-gray-200 pb-0.5"><p class="text-[7px] uppercase font-bold text-gray-500 tracking-tighter mb-0.5">Roll Number</p><p class="font-black text-blue-900 font-mono text-xs" id="admit-roll-no">---</p></div>
+                    <div class="border-b border-gray-200 pb-0.5"><p class="text-[7px] uppercase font-bold text-gray-500 tracking-tighter mb-0.5">Class & Section</p><p class="font-black text-gray-900 uppercase" id="admit-class">---</p></div>
+                    <div class="border-b border-gray-200 pb-0.5"><p class="text-[7px] uppercase font-bold text-gray-500 tracking-tighter mb-0.5">Father's Name</p><p class="font-black text-gray-900 uppercase truncate" id="admit-father-name">---</p></div>
+                </div>
+
+                <div class="mb-2 relative z-10 flex-grow">
+                    <table class="w-full text-[9.5px] border-collapse">
+                        <thead>
+                            <tr class="bg-blue-50">
+                                <th class="border-2 border-blue-900 p-1.5 text-blue-900 uppercase">Subject</th>
+                                <th class="border-2 border-blue-900 p-1.5 text-blue-900 uppercase">Date</th>
+                                <th class="border-2 border-blue-900 p-1.5 text-blue-900 uppercase">Time</th>
+                            </tr>
+                        </thead>
+                        <tbody id="admit-subjects-body"></tbody>
+                    </table>
+                </div>
+
+                <div class="flex justify-between items-end relative z-10 mt-auto">
+                    <div class="text-[7px] space-y-1 mb-1">
+                        <p class="font-bold text-red-600 underline text-[8px]">Note:</p>
+                        <ul class="list-disc list-inside text-gray-600 leading-tight font-medium">
+                            <li>Carry admit card daily to the examination hall.</li>
+                            <li>Reach the examination hall 15 minutes early.</li>
+                        </ul>
+                    </div>
+                    <div class="flex flex-col items-center pt-1">
+                        <img src="{{ url_for('static', filename='assets/images/logo/signature.png') }}" alt="Signature" class="h-10 w-48 object-contain mb-1">
+                        <div class="w-48 pt-1 text-center" style="border-top: 2px solid #1e3a8a;">
+                            <p class="text-[8px] font-black text-blue-900 tracking-wide">Controller of Exams</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 
-<div id="exam-config-modal" class="fixed inset-0 bg-black bg-opacity-70 hidden items-center justify-center z-[80] p-4 backdrop-blur-sm">
+<div id="exam-config-modal" class="fixed inset-0 bg-black bg-opacity-70 hidden items-center justify-center z-[80] p-4 backdrop-blur-sm overflow-y-auto">
+    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-2xl overflow-hidden" id="exam-config-content">
+        <!-- JS populated -->
+    </div>
 </div>
 
 <style>

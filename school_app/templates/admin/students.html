@@ -91,10 +91,30 @@
 </div>
 
 <!-- Modals -->
-<div id="student-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4 overflow-y-auto">
-    <!-- Content injected or copied from static/pages/admin-students.html -->
-</div>
-<div id="teacher-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4 overflow-y-auto">
+<div id="student-modal" class="hidden fixed inset-0 bg-black bg-opacity-70 z-50 flex items-center justify-center p-4 overflow-y-auto"></div>
+<div id="teacher-modal" class="hidden fixed inset-0 bg-black bg-opacity-70 z-50 flex items-center justify-center p-4 overflow-y-auto"></div>
+
+<!-- Salary Slip Modal -->
+<div id="salary-slip-modal"
+    class="hidden fixed inset-0 bg-black bg-opacity-70 z-[70] flex items-start justify-center p-4 overflow-y-auto"
+    style="backdrop-filter: blur(8px); padding-top: var(--ledger-top-offset, 120px);">
+    <div class="bg-white rounded-2xl shadow-2xl max-w-4xl w-full flex flex-col max-h-[94vh] shadow-blue-900/20">
+        <div class="bg-blue-900 text-white px-6 py-4 flex justify-between items-center rounded-t-2xl flex-shrink-0">
+            <h3 class="text-xl font-bold"><i class="fas fa-file-invoice-dollar mr-2"></i>Teacher Salary Slip</h3>
+            <div class="flex gap-2">
+                <button onclick="printSalarySlip()"
+                    class="bg-white text-blue-900 px-4 py-1.5 rounded-lg font-bold hover:bg-gray-100 transition-colors">
+                    <i class="fas fa-print mr-2"></i>Print Slip
+                </button>
+                <button onclick="document.getElementById('salary-slip-modal').classList.add('hidden')" class="text-white hover:text-gray-200">
+                    <i class="fas fa-times text-2xl"></i>
+                </button>
+            </div>
+        </div>
+        <div class="p-8 bg-gray-50 flex-1 overflow-y-auto" id="salary-slip-content">
+            <!-- Content populated by JS -->
+        </div>
+    </div>
 </div>
 
 <script type="module">
