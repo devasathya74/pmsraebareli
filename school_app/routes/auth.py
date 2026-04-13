@@ -1,10 +1,9 @@
 import secrets
-from pathlib import Path
-
-from flask import Blueprint, current_app, flash, g, redirect, render_template, request, send_from_directory, session, url_for
+from flask import Blueprint, current_app, flash, g, redirect, render_template, request, session, url_for
 
 from school_app.services.audit import log_audit_event
-from school_app.utils import find_user_by_identifier, generate_captcha, login_required, utcnow_iso
+from school_app.utils import find_user_by_identifier, generate_captcha, utcnow_iso
+
 
 
 auth_bp = Blueprint("auth", __name__, url_prefix="/auth")
@@ -67,8 +66,9 @@ def logout():
     return redirect(url_for("auth.login"))
 
 
-@auth_bp.get("/files/<path:object_name>")
-@login_required
-def protected_file(object_name: str):
-    upload_root = Path(current_app.config["LOCAL_UPLOAD_DIR"]).resolve()
-    return send_from_directory(upload_root, object_name)
+
+
+# NOTE: File serving is handled server-side via Supabase Storage public URLs.
+# The /auth/files/<path> route has been removed — local file serving is not
+# available in cloud-only mode (no LOCAL_UPLOAD_DIR in config).
+

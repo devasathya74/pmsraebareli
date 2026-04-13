@@ -1,7 +1,7 @@
 from pathlib import Path
 
 from pydantic import ValidationError
-from flask import Blueprint, current_app, g, jsonify, redirect, render_template, request, send_from_directory, url_for
+from flask import Blueprint, current_app, g, jsonify, redirect, render_template, request, send_from_directory, session, url_for
 
 from school_app.schemas import ContactRequest
 from school_app.services.audit import log_audit_event
@@ -152,23 +152,27 @@ def public_student_info(student_id: str):
 def public_contacts():
     token = request.headers.get("X-CSRF-Token") or (request.get_json(silent=True) or {}).get("csrf_token")
     if not validate_csrf_token(token):
+        print(f"[public/contacts] CSRF rejected. header={request.headers.get('X-CSRF-Token')!r}, session_has_token={bool(session.get('csrf_token'))}")
         return jsonify({"success": False, "error": "Invalid CSRF token"}), 403
 
-    payload = request.get_json(silent=True) or {}
+    raw_payload = request.get_json(silent=True) or {}
+    print(f"[public/contacts] Received payload keys={list(raw_payload.keys())}, email={raw_payload.get('email')!r}, name_len={len(str(raw_payload.get('name', '')))}, msg_len={len(str(raw_payload.get('message', '')))}")
+
     try:
-        data = ContactRequest.model_validate(payload)
+        data = ContactRequest.model_validate(raw_payload)
     except ValidationError as error:
+        print(f"[public/contacts] Validation Error: {error.errors()}")
         return jsonify({"success": False, "error": "validation-error", "details": error.errors()}), 422
 
-    payload = {
+    save_payload = {
         "name": data.name,
         "email": data.email,
         "phone": data.phone,
         "message": data.message,
-        "createdAt": payload.get("createdAt", ""),
-        "read": bool(payload.get("read", False)),
+        "createdAt": raw_payload.get("createdAt", ""),
+        "read": bool(raw_payload.get("read", False)),
         "status": "new",
     }
-    current_app.repository.create("contacts", payload)
+    current_app.repository.create("contacts", save_payload)
     log_audit_event("PUBLIC_CONTACT_SUBMITTED", target_collection="contacts", details={"email": data.email})
     return jsonify({"success": True})

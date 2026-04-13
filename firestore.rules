@@ -1,0 +1,148 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ─── Helper Functions ───────────────────────────────────────────────────
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    // Reads user doc from pmsr_users collection (matches backend prefix)
+    function userData() {
+      return isSignedIn()
+        ? get(/databases/$(database)/documents/pmsr_users/$(request.auth.uid)).data
+        : null;
+    }
+
+    function isAdmin() {
+      return isSignedIn() &&
+        (userData().role == 'admin' || userData().role == 'principal');
+    }
+
+    function isTeacher() {
+      return isSignedIn() && userData().role == 'teacher';
+    }
+
+    // Gets teacher's assigned class from their user document
+    // (teacher_assignments collection does not exist — class is stored in pmsr_users)
+    function teacherClass() {
+      let u = userData();
+      return u != null
+        ? (u.get('assigned_class', u.get('assignedClass', null)))
+        : null;
+    }
+
+    // ─── Default: deny all direct client access ──────────────────────────────
+    // The Flask backend uses Admin SDK which bypasses these rules.
+    // These rules protect against direct client-side Firestore access.
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // ─── pmsr_users ──────────────────────────────────────────────────────────
+    match /pmsr_users/{userId} {
+      // Users can only read their own document; admins can read all
+      allow read: if isAdmin() || (isSignedIn() && request.auth.uid == userId);
+      // Only admins can create / update / delete users
+      allow write: if isAdmin();
+    }
+
+    // ─── pmsr_students ───────────────────────────────────────────────────────
+    match /pmsr_students/{id} {
+      allow read: if isAdmin() ||
+        (isTeacher() && resource.data.get('class', '') == teacherClass());
+      allow create, update: if isAdmin();
+      allow delete: if isAdmin();
+    }
+
+    // ─── pmsr_teachers ───────────────────────────────────────────────────────
+    match /pmsr_teachers/{id} {
+      allow read: if isAdmin() ||
+        (isTeacher() && resource.data.get('user_id', resource.data.get('uid', '')) == request.auth.uid);
+      allow write: if isAdmin();
+    }
+
+    // ─── pmsr_admissions ─────────────────────────────────────────────────────
+    match /pmsr_admissions/{id} {
+      allow read, write: if isAdmin();
+    }
+
+    // ─── pmsr_attendance ─────────────────────────────────────────────────────
+    match /pmsr_attendance/{id} {
+      allow read: if isAdmin() ||
+        (isTeacher() && resource.data.get('class', resource.data.get('class_name', '')) == teacherClass());
+      allow create, update: if isAdmin() ||
+        (isTeacher() && request.resource.data.get('class', request.resource.data.get('class_name', '')) == teacherClass());
+      allow delete: if isAdmin();
+    }
+
+    // ─── pmsr_fees ───────────────────────────────────────────────────────────
+    match /pmsr_fees/{id} {
+      allow read: if isAdmin() ||
+        (isTeacher() && resource.data.get('class', '') == teacherClass());
+      allow create, update: if isAdmin();
+      allow delete: if isAdmin();
+    }
+
+    // ─── pmsr_results ────────────────────────────────────────────────────────
+    match /pmsr_results/{id} {
+      allow read: if isAdmin() ||
+        (isTeacher() && resource.data.get('class', '') == teacherClass());
+      allow write: if isAdmin() ||
+        (isTeacher() && request.resource.data.get('class', '') == teacherClass());
+    }
+
+    // ─── pmsr_messages ───────────────────────────────────────────────────────
+    match /pmsr_messages/{id} {
+      allow read: if isAdmin() || isTeacher();
+      allow create: if isAdmin() || isTeacher();
+      allow update, delete: if isAdmin();
+    }
+
+    // ─── pmsr_notifications ──────────────────────────────────────────────────
+    match /pmsr_notifications/{id} {
+      allow read: if isAdmin() || isTeacher();
+      allow write: if isAdmin();
+    }
+
+    // ─── pmsr_contacts ───────────────────────────────────────────────────────
+    match /pmsr_contacts/{id} {
+      allow read, write: if isAdmin();
+    }
+
+    // ─── pmsr_inventory_items ────────────────────────────────────────────────
+    match /pmsr_inventory_items/{id} {
+      allow read, write: if isAdmin();
+    }
+
+    // ─── pmsr_ledger_entries (expenses) ──────────────────────────────────────
+    match /pmsr_ledger_entries/{id} {
+      allow read, write: if isAdmin();
+    }
+
+    // ─── pmsr_salary_slips ───────────────────────────────────────────────────
+    match /pmsr_salary_slips/{id} {
+      allow read: if isAdmin() ||
+        (isTeacher() && resource.data.get('teacherId', '') == request.auth.uid);
+      allow write: if isAdmin();
+    }
+
+    // ─── pmsr_exam_schedules ─────────────────────────────────────────────────
+    match /pmsr_exam_schedules/{id} {
+      allow read: if isAdmin() || isTeacher();
+      allow write: if isAdmin();
+    }
+
+    // ─── pmsr_audit_logs ─────────────────────────────────────────────────────
+    match /pmsr_audit_logs/{id} {
+      allow read: if isAdmin();
+      allow write: if false; // Never allow client-side audit log writes
+    }
+
+    // ─── pmsr_keep_alive (health check / background pings) ───────────────────
+    match /pmsr_keep_alive/{id} {
+      allow read, write: if false; // Service account only
+    }
+  }
+}

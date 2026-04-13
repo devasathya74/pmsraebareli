@@ -1,4 +1,4 @@
-﻿    <!-- Footer & Contact -->
+    <!-- Footer & Contact -->
     <footer id="contact" class="bg-gray-900 text-white pt-16 pb-8">
         <div class="container mx-auto px-6">
             <div class="grid grid-cols-1 md:grid-cols-3 gap-12 mb-12">
@@ -65,14 +65,14 @@
                 <!-- Inquiry Form -->
                 <div class="bg-gray-800 p-6 rounded-xl">
                     <h3 class="text-lg font-bold mb-4">Quick Inquiry</h3>
-                    <form id="contact-form" class="space-y-3">
-                        <input type="text" name="name" placeholder="Your Name" required
+                    <form id="contact-form" class="space-y-3" novalidate>
+                        <input type="text" name="name" placeholder="Your Name" required minlength="1" maxlength="120"
                             class="w-full bg-gray-700 border-none rounded-lg px-4 py-2 text-white focus:ring-2 focus:ring-secondary outline-none">
-                        <input type="email" name="email" placeholder="Email" required
+                        <input type="email" name="email" placeholder="Email" required minlength="3" maxlength="255"
                             class="w-full bg-gray-700 border-none rounded-lg px-4 py-2 text-white focus:ring-2 focus:ring-secondary outline-none">
-                        <input type="tel" name="phone" placeholder="Phone Number" required
+                        <input type="tel" name="phone" placeholder="Phone Number" maxlength="30"
                             class="w-full bg-gray-700 border-none rounded-lg px-4 py-2 text-white focus:ring-2 focus:ring-secondary outline-none">
-                        <textarea name="message" placeholder="Your Message" rows="3" required
+                        <textarea name="message" placeholder="Your Message" rows="3" required minlength="1" maxlength="2000"
                             class="w-full bg-gray-700 border-none rounded-lg px-4 py-2 text-white focus:ring-2 focus:ring-secondary outline-none"></textarea>
                         <button type="submit"
                             class="w-full bg-secondary text-primary font-bold py-2 rounded-lg hover:bg-yellow-300 transition-colors">Send

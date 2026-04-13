@@ -457,12 +457,6 @@ window.loadClassAttendance = async function () {
                             <div class="text-[10px] text-gray-400 uppercase tracking-tighter">Roll No: ${student.rollNumber || '---'}</div>
                         </td>
                         <td class="px-6 py-4 text-center">
-<tr class="border-b hover:bg-gray-50 transition-colors">
-                        <td class="px-6 py-4">
-                            <div class="font-bold text-gray-900">${student.studentName || student.name}</div>
-                            <div class="text-[10px] text-gray-400 uppercase tracking-tighter">Roll No: ${student.rollNumber || '---'}</div>
-                        </td>
-                        <td class="px-6 py-4 text-center">
                             ${statusDisplay}
                         </td>
                     </tr>
@@ -2035,6 +2029,7 @@ window.handleFeeSubmit = async function (e) {
         btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
 
         // 2. SAVE RECORD
+        const nowIso = new Date().toISOString();
         const saveResult = await firestoreHelper.addDocument('fees', {
             studentId,
             studentName,
@@ -2043,7 +2038,8 @@ window.handleFeeSubmit = async function (e) {
             year,
             amount,
             receiptNumber,
-            submittedAt: new Date().toISOString(),
+            timestamp: nowIso,          // used by teacher-dashboard for date display & sorting
+            submittedAt: nowIso,
             paymentDate: new Date().toLocaleDateString('en-IN'),
             paymentTime: new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' })
         });
@@ -2099,7 +2095,7 @@ window.loadFeeHistory = async function () {
         const result = await firestoreHelper.getDocuments('fees');
         if (!result.success) throw new Error(result.error || 'Failed to load fees');
         
-        const records = (result.data || []).sort((a, b) => new Date(b.submittedAt) - new Date(a.submittedAt));
+        const records = (result.data || []).sort((a, b) => new Date(b.timestamp || b.submittedAt) - new Date(a.timestamp || a.submittedAt));
         window.allFeeRecords = records;
         
         // Apply filters automatically
@@ -2125,7 +2121,7 @@ window.renderFeeHistory = function (records) {
         const regNo = student ? (student.serialNumber || student.admissionId || student.registrationNumber || '---') : 'N/A';
         const displayName = f.studentName || (student ? getStudentDisplayName(student) : 'Unknown');
 
-        const paidAt = f.submittedAt ? new Date(f.submittedAt) : null;
+        const paidAt = (f.timestamp || f.submittedAt) ? new Date(f.timestamp || f.submittedAt) : null;
         const dateStr = paidAt ? paidAt.toLocaleDateString('en-IN', { day: '2-digit', month: '2-digit', year: '2-digit' }) : '-';
 
         return `

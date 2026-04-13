@@ -258,8 +258,7 @@ function initLanguageSwitcher() {
     const langButtons = document.querySelectorAll('.lang-btn');
     langButtons.forEach(btn => {
         btn.addEventListener('click', () => {
-            // Language preference is now session-only, no localStorage
-            console.log('Language switched to:', btn.dataset.lang);
+            // Language preference is session-only
         });
     });
 }
@@ -282,28 +281,56 @@ function initContactForm() {
                 sending: 'Sending...',
                 success: 'Thank you! Your message has been sent successfully.',
                 successAlt: 'Thank you! We will contact you soon.',
-                error: 'Something went wrong. Please try again.'
+                error: 'Something went wrong. Please try again.',
+                validName: 'Please enter your name.',
+                validEmail: 'Please enter a valid email address.',
+                validMessage: 'Please enter a message.'
             },
             hi: {
                 sending: 'भेजा जा रहा है...',
                 success: 'धन्यवाद! संदेश सफलतापूर्वक भेज दिया गया है।',
                 successAlt: 'धन्यवाद! हम आपसे जल्द संपर्क करेंगे।',
-                error: 'कुछ गलत हो गया। कृपया पुनः प्रयास करें।'
+                error: 'कुछ गलत हो गया। कृपया पुनः प्रयास करें।',
+                validName: 'कृपया अपना नाम दर्ज करें।',
+                validEmail: 'कृपया एक वैध ईमेल पता दर्ज करें।',
+                validMessage: 'कृपया संदेश दर्ज करें।'
             }
         };
 
         const strings = langStrings[currentLang] || langStrings.hi;
 
+        const formData = new FormData(contactForm);
+        const name = (formData.get('name') || '').trim();
+        const email = (formData.get('email') || '').trim();
+        const phone = (formData.get('phone') || '').trim();
+        const message = (formData.get('message') || '').trim();
+
+        // Client-side validation
+        if (!name) {
+            showNotification(strings.validName, 'error');
+            contactForm.querySelector('[name="name"]').focus();
+            return;
+        }
+        if (!email || !email.includes('@') || email.length < 3) {
+            showNotification(strings.validEmail, 'error');
+            contactForm.querySelector('[name="email"]').focus();
+            return;
+        }
+        if (!message) {
+            showNotification(strings.validMessage, 'error');
+            contactForm.querySelector('[name="message"]').focus();
+            return;
+        }
+
         submitBtn.disabled = true;
         submitBtn.textContent = strings.sending;
 
         try {
-            const formData = new FormData(contactForm);
             const contactData = {
-                name: formData.get('name') || '',
-                email: formData.get('email') || '',
-                phone: formData.get('phone') || '',
-                message: formData.get('message') || '',
+                name,
+                email,
+                phone,
+                message,
                 createdAt: new Date().toISOString(),
                 read: false
             };

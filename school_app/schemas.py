@@ -37,16 +37,19 @@ class CreateUserRequest(StrictModel):
         return value
 
 
-class ContactRequest(StrictModel):
-    name: str = Field(min_length=2, max_length=120)
-    email: str = Field(min_length=5, max_length=255)
-    phone: str = Field(min_length=7, max_length=20)
-    message: str = Field(min_length=2, max_length=2000)
+class ContactRequest(BaseModel):
+    model_config = ConfigDict(extra="ignore", str_strip_whitespace=True)
+    name: str = Field(min_length=1, max_length=120)
+    email: str = Field(min_length=3, max_length=255)
+    phone: str = Field(default="", max_length=30)
+    message: str = Field(min_length=1, max_length=2000)
+    createdAt: str = Field(default="", max_length=100)
+    read: bool = Field(default=False)
 
     @field_validator("email")
     @classmethod
     def validate_email(cls, value: str) -> str:
-        if "@" not in value:
+        if "@" not in value or len(value) < 3:
             raise ValueError("invalid email")
         return value
 

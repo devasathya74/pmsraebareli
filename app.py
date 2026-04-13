@@ -1,5 +1,10 @@
-from school_app import create_app
 import os
+from dotenv import load_dotenv
+
+# Load environment variables before any other imports that might need them
+load_dotenv()
+
+from school_app import create_app
 
 app = create_app()
 

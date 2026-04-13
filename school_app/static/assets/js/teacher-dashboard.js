@@ -405,16 +405,19 @@ window.viewFeeDetails = async function (id) {
         }
 
         const fees = snapshot.docs.map(doc => doc.data());
-        // Sort by timestamp descending
-        fees.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+        // Sort by date descending (supports both timestamp and submittedAt fields)
+        fees.sort((a, b) => new Date(b.timestamp || b.submittedAt) - new Date(a.timestamp || a.submittedAt));
 
-        tbody.innerHTML = fees.map(f => `
+        tbody.innerHTML = fees.map(f => {
+            const dateStr = f.timestamp || f.submittedAt || '';
+            const displayDate = dateStr ? new Date(dateStr).toLocaleDateString() : '-';
+            return `
             <tr class="hover:bg-gray-50 border-b">
-                <td class="p-4 text-gray-800 font-medium">${new Date(f.timestamp).toLocaleDateString()}</td>
+                <td class="p-4 text-gray-800 font-medium">${displayDate}</td>
                 <td class="p-4 text-gray-600">${f.month || '-'} ${f.year || ''}</td>
                 <td class="p-4 text-green-700 font-bold">₹${f.amount || 0}</td>
-            </tr>
-        `).join('');
+            </tr>`;
+        }).join('');
     } catch (error) {
         console.error("Error fetching fee details:", error);
         tbody.innerHTML = '<tr><td colspan="3" class="p-4 text-center text-red-500">Error loading fee records.</td></tr>';
