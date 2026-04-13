@@ -2733,7 +2733,7 @@ const FEE_STRUCTURE = {
     '8': 900
 };
 
-window.openLedgerModal = async function() {
+window.openSchoolLedgerModal = async function() {
     document.getElementById('ledger-modal').classList.remove('hidden');
     await calculateLedgerData();
 };
@@ -2848,7 +2848,7 @@ async function calculateLedgerData() {
 
     } catch (error) {
         console.error('Ledger calculation error:', error);
-        classBody.innerHTML = '<tr><td colspan="5" class="py-8 text-center text-red-500">Error calculating financials. Check console.</td></tr>';
+        if (classBody) classBody.innerHTML = '<tr><td colspan="5" class="py-8 text-center text-red-500">Error calculating financials. Check console.</td></tr>';
     }
 }
 
