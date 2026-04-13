@@ -1,0 +1,730 @@
+<!DOCTYPE html>
+<html lang="hi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Students & Teachers | Admin | पुलिस मॉडर्न स्कूल</title>
+
+    <!-- Favicons -->
+    <link rel="icon" type="image/png" sizes="32x32" href="../assets/images/logo/logo.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="../assets/images/logo/logo.png">
+    <link rel="apple-touch-icon" href="../assets/images/logo/logo.png">
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Tiro+Devanagari+Hindi&display=swap" rel="stylesheet">
+
+    <!-- Responsive CSS Framework -->
+    <link rel="stylesheet" href="../assets/css/responsive.css">
+    <style>
+        html {
+            font-size: 90%;
+        }
+
+        body {
+            font-family: 'Poppins', 'Tiro Devanagari Hindi', sans-serif;
+            line-height: 1.8;
+        }
+
+        .container {
+            max-width: 100% !important;
+            padding-left: 2rem !important;
+            padding-right: 2rem !important;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .animate-fade-in {
+            animation: fadeIn 0.5s ease-out forwards;
+        }
+
+        .tab-btn {
+            background: white;
+            color: #1f2937;
+        }
+
+        .tab-btn.active {
+            background: #1e3a8a !important;
+            color: white !important;
+        }
+
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        .page-nav-btn {
+            padding: 1rem 1.5rem;
+            font-weight: 600;
+            color: #4b5563;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s;
+            white-space: nowrap;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .page-nav-btn:hover {
+            background-color: #f9fafb;
+            color: #1e3a8a;
+        }
+        .page-nav-btn.active {
+            color: #1e3a8a;
+            border-bottom-color: #1e3a8a;
+            background-color: #eff6ff;
+        }
+            h1, h2, h3, h4, h5, h6 { font-family: 'Nunito', sans-serif; }
+    </style>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    </head>
+
+<body class="bg-gray-50">
+
+    <!-- Header -->
+    <header class="bg-blue-900 text-white shadow-lg sticky top-0 z-50">
+        <div class="container mx-auto px-6 py-4">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h1 class="text-xl md:text-2xl font-bold">Admin Dashboard</h1>
+                    <p class="text-blue-200 text-sm">स्टूडेंट्स एवं टीचर्स मैनेजमेंट</p>
+                </div>
+                <div class="flex items-center gap-4">
+                    <div class="relative">
+                        <button onclick="toggleUserDropdown()" class="flex items-center gap-2 focus:outline-none">
+                            <span id="user-name" class="text-sm font-semibold hidden md:block text-blue-100">Loading...</span>
+                            <div class="w-8 h-8 rounded-full bg-blue-700 flex items-center justify-center border-2 border-blue-400">
+                                <i class="fas fa-user text-sm"></i>
+                            </div>
+                            <i class="fas fa-chevron-down text-xs text-blue-300"></i>
+                        </button>
+                        <div id="user-dropdown" class="hidden absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-xl z-50 border border-gray-100 py-1">
+                            <div class="px-4 py-3 border-b border-gray-100">
+                                <p class="text-xs text-gray-500 uppercase tracking-wider font-bold">Signed in as</p>
+                                <p id="dropdown-user-email" class="text-sm font-medium text-gray-900 truncate">user@example.com</p>
+                            </div>
+                            <a href="#" onclick="openChangePasswordModal()" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
+                                <i class="fas fa-key w-4 text-gray-400 mr-2"></i>Change Password
+                            </a>
+                            <div class="border-t border-gray-100 my-1"></div>
+                            <a href="#" onclick="authHelper.logout()" class="block px-4 py-2 text-sm text-red-600 hover:bg-red-50">
+                                <i class="fas fa-sign-out-alt w-4 text-red-400 mr-2"></i>Logout
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Page Group Navigation -->
+    <div class="bg-white border-b shadow-sm sticky top-[72px] z-40 overflow-x-auto no-scrollbar">
+        <div class="container mx-auto px-6 flex">
+            <a href="admin-dashboard.html" class="page-nav-btn" id="nav-dash">
+                <i class="fas fa-th-large"></i> Main
+            </a>
+            <a href="admin-students.html" class="page-nav-btn active" id="nav-students">
+                <i class="fas fa-users"></i> Students
+            </a>
+            <a href="admin-messages.html" class="page-nav-btn" id="nav-messages">
+                <i class="fas fa-envelope"></i> Communication
+            </a>
+            <a href="admin-monitor.html" class="page-nav-btn" id="nav-monitor">
+                <i class="fas fa-desktop"></i> Monitor
+            </a>
+            <a href="admin-inventory.html" class="page-nav-btn" id="nav-inventory">
+                <i class="fas fa-boxes"></i> Inventory
+            </a>
+        </div>
+    </div>
+
+    <div class="container mx-auto px-6 py-8">
+        <!-- Navigation Tabs for this Page -->
+        <div class="bg-white rounded-xl shadow-lg mb-8 overflow-hidden">
+            <div class="flex overflow-x-auto no-scrollbar border-b">
+                <button onclick="switchTab('students')" class="tab-btn active px-8 py-4 font-bold transition-colors hover:bg-gray-50 whitespace-nowrap">
+                    <i class="fas fa-user-graduate mr-2"></i>Students List
+                </button>
+                <button onclick="switchTab('teachers')" class="tab-btn px-8 py-4 font-bold transition-colors hover:bg-gray-50 whitespace-nowrap">
+                    <i class="fas fa-chalkboard-teacher mr-2"></i>Teachers List
+                </button>
+            </div>
+
+            <!-- Students Tab -->
+            <div id="students-tab" class="tab-content active p-6">
+                <div class="flex flex-wrap items-center justify-between gap-4 mb-6">
+                    <h3 class="text-xl font-bold text-gray-800">Student Directory</h3>
+                    <div class="flex flex-wrap gap-2">
+                        <div class="relative">
+                            <input type="text" id="student-search" oninput="searchStudents()" placeholder="Search name/roll..."
+                                class="pl-10 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none w-64">
+                            <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
+                        </div>
+                        <select id="class-filter" onchange="filterStudents()" class="px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
+                            <option value="all">All Classes</option>
+                            <option value="lkg">LKG</option>
+                            <option value="ukg">UKG</option>
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                            <option value="5">5</option>
+                            <option value="6">6</option>
+                            <option value="7">7</option>
+                            <option value="8">8</option>
+                        </select>
+                        <button onclick="exportStudents()" class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700">
+                            <i class="fas fa-file-export mr-2"></i>Export CSV
+                        </button>
+                        <button onclick="openAddStudentModal()" class="bg-blue-900 text-white px-4 py-2 rounded-lg hover:bg-blue-800">
+                            <i class="fas fa-plus mr-2"></i>New Student
+                        </button>
+                    </div>
+                </div>
+
+                <div class="overflow-x-auto rounded-lg border">
+                    <table class="w-full text-left">
+                        <thead class="bg-gray-100 text-gray-700 font-bold">
+                            <tr>
+                                <th class="px-6 py-4">Photo</th>
+                                <th class="px-6 py-4">ID</th>
+                                <th class="px-6 py-4">Roll No</th>
+                                <th class="px-6 py-4">Name</th>
+                                <th class="px-6 py-4">Class</th>
+                                <th class="px-6 py-4">Father Name</th>
+                                <th class="px-6 py-4">Contact</th>
+                                <th class="px-6 py-4">Status</th>
+                                <th class="px-6 py-4 text-center">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="students-table-body">
+                            <!-- Populated by JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Teachers Tab -->
+            <div id="teachers-tab" class="tab-content p-6">
+                <div class="flex flex-wrap items-center justify-between gap-4 mb-6">
+                    <h3 class="text-xl font-bold text-gray-800">Faculty Management</h3>
+                    <div class="flex flex-wrap gap-2">
+                        <div class="relative">
+                            <input type="text" id="teacher-search" oninput="searchTeachers()" placeholder="Search name/subject..."
+                                class="pl-10 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
+                            <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
+                        </div>
+                        <button onclick="openAddSalaryModal()" class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 shadow-sm transition-all">
+                            <i class="fas fa-plus-circle mr-2"></i>Add Salary Slip
+                        </button>
+                        <button onclick="openViewSalaryModal()" class="bg-blue-100 text-blue-900 px-4 py-2 rounded-lg hover:bg-blue-200 shadow-sm transition-all">
+                            <i class="fas fa-history mr-2"></i>View Slips
+                        </button>
+                        <button onclick="openAddTeacherModal()" class="bg-blue-900 text-white px-4 py-2 rounded-lg hover:bg-blue-800">
+                            <i class="fas fa-plus mr-2"></i>New Teacher
+                        </button>
+                    </div>
+                </div>
+
+                <div class="overflow-x-auto rounded-lg border">
+                    <table class="w-full text-left font-sans">
+                        <thead class="bg-gray-100 text-gray-700 font-bold">
+                            <tr>
+                                <th class="px-6 py-4">Photo</th>
+                                <th class="px-6 py-4">Name</th>
+                                <th class="px-6 py-4">Email</th>
+                                <th class="px-6 py-4">Contact</th>
+                                <th class="px-6 py-4">Subject</th>
+                                <th class="px-6 py-4">Salary</th>
+                                <th class="px-6 py-4">Class</th>
+                                <th class="px-6 py-4">Status</th>
+                                <th class="px-6 py-4 text-center">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="teachers-table-body">
+                            <!-- Populated by JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modals (Borrowed from admin-dashboard.html) -->
+    <!-- Student Modal -->
+    <div id="student-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4 overflow-y-auto">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-4xl w-full my-8 max-h-[90vh] overflow-y-auto">
+            <div class="sticky top-0 bg-blue-900 text-white px-6 py-4 rounded-t-2xl flex justify-between items-center z-10">
+                <h3 class="text-xl font-bold">
+                    <i class="fas fa-user-edit mr-2"></i><span id="student-modal-title">Edit Student</span>
+                </h3>
+                <button onclick="closeStudentModal()" class="text-white hover:text-gray-200">
+                    <i class="fas fa-times text-2xl"></i>
+                </button>
+            </div>
+            <form id="student-form" class="p-8 space-y-6" onsubmit="handleStudentSubmit(event)">
+                <input type="hidden" id="student-id">
+                <div class="bg-white border-2 border-gray-300 rounded-lg p-8 shadow-inner">
+                    <div class="flex justify-end mb-6">
+                        <div class="relative">
+                            <div class="w-32 h-40 border-2 border-gray-400 rounded overflow-hidden bg-gray-50">
+                                <img id="student-preview" src="../assets/images/logo/logo.png" class="w-full h-full object-cover">
+                            </div>
+                            <label for="student-photo" class="absolute bottom-2 right-2 bg-blue-900 text-white p-2 rounded-full cursor-pointer hover:bg-blue-700 shadow-lg">
+                                <i class="fas fa-camera text-sm"></i>
+                            </label>
+                            <input type="file" id="student-photo" accept="image/*" class="hidden" onchange="previewImage(this, 'student-preview')">
+                        </div>
+                    </div>
+                    <div class="space-y-4">
+                        <div class="flex items-baseline border-b border-dotted border-gray-400 pb-2">
+                            <label class="w-48 font-bold text-gray-900 flex-shrink-0">Student Name *</label>
+                            <input type="text" id="student-name" required class="flex-1 px-3 py-1 border-0 border-b-2 border-transparent focus:border-blue-500 focus:outline-none font-semibold">
+                        </div>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div class="flex items-baseline border-b border-dotted border-gray-400 pb-2">
+                                <label class="w-32 font-bold text-gray-900 flex-shrink-0">Roll No *</label>
+                                <input type="text" id="student-roll" required class="flex-1 px-3 py-1 border-0 border-b-2 border-transparent focus:border-blue-500 focus:outline-none">
+                            </div>
+                            <div class="flex items-baseline border-b border-dotted border-gray-400 pb-2">
+                                <label class="w-24 font-bold text-gray-900 flex-shrink-0">Class *</label>
+                                <select id="student-class" required class="flex-1 px-3 py-1 border-0 border-b-2 border-transparent focus:border-blue-500 focus:outline-none">
+                                    <option value="">Select</option>
+                                    <option value="lkg">LKG</option>
+                                    <option value="ukg">UKG</option>
+                                    <option value="1">1</option>
+                                    <option value="2">2</option>
+                                    <option value="3">3</option>
+                                    <option value="4">4</option>
+                                    <option value="5">5</option>
+                                    <option value="6">6</option>
+                                    <option value="7">7</option>
+                                    <option value="8">8</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div class="flex items-baseline border-b border-dotted border-gray-400 pb-2">
+                                <label class="w-32 font-bold text-gray-900 flex-shrink-0">Date of Birth *</label>
+                                <input type="date" id="student-dob" required class="flex-1 px-3 py-1 border-0 border-b-2 border-transparent focus:border-blue-500 focus:outline-none">
+                            </div>
+                            <div class="flex items-baseline border-b border-dotted border-gray-400 pb-2">
+                                <label class="w-24 font-bold text-gray-900 flex-shrink-0">Gender *</label>
+                                <select id="student-gender" required class="flex-1 px-3 py-1 border-0 border-b-2 border-transparent focus:border-blue-500 focus:outline-none">
+                                    <option value="">Select</option>
+                                    <option value="male">Male</option>
+                                    <option value="female">Female</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="flex items-baseline border-b border-dotted border-gray-400 pb-2">
+                            <label class="w-48 font-bold text-gray-900 flex-shrink-0">Father's Name *</label>
+                            <input type="text" id="student-father" required class="flex-1 px-3 py-1 border-0 border-b-2 border-transparent focus:border-blue-500 focus:outline-none">
+                        </div>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div class="flex items-baseline border-b border-dotted border-gray-400 pb-2">
+                                <label class="w-32 font-bold text-gray-900 flex-shrink-0">Mobile *</label>
+                                <input type="tel" id="student-mobile" required pattern="[0-9]{10}" maxlength="10" class="flex-1 px-3 py-1 border-0 border-b-2 border-transparent focus:border-blue-500 focus:outline-none">
+                            </div>
+                            <div class="flex items-baseline border-b border-dotted border-gray-400 pb-2">
+                                <label class="w-24 font-bold text-gray-900 flex-shrink-0">Email</label>
+                                <input type="email" id="student-email" class="flex-1 px-3 py-1 border-0 border-b-2 border-transparent focus:border-blue-500 focus:outline-none">
+                            </div>
+                        </div>
+                        <div class="border-b border-dotted border-gray-400 pb-2">
+                            <label class="font-bold text-gray-900 block mb-2">Address *</label>
+                            <textarea id="student-address" required rows="2" class="w-full px-3 py-1 border-0 border-b-2 border-transparent focus:border-blue-500 focus:outline-none resize-none"></textarea>
+                        </div>
+                    </div>
+                </div>
+                <div class="flex gap-4 pt-4 border-t">
+                    <button type="submit" class="flex-1 bg-blue-900 text-white py-3 rounded-lg font-bold hover:bg-blue-800 transition-colors shadow-lg">
+                        <i class="fas fa-save mr-2"></i>Save Changes
+                    </button>
+                    <button type="button" onclick="closeStudentModal()" class="px-8 bg-gray-300 text-gray-700 py-3 rounded-lg font-bold hover:bg-gray-400 transition-colors">
+                        Cancel
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Teacher Modal -->
+    <div id="teacher-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4 overflow-y-auto">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-4xl w-full my-8">
+            <div class="bg-blue-900 text-white px-6 py-4 rounded-t-2xl flex justify-between items-center">
+                <h3 id="teacher-modal-title" class="text-xl font-bold">Add New Teacher</h3>
+                <button onclick="closeTeacherModal()" class="text-white hover:text-gray-200">
+                    <i class="fas fa-times text-2xl"></i>
+                </button>
+            </div>
+            <form id="teacher-form" onsubmit="handleTeacherSubmit(event)" class="p-6">
+                <input type="hidden" id="teacher-id">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Photo Upload -->
+                    <div class="md:col-span-2 flex items-center gap-6 bg-blue-50 p-4 rounded-xl border border-blue-100">
+                        <img id="teacher-preview" src="../assets/images/logo/logo.png" alt="Preview" class="w-24 h-24 rounded-full object-cover border-4 border-white shadow-md">
+                        <div>
+                            <label class="block text-sm font-bold text-gray-700 mb-2">Teacher Photo</label>
+                            <input type="file" id="teacher-photo" accept="image/*" onchange="previewImage(this, 'teacher-preview')" class="text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-bold file:bg-blue-600 file:text-white hover:file:bg-blue-700">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-bold mb-1">Full Name *</label>
+                        <input type="text" id="teacher-name" required class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-bold mb-1">Email Address *</label>
+                        <input type="email" id="teacher-email" required class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-bold mb-1">Mobile Number *</label>
+                        <input type="tel" id="teacher-mobile" required class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-bold mb-1">Password *</label>
+                        <input type="password" id="teacher-password" class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" placeholder="Required for new accounts">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-bold mb-1">Qualification</label>
+                        <input type="text" id="teacher-qualification" class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-bold mb-1">Primary Subject</label>
+                        <input type="text" id="teacher-subject" class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-bold mb-1">Assigned Class</label>
+                        <select id="teacher-assigned-class" class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
+                            <option value="">None / Multiple</option>
+                            <option value="lkg">LKG</option>
+                            <option value="ukg">UKG</option>
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                            <option value="5">5</option>
+                            <option value="6">6</option>
+                            <option value="7">7</option>
+                            <option value="8">8</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-bold mb-1">Salary (Monthly ₹)</label>
+                        <input type="number" id="teacher-salary" class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-bold mb-1">Joining Date</label>
+                        <input type="date" id="teacher-joining-date" class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
+                    </div>
+                </div>
+                <div class="flex gap-4 mt-8">
+                    <button type="submit" class="flex-1 bg-blue-900 text-white font-bold py-3 rounded-xl hover:bg-blue-800 shadow-lg">Save Record</button>
+                    <button type="button" onclick="closeTeacherModal()" class="px-8 bg-gray-200 font-bold py-3 rounded-xl hover:bg-gray-300">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Group of common modals (Password, Roll No) -->
+    <div id="roll-no-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-xl shadow-2xl p-6 w-full max-w-sm">
+            <h3 class="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
+                <i class="fas fa-id-card text-blue-600"></i> Edit Roll Number
+            </h3>
+            <input type="text" id="edit-roll-input" class="w-full p-3 border-2 border-gray-300 rounded-lg focus:border-blue-500 outline-none font-bold text-lg text-center mb-4" placeholder="e.g. 101">
+            <div class="flex gap-3">
+                <button onclick="closeRollNoModal()" class="flex-1 bg-gray-200 py-2 rounded-lg font-semibold">Cancel</button>
+                <button onclick="saveRollNo()" class="flex-1 bg-blue-600 text-white py-2 rounded-lg font-bold">Save</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="change-password-modal" class="fixed inset-0 bg-black bg-opacity-70 hidden items-center justify-center z-[70] p-4 backdrop-blur-sm">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md transform transition-all duration-300" id="password-modal-content">
+            <div class="p-6">
+                <h2 class="text-xl font-bold text-gray-800 mb-6">Change Password</h2>
+                <form id="change-password-form" onsubmit="handlePasswordChange(event)" class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Current Password</label>
+                        <input type="password" id="current-password" required class="w-full px-4 py-2 border rounded-lg shadow-sm">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">New Password</label>
+                        <input type="password" id="new-password" required minlength="6" class="w-full px-4 py-2 border rounded-lg shadow-sm">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Confirm New Password</label>
+                        <input type="password" id="confirm-password" required minlength="6" class="w-full px-4 py-2 border rounded-lg shadow-sm">
+                    </div>
+                    <div class="flex gap-3 pt-4">
+                        <button type="button" onclick="closeChangePasswordModal()" class="flex-1 bg-gray-100 py-2.5 rounded-lg">Cancel</button>
+                        <button type="submit" id="save-password-btn" class="flex-1 bg-blue-900 text-white py-2.5 rounded-lg font-bold">Update Password</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <!-- Add Salary Modal -->
+    <div id="add-salary-modal" class="hidden fixed inset-0 bg-black bg-opacity-70 z-[80] flex items-center justify-center p-4 backdrop-blur-sm">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-2xl w-full overflow-hidden">
+            <div class="bg-blue-900 text-white px-6 py-4 flex justify-between items-center">
+                <h3 class="text-xl font-bold"><i class="fas fa-money-check-alt mr-2"></i>Generate Salary Slip</h3>
+                <button onclick="closeAddSalaryModal()" class="text-white hover:text-gray-200">
+                    <i class="fas fa-times text-2xl"></i>
+                </button>
+            </div>
+            <div class="p-6 bg-gray-50">
+                <form id="salary-input-form" onsubmit="handleManualSalarySlip(event)" class="space-y-4">
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="col-span-2 md:col-span-1">
+                            <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Select Teacher *</label>
+                            <select id="salary-teacher-id" required onchange="handleSalaryTeacherChange()" class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none bg-white">
+                                <option value="">Select Name</option>
+                            </select>
+                        </div>
+                        <div class="col-span-2 md:col-span-1">
+                            <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Class</label>
+                            <input type="text" id="salary-display-class" readonly class="w-full px-4 py-2 border rounded-lg bg-gray-100 outline-none" placeholder="Prefilled">
+                        </div>
+                        <div class="col-span-2 md:col-span-1">
+                            <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Month & Year *</label>
+                            <input type="month" id="salary-month-year" required class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none bg-white">
+                        </div>
+                        <div class="col-span-2 md:col-span-1">
+                            <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Daily Payment</label>
+                            <input type="number" id="salary-daily-rate" value="0" oninput="calculateManualSalary()" class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none bg-white">
+                        </div>
+                        <div class="col-span-2 md:col-span-1">
+                            <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Total Days</label>
+                            <input type="number" id="salary-total-days" value="30" oninput="calculateManualSalary()" class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none bg-white">
+                        </div>
+                        <div class="col-span-2 md:col-span-1">
+                            <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Leave (Days)</label>
+                            <input type="number" id="salary-leave-days" value="0" oninput="calculateManualSalary()" class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none bg-white">
+                        </div>
+                        <div class="col-span-2 md:col-span-1">
+                            <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Total Paid Leave</label>
+                            <input type="number" id="salary-paid-leave" value="0" oninput="calculateManualSalary()" class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none bg-white">
+                        </div>
+                        <div class="col-span-2">
+                            <div class="bg-blue-50 p-4 rounded-xl border border-blue-200">
+                                <div class="flex justify-between items-center">
+                                    <span class="text-sm font-bold text-blue-900">Calculated Grand Total:</span>
+                                    <span id="salary-calc-total" class="text-2xl font-black text-blue-900 underline underline-offset-4 decoration-2">₹0</span>
+                                </div>
+                                <p id="salary-total-text" class="text-[10px] text-gray-500 mt-1 uppercase italic font-bold">Zero Rupees Only</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flex gap-3 pt-2">
+                        <button type="button" onclick="closeAddSalaryModal()" class="flex-1 py-3 bg-gray-100 font-bold hover:bg-gray-200 rounded-xl">Cancel</button>
+                        <button type="submit" class="flex-1 py-3 bg-blue-900 text-white font-black hover:bg-blue-800 rounded-xl shadow-lg">Generate & View Slip</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- View Salary History Modal -->
+    <div id="view-salary-modal" class="hidden fixed inset-0 bg-black bg-opacity-70 z-[80] flex items-center justify-center p-4 backdrop-blur-sm">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-lg w-full overflow-hidden">
+            <div class="bg-blue-900 text-white px-6 py-4 flex justify-between items-center">
+                <h3 class="text-xl font-bold"><i class="fas fa-search mr-2"></i>Search Salary Record</h3>
+                <button onclick="closeViewSalaryModal()" class="text-white hover:text-gray-200">
+                    <i class="fas fa-times text-2xl"></i>
+                </button>
+            </div>
+            <div class="p-6 bg-gray-50 flex flex-col max-h-[70vh]">
+                <div class="space-y-4 mb-6">
+                    <div>
+                        <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Select Teacher to View History</label>
+                        <select id="view-salary-teacher-id" onchange="handleViewSalaryTeacherChange()" class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none bg-white font-bold text-blue-900 border-blue-200 shadow-sm">
+                            <option value="">Select Teacher</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="flex-1 overflow-y-auto min-h-[300px] border rounded-xl bg-white shadow-inner p-2">
+                    <div id="view-history-status" class="text-center py-10 text-gray-400 italic">
+                        <i class="fas fa-arrow-up block text-3xl mb-2 opacity-20"></i>
+                        Select a teacher to load history
+                    </div>
+                    <table id="salary-history-table" class="w-full text-sm hidden">
+                        <thead class="bg-gray-50 text-gray-600 sticky top-0">
+                            <tr>
+                                <th class="px-3 py-2 text-left">Period</th>
+                                <th class="px-3 py-2 text-right">Net Amount</th>
+                                <th class="px-3 py-2 text-center">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="salary-history-body" class="divide-y divide-gray-100">
+                            <!-- Loaded from DB -->
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div class="mt-4 flex justify-end">
+                    <button type="button" onclick="closeViewSalaryModal()" class="px-6 py-2 bg-gray-200 font-bold hover:bg-gray-300 rounded-lg transition-colors">Close Dashboard</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Salary Slip Modal -->
+    <div id="salary-slip-modal" class="hidden fixed inset-0 bg-black bg-opacity-70 z-[70] flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-4xl w-full flex flex-col" style="max-height: 70vh;">
+            <div class="bg-blue-900 text-white px-6 py-4 flex justify-between items-center rounded-t-2xl flex-shrink-0">
+                <h3 class="text-xl font-bold"><i class="fas fa-file-invoice-dollar mr-2"></i>Teacher Salary Slip</h3>
+                <div class="flex gap-2">
+                    <button onclick="printSalarySlip()" class="bg-white text-blue-900 px-4 py-1.5 rounded-lg font-bold hover:bg-gray-100 transition-colors">
+                        <i class="fas fa-print mr-2"></i>Print Slip
+                    </button>
+                    <button onclick="closeSalarySlipModal()" class="text-white hover:text-gray-200">
+                        <i class="fas fa-times text-2xl"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <div class="overflow-y-auto flex-1 p-6 bg-gray-50" id="salary-slip-content">
+                <!-- Salary Slip Format (Printable) -->
+                <div class="bg-white p-10 shadow-lg border border-gray-200 mx-auto max-w-3xl font-serif text-gray-800 printable-slip transition-all">
+                    <div class="flex items-center justify-between border-b-2 border-blue-900 pb-6 mb-8">
+                        <img src="../assets/images/logo/logo.png" alt="Logo" class="w-20 h-auto">
+                        <div class="text-center flex-1 px-4">
+                            <h1 class="text-2xl font-bold uppercase text-blue-900 leading-tight">Police Modern School</h1>
+                            <p class="text-sm font-bold text-gray-700">25<sup>th</sup> BN PAC Raebareli</p>
+                            <p class="text-xs mt-1 text-gray-500 italic">"Affiliated to CBSE, New Delhi"</p>
+                        </div>
+                        <img src="../assets/images/logo/logo1.png" alt="Logo" class="w-16 h-auto opacity-70">
+                    </div>
+
+                    <div class="text-center mb-8">
+                        <h2 class="inline-block border-2 border-gray-800 px-6 py-1 text-lg font-bold uppercase tracking-widest bg-gray-50">Salary Statement</h2>
+                        <p class="mt-2 text-sm text-gray-600 font-bold" id="slip-month-year">For the month of October 2025</p>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-x-12 gap-y-4 mb-8 text-sm">
+                        <div class="flex border-b border-gray-100 pb-1">
+                            <span class="w-32 font-bold text-gray-600">Employee Name:</span>
+                            <span class="flex-1 font-bold text-blue-900" id="slip-teacher-name">---</span>
+                        </div>
+                        <div class="flex border-b border-gray-100 pb-1">
+                            <span class="w-32 font-bold text-gray-600">Designation:</span>
+                            <span class="flex-1" id="slip-teacher-subject">---</span>
+                        </div>
+                        <div class="flex border-b border-gray-100 pb-1">
+                            <span class="w-32 font-bold text-gray-600">Employee ID:</span>
+                            <span class="flex-1 font-mono" id="slip-teacher-id">---</span>
+                        </div>
+                        <div class="flex border-b border-gray-100 pb-1">
+                            <span class="w-32 font-bold text-gray-600">Paid Days:</span>
+                            <span class="flex-1">30</span>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-8 mb-8">
+                        <!-- Earnings -->
+                        <div>
+                            <h3 class="bg-gray-800 text-white px-3 py-1 text-xs font-bold uppercase tracking-wider mb-2">Earnings</h3>
+                            <div class="space-y-2 text-sm">
+                                <div class="flex justify-between border-b pb-1">
+                                    <span>Basic Salary</span>
+                                    <span class="font-bold" id="slip-basic-pay">₹0</span>
+                                </div>
+                                <div class="flex justify-between border-b pb-1">
+                                    <span>HRA (Allowances)</span>
+                                    <span class="font-bold">₹2,000</span>
+                                </div>
+                                <div class="flex justify-between border-b pb-1">
+                                    <span>Conveyance</span>
+                                    <span class="font-bold">₹1,500</span>
+                                </div>
+                                <div class="flex justify-between font-bold text-blue-900 pt-2 border-t-2 border-blue-100">
+                                    <span>Gross Total</span>
+                                    <span id="slip-gross-total">₹0</span>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Deductions -->
+                        <div>
+                            <h3 class="bg-red-800 text-white px-3 py-1 text-xs font-bold uppercase tracking-wider mb-2">Deductions</h3>
+                            <div class="space-y-2 text-sm">
+                                <div class="flex justify-between border-b pb-1">
+                                    <span>Professional Tax</span>
+                                    <span class="font-bold">₹200</span>
+                                </div>
+                                <div class="flex justify-between border-b pb-1">
+                                    <span>PF Contribution</span>
+                                    <span class="font-bold">₹1,800</span>
+                                </div>
+                                <div class="flex justify-between border-b pb-1">
+                                    <span>Absence/Leave</span>
+                                    <span class="font-bold">₹0</span>
+                                </div>
+                                <div class="flex justify-between font-bold text-red-700 pt-2 border-t-2 border-red-100">
+                                    <span>Total Deductions</span>
+                                    <span id="slip-total-deductions">₹2,000</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-blue-50 border-2 border-blue-900 p-4 mb-10">
+                        <div class="flex justify-between items-center">
+                            <div>
+                                <p class="text-xs font-bold text-blue-900 uppercase">Net Take-Home Salary</p>
+                                <p class="text-3xl font-bold text-blue-900" id="slip-net-salary">₹0</p>
+                            </div>
+                            <div class="text-right">
+                                <p class="text-[10px] text-gray-500 italic">Signature of Principal/Admin</p>
+                                <div class="mt-4 border-t border-gray-800 w-32 ml-auto"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-12 pt-8 border-t border-dotted border-gray-300 flex justify-between items-end">
+                        <div class="text-[9px] text-gray-400">
+                            <p>Computer generated slip. Does not require physical seal if verified online.</p>
+                            <p>Police Modern School, Raebareli - Management Portal</p>
+                        </div>
+                        <img src="../assets/images/logo/barcode.png" alt="Barcode" class="h-8 opacity-40 grayscale">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initDashboard } from '../assets/js/admin-dashboard.js';
+        window.addEventListener('load', () => {
+            initDashboard();
+            // Default to students tab if needed
+            // switchTab('students');
+        });
+    </script>
+</body>
+</html>
+

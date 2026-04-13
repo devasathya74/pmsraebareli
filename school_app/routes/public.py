@@ -32,6 +32,11 @@ def print_fee_structure():
     return render_template("print/fee-structure.html")
 
 
+@public_bp.get("/brochure")
+def brochure():
+    return render_template("public/brochure.html")
+
+
 
 
 @public_bp.get("/")
@@ -77,8 +82,8 @@ def english_alias():
 
 @public_bp.get("/pages/<path:page_name>")
 def legacy_page(page_name: str):
-    """Redirect legacy page requests to the home page since all pages have been migrated."""
-    return redirect(url_for("public.index"))
+    """Serve legacy static pages directly from the static/pages directory."""
+    return send_from_directory(Path(current_app.static_folder) / "pages", page_name)
 
 
 @public_bp.get("/api/public/notifications")

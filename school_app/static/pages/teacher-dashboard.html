@@ -1,0 +1,870 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teacher Dashboard - PMS</title>
+
+    <!-- Favicons -->
+    <link rel="icon" type="image/png" sizes="32x32" href="../assets/images/logo/logo.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="../assets/images/logo/logo.png">
+    <link rel="apple-touch-icon" href="../assets/images/logo/logo.png">
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Responsive CSS Framework -->
+    <link rel="stylesheet" href="../assets/css/responsive.css">
+
+    <link rel="stylesheet" href="../assets/css/main.css">
+    <style>
+        html {
+            font-size: 90%;
+        }
+
+        .sidebar-active {
+            background-color: rgba(255, 255, 255, 0.1);
+            border-left: 4px solid #FCD34D;
+        }
+
+        body {
+            line-height: 1.8;
+        }
+            h1, h2, h3, h4, h5, h6 { font-family: 'Nunito', sans-serif; }
+    </style>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    </head>
+
+<body class="bg-gray-100 font-sans">
+    <div class="flex h-screen overflow-hidden">
+        <!-- Sidebar -->
+        <aside class="w-64 bg-blue-900 text-white hidden md:flex flex-col">
+            <div class="p-6 border-b border-blue-800">
+                <div class="flex items-center gap-3">
+                    <img id="sidebar-profile-img" src="../assets/images/logo/logo.png" alt="PMS Logo"
+                        class="w-10 h-10 rounded-full bg-white p-1 object-cover">
+                    <div>
+                        <h1 class="text-lg font-bold">Teacher Panel</h1>
+                        <p class="text-xs text-blue-300" id="teacher-name-sidebar">Loading...</p>
+                    </div>
+                </div>
+            </div>
+
+            <nav class="flex-1 overflow-y-auto py-4">
+                <ul class="space-y-1">
+                    <li>
+                        <a href="#" onclick="switchTab('overview')" id="nav-overview"
+                            class="flex items-center px-6 py-3 hover:bg-blue-800 transition-colors sidebar-active">
+                            <i class="fas fa-home w-6"></i>
+                            <span>Overview</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" onclick="switchTab('students')" id="nav-students"
+                            class="flex items-center px-6 py-3 hover:bg-blue-800 transition-colors">
+                            <i class="fas fa-user-graduate w-6"></i>
+                            <span>My Class</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" onclick="switchTab('attendance')" id="nav-attendance"
+                            class="flex items-center px-6 py-3 hover:bg-blue-800 transition-colors">
+                            <i class="fas fa-calendar-check w-6"></i>
+                            <span>Attendance</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" onclick="switchTab('progress')" id="nav-progress"
+                            class="flex items-center px-6 py-3 hover:bg-blue-800 transition-colors">
+                            <i class="fas fa-chart-line w-6"></i>
+                            <span>Academic Progress</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" onclick="switchTab('reports')" id="nav-reports"
+                            class="flex items-center px-6 py-3 hover:bg-blue-800 transition-colors">
+                            <i class="fas fa-paper-plane w-6"></i>
+                            <span>Send Reports</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" onclick="switchTab('salary')" id="nav-salary"
+                            class="flex items-center px-6 py-3 hover:bg-blue-800 transition-colors">
+                            <i class="fas fa-file-invoice-dollar w-6"></i>
+                            <span>My Salary Slip</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+
+            <div class="p-4 border-t border-blue-800">
+                <button onclick="authHelper.logout()"
+                    class="flex items-center w-full px-4 py-2 text-sm text-red-300 hover:text-red-100 hover:bg-red-900/30 rounded-lg transition-colors">
+                    <i class="fas fa-sign-out-alt w-5"></i>
+                    <span>Logout</span>
+                </button>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <div class="flex-1 flex flex-col overflow-hidden">
+            <!-- Header -->
+            <header class="bg-white shadow px-6 py-4 flex justify-between items-center z-10">
+                <div class="flex items-center gap-4">
+                    <button onclick="toggleSidebar()" class="md:hidden text-gray-600 focus:outline-none">
+                        <i class="fas fa-bars text-xl"></i>
+                    </button>
+                    <h2 class="text-xl font-bold text-gray-800" id="header-title">Teacher Dashboard</h2>
+                </div>
+                <div class="flex items-center gap-4">
+                    <p class="text-sm text-gray-600 hidden md:block" id="current-date">
+                        <!-- Date will be inserted here -->
+                    </p>
+                    <div class="relative">
+                        <button class="text-gray-600 hover:text-blue-900 focus:outline-none">
+                            <i class="fas fa-bell text-xl"></i>
+                            <span
+                                class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">0</span>
+                        </button>
+                    </div>
+                    <div class="flex items-center gap-3 ml-4">
+                        <div class="relative ml-4">
+                            <button onclick="toggleUserDropdown()"
+                                class="flex items-center gap-3 focus:outline-none group">
+                                <div class="hidden md:block text-right">
+                                    <p class="text-sm font-semibold text-gray-800 group-hover:text-blue-900 transition-colors"
+                                        id="teacher-name-header">Teacher</p>
+                                    <p class="text-xs text-gray-500">Class Teacher</p>
+                                </div>
+                                <div
+                                    class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center border-2 border-blue-200 group-hover:border-blue-400 transition-colors text-blue-700">
+                                    <i class="fas fa-chalkboard-teacher"></i>
+                                </div>
+                                <i
+                                    class="fas fa-chevron-down text-xs text-gray-400 group-hover:text-blue-600 transition-colors"></i>
+                            </button>
+
+                            <!-- User Dropdown Menu -->
+                            <div id="user-dropdown"
+                                class="hidden absolute right-0 mt-2 w-56 bg-white rounded-xl shadow-xl z-50 border border-gray-100 py-2 origin-top-right transform transition-all duration-200">
+                                <div class="px-5 py-3 border-b border-gray-100">
+                                    <p class="text-xs text-gray-400 uppercase tracking-wider font-bold mb-1">Signed in
+                                        as</p>
+                                    <p id="dropdown-user-email" class="text-sm font-semibold text-gray-800 truncate">
+                                        teacher@example.com</p>
+                                </div>
+                                <div class="py-1">
+                                    <a href="#" onclick="openChangePasswordModal()"
+                                        class="flex items-center px-5 py-2.5 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-700 transition-colors group">
+                                        <span
+                                            class="w-8 h-8 rounded-lg bg-gray-100 group-hover:bg-blue-100 flex items-center justify-center mr-3 transition-colors">
+                                            <i class="fas fa-key text-gray-500 group-hover:text-blue-600"></i>
+                                        </span>
+                                        Change Password
+                                    </a>
+                                </div>
+                                <div class="border-t border-gray-100 my-1"></div>
+                                <div class="py-1">
+                                    <a href="#" onclick="authHelper.logout()"
+                                        class="flex items-center px-5 py-2.5 text-sm text-red-600 hover:bg-red-50 transition-colors group">
+                                        <span
+                                            class="w-8 h-8 rounded-lg bg-red-50 group-hover:bg-red-100 flex items-center justify-center mr-3 transition-colors">
+                                            <i class="fas fa-sign-out-alt text-red-500 group-hover:text-red-700"></i>
+                                        </span>
+                                        Logout
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Content Area -->
+            <main class="flex-1 overflow-x-hidden overflow-y-auto bg-gray-100 p-6">
+                <!-- Overview Section -->
+                <div id="section-overview" class="tab-content">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-6">Class Overview - <span
+                            id="class-name-header">...</span></h2>
+
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                        <div class="bg-white p-6 rounded-xl shadow-sm border-l-4 border-blue-500">
+                            <div class="flex justify-between items-start">
+                                <div>
+                                    <p class="text-sm text-gray-500 font-semibold mb-1">Total Students</p>
+                                    <h3 class="text-3xl font-bold text-gray-800" id="stat-total-students">-</h3>
+                                </div>
+                                <div class="p-3 bg-blue-100 rounded-lg text-blue-600">
+                                    <i class="fas fa-users text-xl"></i>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-white p-6 rounded-xl shadow-sm border-l-4 border-green-500">
+                            <div class="flex justify-between items-start">
+                                <div>
+                                    <p class="text-sm text-gray-500 font-semibold mb-1">Present Today</p>
+                                    <h3 class="text-3xl font-bold text-gray-800" id="stat-present-today">-</h3>
+                                </div>
+                                <div class="p-3 bg-green-100 rounded-lg text-green-600">
+                                    <i class="fas fa-check-circle text-xl"></i>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-white p-6 rounded-xl shadow-sm border-l-4 border-purple-500">
+                            <div class="flex justify-between items-start">
+                                <div>
+                                    <p class="text-sm text-gray-500 font-semibold mb-1">Assignments</p>
+                                    <h3 class="text-3xl font-bold text-gray-800">0</h3>
+                                </div>
+                                <div class="p-3 bg-purple-100 rounded-lg text-purple-600">
+                                    <i class="fas fa-book text-xl"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-xl shadow-sm p-6">
+                        <h3 class="font-bold text-lg mb-4 text-gray-800">Recent Notices</h3>
+                        <p class="text-gray-500 italic">No recent notices from the principal.</p>
+                    </div>
+                </div>
+
+                <!-- My Students Section -->
+                <div id="section-students" class="tab-content hidden">
+                    <div class="flex justify-between items-center mb-6">
+                        <h2 class="text-2xl font-bold text-gray-800">My Class List</h2>
+                        <button onclick="loadStudents()"
+                            class="bg-blue-100 text-blue-700 px-4 py-2 rounded-lg hover:bg-blue-200">
+                            <i class="fas fa-sync-alt mr-2"></i>Refresh
+                        </button>
+                    </div>
+
+                    <div class="bg-white rounded-xl shadow-sm overflow-hidden">
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left border-collapse">
+                                <thead class="bg-gray-50 border-b">
+                                    <tr>
+                                        <th class="p-4 text-sm font-semibold text-gray-600">Name</th>
+                                        <th class="p-4 text-sm font-semibold text-gray-600">Roll No</th>
+                                        <th class="p-4 text-sm font-semibold text-gray-600">Parent</th>
+                                        <th class="p-4 text-sm font-semibold text-gray-600">Mobile</th>
+                                        <th class="p-4 text-sm font-semibold text-gray-600">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="students-table-body" class="divide-y divide-gray-100">
+                                    <tr>
+                                        <td colspan="5" class="p-4 text-center">Loading students...</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Attendance Section -->
+                <div id="section-attendance" class="tab-content hidden">
+                    <div class="flex justify-between items-center mb-6">
+                        <h2 class="text-2xl font-bold text-gray-800">Mark Attendance</h2>
+                        <div>
+                            <input type="date" id="attendance-date"
+                                class="px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <button onclick="saveAttendance()"
+                                class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 shadow-sm text-sm">
+                                <i class="fas fa-save mr-2"></i>Save
+                            </button>
+                            <button onclick="loadAttendanceHistory()"
+                                class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 shadow-sm text-sm ml-2">
+                                <i class="fas fa-history mr-2"></i>View History
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-xl shadow-sm overflow-hidden p-6">
+                        <div class="mb-4 flex flex-wrap gap-4 text-sm">
+                            <div class="flex items-center gap-2">
+                                <div class="w-4 h-4 bg-green-100 border border-green-500 rounded"></div> Present
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <div class="w-4 h-4 bg-red-100 border border-red-500 rounded"></div> Absent
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="attendance-list">
+                            <!-- Student cards with checkboxes will go here -->
+                            <p class="text-gray-500">Select a date/Loading students...</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Progress Section -->
+                <!-- Academic Progress Section -->
+                <div id="section-progress" class="tab-content hidden">
+                    <div class="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
+                        <h2 class="text-2xl font-bold text-gray-800">Academic Progress</h2>
+                        <div>
+                            <select id="progress-exam-filter" onchange="filterProgress()"
+                                class="bg-white border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                <option value="Unit Test 1">Unit Test 1</option>
+                                <option value="Half Yearly">Half Yearly</option>
+                                <option value="Unit Test 2">Unit Test 2</option>
+                                <option value="Annual">Annual Exam</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-xl shadow-sm p-6">
+                        <p class="text-gray-500 mb-4">Select a student and exam to view or update marks.</p>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left border-collapse">
+                                <thead class="bg-gray-50 border-b">
+                                    <tr>
+                                        <th class="p-4 text-sm font-semibold text-gray-600">Student Name</th>
+                                        <th class="p-4 text-sm font-semibold text-gray-600">Marks (%)</th>
+                                        <th class="p-4 text-sm font-semibold text-gray-600">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="progress-table-body" class="divide-y divide-gray-100">
+                                    <tr>
+                                        <td colspan="3" class="p-4 text-center">Loading...</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Reports Section -->
+                <div id="section-reports" class="tab-content hidden">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-6">Send Report to Principal</h2>
+                    <div class="bg-white rounded-xl shadow-sm p-6 max-w-2xl">
+                        <form id="report-form" onsubmit="sendReport(event)">
+                            <div class="mb-4">
+                                <label class="block text-gray-700 font-semibold mb-2">Subject</label>
+                                <input type="text" id="report-subject" required
+                                    class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    placeholder="e.g. Monthly Class Performance">
+                            </div>
+                            <div class="mb-4">
+                                <label class="block text-gray-700 font-semibold mb-2">Message</label>
+                                <textarea id="report-message" rows="5" required
+                                    class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    placeholder="Write your report detail here..."></textarea>
+                            </div>
+                            <button type="submit"
+                                class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 font-bold w-full md:w-auto">
+                                <i class="fas fa-paper-plane mr-2"></i>Send Report
+                            </button>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- ========== SALARY SLIP SECTION ========== -->
+                <div id="section-salary" class="tab-content hidden">
+                    <div class="flex justify-between items-center mb-6">
+                        <h2 class="text-2xl font-bold text-gray-800">My Salary Slips</h2>
+                        <button onclick="loadSalarySlips()"
+                            class="bg-indigo-100 text-indigo-700 px-4 py-2 rounded-lg hover:bg-indigo-200 font-semibold text-sm">
+                            <i class="fas fa-sync-alt mr-2"></i>Refresh
+                        </button>
+                    </div>
+
+                    <!-- Summary Card -->
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6" id="salary-summary-cards">
+                        <div class="bg-gradient-to-br from-indigo-600 to-indigo-800 text-white p-5 rounded-xl shadow-sm">
+                            <div class="flex justify-between items-start">
+                                <div>
+                                    <p class="text-indigo-200 text-sm font-semibold mb-1">Total Slips</p>
+                                    <h3 class="text-3xl font-bold" id="salary-total-slips">-</h3>
+                                </div>
+                                <div class="p-3 bg-white/20 rounded-lg"><i class="fas fa-file-alt text-xl"></i></div>
+                            </div>
+                        </div>
+                        <div class="bg-gradient-to-br from-green-600 to-green-800 text-white p-5 rounded-xl shadow-sm">
+                            <div class="flex justify-between items-start">
+                                <div>
+                                    <p class="text-green-200 text-sm font-semibold mb-1">Last Net Salary</p>
+                                    <h3 class="text-3xl font-bold" id="salary-last-net">-</h3>
+                                </div>
+                                <div class="p-3 bg-white/20 rounded-lg"><i class="fas fa-rupee-sign text-xl"></i></div>
+                            </div>
+                        </div>
+                        <div class="bg-gradient-to-br from-blue-600 to-blue-800 text-white p-5 rounded-xl shadow-sm">
+                            <div class="flex justify-between items-start">
+                                <div>
+                                    <p class="text-blue-200 text-sm font-semibold mb-1">Latest Month</p>
+                                    <h3 class="text-xl font-bold mt-1" id="salary-latest-month">-</h3>
+                                </div>
+                                <div class="p-3 bg-white/20 rounded-lg"><i class="fas fa-calendar-alt text-xl"></i></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Slips Table -->
+                    <div class="bg-white rounded-xl shadow-sm overflow-hidden">
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left border-collapse">
+                                <thead class="bg-indigo-50 border-b">
+                                    <tr>
+                                        <th class="p-4 text-sm font-semibold text-gray-600">Month / Year</th>
+                                        <th class="p-4 text-sm font-semibold text-gray-600">Working Days</th>
+                                        <th class="p-4 text-sm font-semibold text-gray-600">Leave Days</th>
+                                        <th class="p-4 text-sm font-semibold text-gray-600">Net Salary</th>
+                                        <th class="p-4 text-sm font-semibold text-gray-600">Issued On</th>
+                                        <th class="p-4 text-sm font-semibold text-gray-600">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="salary-slips-tbody" class="divide-y divide-gray-100">
+                                    <tr>
+                                        <td colspan="6" class="p-8 text-center text-gray-400">
+                                            <i class="fas fa-spinner fa-spin text-2xl mb-2 block"></i>
+                                            Loading salary slips...
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+            </main>
+        </div>
+    </div>
+
+    <!-- Student Details Modal -->
+    <div id="student-modal"
+        class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+            <div class="sticky top-0 bg-blue-900 text-white px-6 py-4 rounded-t-2xl flex justify-between items-center">
+                <h3 class="text-xl font-bold">Student Profile</h3>
+                <button onclick="document.getElementById('student-modal').classList.add('hidden')"
+                    class="text-white hover:text-gray-200">
+                    <i class="fas fa-times text-2xl"></i>
+                </button>
+            </div>
+            <div class="p-6 space-y-4">
+                <div class="flex flex-col items-center mb-6">
+                    <div
+                        class="w-24 h-24 bg-gray-200 rounded-full mb-3 overflow-hidden flex items-center justify-center">
+                        <img id="detail-photo" src="../assets/images/logo/logo.png" alt="Student"
+                            class="w-full h-full object-cover">
+                    </div>
+                    <h2 class="text-2xl font-bold text-gray-800" id="detail-name">-</h2>
+                    <p class="text-blue-600 font-semibold" id="detail-roll">-</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <h4 class="font-bold text-gray-700 border-b pb-1 mb-2">Personal Info</h4>
+                        <p><span class="font-semibold">DOB:</span> <span id="detail-dob">-</span></p>
+                        <p><span class="font-semibold">Gender:</span> <span id="detail-gender">-</span></p>
+                        <p><span class="font-semibold">Address:</span> <span id="detail-address">-</span></p>
+                    </div>
+                    <div>
+                        <h4 class="font-bold text-gray-700 border-b pb-1 mb-2">Parent Info</h4>
+                        <p><span class="font-semibold">Father:</span> <span id="detail-father">-</span></p>
+                        <p><span class="font-semibold">Mother:</span> <span id="detail-mother">-</span></p>
+                        <p><span class="font-semibold">Mobile:</span> <span id="detail-mobile">-</span></p>
+                    </div>
+                </div>
+            </div>
+            <div class="p-6 bg-gray-50 border-t rounded-b-2xl flex justify-end">
+                <button onclick="document.getElementById('student-modal').classList.add('hidden')"
+                    class="px-6 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Extended Marks Modal -->
+    <div id="marks-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-xl shadow-lg w-full max-w-2xl p-6 max-h-[90vh] overflow-y-auto">
+            <h3 class="text-xl font-bold mb-4 border-b pb-2">Update Marks - <span id="marks-student-name"></span></h3>
+            <input type="hidden" id="marks-student-id">
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                <div class="md:col-span-2">
+                    <label class="block text-gray-700 font-bold mb-1">Exam Name</label>
+                    <select id="exam-name" class="w-full border p-2 rounded">
+                        <option value="Unit Test 1">Unit Test 1</option>
+                        <option value="Half Yearly">Half Yearly</option>
+                        <option value="Unit Test 2">Unit Test 2</option>
+                        <option value="Annual">Annual Exam</option>
+                    </select>
+                </div>
+
+                <!-- Subjects -->
+                <div><label class="block text-sm">Hindi</label><input type="number" id="marks-hindi"
+                        class="w-full border p-2 rounded" placeholder="Out of 100"></div>
+                <div><label class="block text-sm">English</label><input type="number" id="marks-english"
+                        class="w-full border p-2 rounded" placeholder="Out of 100"></div>
+                <div><label class="block text-sm">Mathematics</label><input type="number" id="marks-math"
+                        class="w-full border p-2 rounded" placeholder="Out of 100"></div>
+                <div><label class="block text-sm">Science</label><input type="number" id="marks-science"
+                        class="w-full border p-2 rounded" placeholder="Out of 100"></div>
+                <div><label class="block text-sm">Social Science</label><input type="number" id="marks-sst"
+                        class="w-full border p-2 rounded" placeholder="Out of 100"></div>
+                <div><label class="block text-sm">Computer</label><input type="number" id="marks-computer"
+                        class="w-full border p-2 rounded" placeholder="Out of 100"></div>
+                <div><label class="block text-sm">Drawing/Art</label><input type="number" id="marks-art"
+                        class="w-full border p-2 rounded" placeholder="Out of 100"></div>
+                <div><label class="block text-sm">General Knowledge</label><input type="number" id="marks-gk"
+                        class="w-full border p-2 rounded" placeholder="Out of 100"></div>
+            </div>
+
+            <div class="flex justify-end gap-2 pt-4 border-t">
+                <button onclick="document.getElementById('marks-modal').classList.add('hidden')"
+                    class="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400">Cancel</button>
+                <button onclick="saveStudentMarks()"
+                    class="px-6 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 font-bold">Save Report
+                    Card</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="sidebar-overlay" onclick="toggleSidebar()"
+        class="fixed inset-0 bg-black bg-opacity-50 z-20 hidden md:hidden"></div>
+
+    <!-- View Fee Modal for Teacher -->
+    <div id="teacher-fee-modal" style="z-index: 99999;" class="hidden fixed inset-0 bg-black bg-opacity-70 flex justify-center items-start pt-20 pb-10 px-4 backdrop-blur-sm overflow-y-auto">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-lg w-full max-h-[85vh] transform transition-all scale-100 flex flex-col">
+            <div class="bg-green-700 text-white px-6 py-4 rounded-t-2xl flex justify-between items-center flex-shrink-0">
+                <h3 class="text-xl font-bold"><i class="fas fa-rupee-sign mr-2"></i>Fee Payment History</h3>
+                <button onclick="closeFeeModal()" class="text-white hover:text-gray-200 focus:outline-none">
+                    <i class="fas fa-times text-2xl"></i>
+                </button>
+            </div>
+            <div class="p-6 bg-gray-50 flex-1 overflow-y-auto">
+                <div class="flex justify-between items-center mb-6 pb-4 border-b border-gray-200">
+                    <div>
+                        <h4 class="text-lg font-black text-gray-800 uppercase tracking-wide" id="fee-student-name">Student Name</h4>
+                        <p class="text-xs font-bold text-gray-500 uppercase tracking-widest mt-1">Status: <span class="text-green-600 font-black">ACTIVE</span></p>
+                    </div>
+                </div>
+
+                <div class="overflow-hidden rounded-lg border border-gray-200 shadow-sm mb-4 bg-white">
+                    <table class="w-full text-sm">
+                        <thead class="bg-gray-100 border-b border-gray-200">
+                            <tr>
+                                <th class="px-4 py-2 text-left text-xs font-bold text-gray-600 uppercase">Date</th>
+                                <th class="px-4 py-2 text-left text-xs font-bold text-gray-600 uppercase">Month/Year</th>
+                                <th class="px-4 py-2 text-right text-xs font-bold text-gray-600 uppercase">Amount</th>
+                            </tr>
+                        </thead>
+                        <tbody id="student-fee-tbody" class="divide-y divide-gray-100 font-medium text-gray-700">
+                            <!-- Populated dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+                <p class="text-[11px] text-gray-500 italic mt-2 text-center p-3 bg-blue-50 rounded-lg border border-blue-100">
+                    <i class="fas fa-info-circle mr-1"></i> Please remind students with pending fees to submit them on time.
+                </p>
+            </div>
+            <div class="px-6 py-4 bg-gray-100 rounded-b-2xl text-center">
+                <button onclick="closeFeeModal()" class="bg-gray-600 text-white px-8 py-2 rounded-lg font-bold hover:bg-gray-700 transition-colors">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========== SALARY SLIP VIEW MODAL ========== -->
+    <div id="teacher-salary-slip-modal" style="z-index: 99999;" class="hidden fixed inset-0 bg-black bg-opacity-70 flex justify-center items-start pt-10 pb-10 px-4 backdrop-blur-sm overflow-y-auto">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg transform transition-all scale-100 flex flex-col">
+            <!-- Modal Header -->
+            <div class="bg-indigo-800 text-white px-6 py-4 rounded-t-2xl flex justify-between items-center flex-shrink-0">
+                <h3 class="text-xl font-bold"><i class="fas fa-file-invoice-dollar mr-2"></i>Salary Slip</h3>
+                <button onclick="closeTeacherSalarySlipModal()" class="text-white hover:text-gray-200 focus:outline-none">
+                    <i class="fas fa-times text-2xl"></i>
+                </button>
+            </div>
+
+            <!-- Printable Slip Content -->
+            <div class="p-6 flex-1 overflow-y-auto" id="teacher-salary-slip-printable">
+                <!-- School Header -->
+                <div class="text-center mb-4 pb-4 border-b-2 border-indigo-800">
+                    <div class="flex items-center justify-center gap-3 mb-2">
+                        <img src="../assets/images/logo/logo.png" alt="Logo" class="w-12 h-12 object-contain">
+                        <div>
+                            <h1 class="text-lg font-black text-indigo-900 uppercase leading-tight">Police Modern School</h1>
+                            <p class="text-xs text-gray-500 font-semibold">25th BN PAC Raebareli, Uttar Pradesh</p>
+                        </div>
+                    </div>
+                    <div class="inline-block bg-indigo-900 text-white text-xs px-5 py-1 rounded-full font-bold tracking-widest uppercase">Salary Slip</div>
+                </div>
+
+                <!-- Teacher Info -->
+                <div class="grid grid-cols-2 gap-3 mb-4 text-sm">
+                    <div>
+                        <p class="text-xs text-gray-500 font-semibold uppercase tracking-wider">Teacher Name</p>
+                        <p class="font-black text-gray-800 uppercase" id="tss-name">---</p>
+                    </div>
+                    <div>
+                        <p class="text-xs text-gray-500 font-semibold uppercase tracking-wider">Month & Year</p>
+                        <p class="font-black text-indigo-800" id="tss-month-year">---</p>
+                    </div>
+                    <div>
+                        <p class="text-xs text-gray-500 font-semibold uppercase tracking-wider">Daily Rate</p>
+                        <p class="font-bold text-gray-700" id="tss-daily-rate">---</p>
+                    </div>
+                    <div>
+                        <p class="text-xs text-gray-500 font-semibold uppercase tracking-wider">Total Working Days</p>
+                        <p class="font-bold text-gray-700" id="tss-total-days">---</p>
+                    </div>
+                </div>
+
+                <!-- Earnings & Deductions Table -->
+                <div class="rounded-lg border border-gray-200 overflow-hidden mb-4">
+                    <table class="w-full text-sm">
+                        <thead class="bg-indigo-50">
+                            <tr>
+                                <th class="px-4 py-2 text-left text-xs font-bold text-gray-600 uppercase">Description</th>
+                                <th class="px-4 py-2 text-right text-xs font-bold text-gray-600 uppercase">Amount</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-gray-100">
+                            <tr class="bg-green-50">
+                                <td class="px-4 py-2 text-gray-700 font-semibold"><i class="fas fa-plus-circle text-green-500 mr-2"></i>Basic Pay (Daily Rate × Working Days)</td>
+                                <td class="px-4 py-2 text-right text-green-700 font-bold" id="tss-basic-pay">---</td>
+                            </tr>
+                            <tr class="bg-red-50">
+                                <td class="px-4 py-2 text-gray-700 font-semibold"><i class="fas fa-minus-circle text-red-400 mr-2"></i>Leave Deduction <span class="text-xs text-gray-500 font-normal" id="tss-leave-info">(0 days)</span></td>
+                                <td class="px-4 py-2 text-right text-red-600 font-bold" id="tss-deduction">---</td>
+                            </tr>
+                        </tbody>
+                        <tfoot class="bg-indigo-900 text-white">
+                            <tr>
+                                <td class="px-4 py-3 font-black uppercase tracking-wider text-sm">Net Salary</td>
+                                <td class="px-4 py-3 text-right font-black text-xl" id="tss-net-salary">---</td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+
+                <!-- Signature Line -->
+                <div class="flex justify-between items-end mt-6 pt-4 border-t border-dashed border-gray-300">
+                    <div class="text-center">
+                        <div class="w-32 border-t-2 border-gray-800 pt-1">
+                            <p class="text-[10px] font-bold text-gray-600 uppercase tracking-wider">Teacher Signature</p>
+                        </div>
+                    </div>
+                    <div class="text-center">
+                        <img src="../assets/images/logo/signature.png" alt="Signature" class="h-8 w-36 object-contain mb-1" onerror="this.style.display='none'">
+                        <div class="w-36 border-t-2 border-indigo-800 pt-1">
+                            <p class="text-[10px] font-bold text-indigo-800 uppercase tracking-wider">Principal</p>
+                        </div>
+                    </div>
+                </div>
+
+                <p class="text-[10px] text-gray-400 text-center mt-4 italic" id="tss-issued-on">Issued on: ---</p>
+            </div>
+
+            <!-- Footer Actions -->
+            <div class="px-6 py-4 bg-gray-50 rounded-b-2xl flex justify-end gap-3">
+                <button onclick="closeTeacherSalarySlipModal()" class="px-5 py-2 bg-gray-200 text-gray-700 rounded-lg font-semibold hover:bg-gray-300 transition-colors">Close</button>
+                <button onclick="printTeacherSalarySlip()" class="px-6 py-2 bg-indigo-700 text-white rounded-lg font-bold hover:bg-indigo-800 transition-colors">
+                    <i class="fas fa-print mr-2"></i>Print Slip
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script type="module" src="../assets/js/teacher-dashboard.js"></script>
+    <script>
+        // Sidebar Toggle Logic
+        function toggleSidebar() {
+            const sidebar = document.querySelector('aside');
+            const overlay = document.getElementById('sidebar-overlay');
+            sidebar.classList.toggle('hidden');
+            sidebar.classList.toggle('absolute');
+            sidebar.classList.toggle('h-full');
+            sidebar.classList.toggle('z-30');
+            overlay.classList.toggle('hidden');
+        }
+
+        // Close sidebar when clicking a link on mobile
+        document.querySelectorAll('aside nav a').forEach(link => {
+            link.addEventListener('click', () => {
+                if (window.innerWidth < 768) {
+                    toggleSidebar();
+                }
+            });
+        });
+
+        // Tab switching logic (Global for basic UI)
+        function switchTab(tabId) {
+            // Hide all sections
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            // Remove active class from navs
+            document.querySelectorAll('nav a').forEach(el => el.classList.remove('sidebar-active'));
+
+            // Show target
+            document.getElementById(`section-${tabId}`).classList.remove('hidden');
+            document.getElementById(`nav-${tabId}`).classList.add('sidebar-active');
+
+            // Update header title
+            const titles = { overview: 'Teacher Dashboard', students: 'My Class', attendance: 'Attendance', progress: 'Academic Progress', reports: 'Send Reports', salary: 'My Salary Slip' };
+            const headerTitle = document.getElementById('header-title');
+            if (headerTitle && titles[tabId]) headerTitle.textContent = titles[tabId];
+
+            // Auto-load salary slips on tab open
+            if (tabId === 'salary' && typeof window.loadSalarySlips === 'function') {
+                window.loadSalarySlips();
+            }
+        }
+
+        // Expose toggleSidebar to window
+        window.toggleSidebar = toggleSidebar;
+    </script>
+    <!-- Change Password Modal -->
+    <div id="change-password-modal"
+        class="fixed inset-0 bg-black bg-opacity-70 hidden items-center justify-center z-[70] p-4 backdrop-blur-sm">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md transform scale-95 opacity-0 transition-all duration-300"
+            id="password-modal-content">
+            <div class="p-6">
+                <div class="flex justify-between items-center mb-6">
+                    <div>
+                        <h2 class="text-xl font-bold text-gray-800">Change Password</h2>
+                        <p class="text-xs text-gray-500 mt-1">Update your account security</p>
+                    </div>
+                    <button onclick="closeChangePasswordModal()"
+                        class="text-gray-400 hover:text-gray-600 transition-colors">
+                        <i class="fas fa-times text-xl"></i>
+                    </button>
+                </div>
+
+                <form id="change-password-form" onsubmit="handlePasswordChange(event)" class="space-y-4">
+                    <!-- Current Password -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Current Password</label>
+                        <div class="relative">
+                            <span
+                                class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
+                                <i class="fas fa-lock"></i>
+                            </span>
+                            <input type="password" id="current-password" required
+                                class="w-full pl-10 pr-10 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
+                                placeholder="Enter current password">
+                            <button type="button" onclick="togglePasswordVisibility('current-password')"
+                                class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600 cursor-pointer">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </div>
+                        <p class="text-xs text-gray-500 mt-1">Required for verification</p>
+                    </div>
+
+                    <!-- New Password -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">New Password</label>
+                        <div class="relative">
+                            <span
+                                class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
+                                <i class="fas fa-key"></i>
+                            </span>
+                            <input type="password" id="new-password" required minlength="6"
+                                class="w-full pl-10 pr-10 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
+                                placeholder="Enter new password (min 6 chars)">
+                            <button type="button" onclick="togglePasswordVisibility('new-password')"
+                                class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600 cursor-pointer">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Confirm New Password -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Confirm New Password</label>
+                        <div class="relative">
+                            <span
+                                class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
+                                <i class="fas fa-check-circle"></i>
+                            </span>
+                            <input type="password" id="confirm-password" required minlength="6"
+                                class="w-full pl-10 pr-10 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
+                                placeholder="Re-enter new password">
+                            <button type="button" onclick="togglePasswordVisibility('confirm-password')"
+                                class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600 cursor-pointer">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="flex gap-3 pt-4">
+                        <button type="button" onclick="closeChangePasswordModal()"
+                            class="flex-1 bg-gray-100 text-gray-700 py-2.5 rounded-lg font-semibold hover:bg-gray-200 transition-colors">
+                            Cancel
+                        </button>
+                        <button type="submit" id="save-password-btn"
+                            class="flex-1 bg-blue-900 text-white py-2.5 rounded-lg font-bold hover:bg-blue-800 shadow-lg transition-transform transform active:scale-95 flex items-center justify-center gap-2">
+                            <span>Update Password</span>
+                            <i class="fas fa-arrow-right text-xs"></i>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <!-- Result View Modal for Teacher -->
+    <div id="result-view-modal" style="z-index: 99999;" class="hidden fixed inset-0 bg-black bg-opacity-70 flex justify-center items-start pt-20 pb-10 px-4 backdrop-blur-sm overflow-y-auto">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-lg w-full max-h-[85vh] transform transition-all scale-100 flex flex-col">
+            <div class="bg-blue-900 text-white px-6 py-4 rounded-t-2xl flex justify-between items-center flex-shrink-0">
+                <h3 class="text-xl font-bold"><i class="fas fa-file-contract mr-2"></i>Academic Result</h3>
+                <button onclick="closeAcademicResultModal()" class="text-white hover:text-gray-200 focus:outline-none">
+                    <i class="fas fa-times text-2xl"></i>
+                </button>
+            </div>
+            <div class="p-6 bg-gray-50 flex-1 overflow-y-auto">
+                <div class="flex justify-between items-center mb-6 pb-4 border-b border-gray-200">
+                    <div>
+                        <h4 class="text-lg font-black text-gray-800 uppercase tracking-wide" id="result-student-name">Student Name</h4>
+                        <p class="text-xs font-bold text-gray-500 uppercase tracking-widest mt-1">Roll No: <span id="result-roll-no" class="text-blue-700">---</span></p>
+                    </div>
+                    <div class="text-right">
+                        <span class="inline-block bg-blue-100 text-blue-800 text-xs px-3 py-1 rounded-full font-bold uppercase tracking-wider" id="result-exam-name">Exam Name</span>
+                    </div>
+                </div>
+
+                <div class="overflow-hidden rounded-lg border border-gray-200 shadow-sm mb-6 bg-white">
+                    <table class="w-full text-sm">
+                        <thead class="bg-gray-100 border-b border-gray-200">
+                            <tr>
+                                <th class="px-4 py-2 text-left text-xs font-bold text-gray-600 uppercase">Subject</th>
+                                <th class="px-4 py-2 text-right text-xs font-bold text-gray-600 uppercase">Max</th>
+                                <th class="px-4 py-2 text-right text-xs font-bold text-gray-600 uppercase">Obtained</th>
+                            </tr>
+                        </thead>
+                        <tbody id="result-subjects-body" class="divide-y divide-gray-100 font-medium text-gray-700">
+                            <!-- Populated dynamically -->
+                        </tbody>
+                        <tfoot class="bg-gray-50 border-t-2 border-gray-200">
+                            <tr>
+                                <th class="px-4 py-3 text-left text-sm font-black text-gray-800 uppercase tracking-wide">Total</th>
+                                <th class="px-4 py-3 text-right text-sm font-black text-gray-800" id="result-total-max">0</th>
+                                <th class="px-4 py-3 text-right text-sm font-black text-blue-900" id="result-total-obtained">0</th>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+
+                <div class="grid grid-cols-3 gap-4 text-center">
+                    <div class="bg-white p-3 rounded-lg border border-gray-200 shadow-sm">
+                        <p class="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Percentage</p>
+                        <p class="text-lg font-black text-gray-800" id="result-percentage">0%</p>
+                    </div>
+                    <div class="bg-white p-3 rounded-lg border border-gray-200 shadow-sm">
+                        <p class="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Grade</p>
+                        <p class="text-lg font-black text-green-600" id="result-grade">-</p>
+                    </div>
+                    <div class="bg-white p-3 rounded-lg border border-gray-200 shadow-sm">
+                        <p class="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Class Rank</p>
+                        <p class="text-lg font-black text-blue-600" id="result-rank">-</p>
+                    </div>
+                </div>
+            </div>
+            <div class="px-6 py-4 bg-gray-100 rounded-b-2xl text-center">
+                <button onclick="closeAcademicResultModal()" class="bg-gray-300 text-gray-700 px-8 py-2 rounded-lg font-bold hover:bg-gray-400 transition-colors">Close</button>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

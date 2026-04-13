@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="hi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Monitoring & Exams | Admin | पुलिस मॉडर्न स्कूल</title>
+
+    <!-- Favicons -->
+    <link rel="icon" type="image/png" sizes="32x32" href="../assets/images/logo/logo1.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="../assets/images/logo/logo1.png">
+    <link rel="apple-touch-icon" href="../assets/images/logo/logo1.png">
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Tiro+Devanagari+Hindi&display=swap" rel="stylesheet">
+
+    <!-- Responsive CSS Framework -->
+    <link rel="stylesheet" href="../assets/css/responsive.css">
+    <style>
+        html {
+            font-size: 90%;
+        }
+
+        body {
+            font-family: 'Poppins', 'Tiro Devanagari Hindi', sans-serif;
+            line-height: 1.8;
+        }
+
+        .container {
+            max-width: 100% !important;
+            padding-left: 2rem !important;
+            padding-right: 2rem !important;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .animate-fade-in {
+            animation: fadeIn 0.5s ease-out forwards;
+        }
+
+        .tab-btn {
+            background: white;
+            color: #1f2937;
+        }
+
+        .tab-btn.active {
+            background: #1e3a8a !important;
+            color: white !important;
+        }
+
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        .page-nav-btn {
+            padding: 1rem 1.5rem;
+            font-weight: 600;
+            color: #4b5563;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s;
+            white-space: nowrap;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .page-nav-btn:hover {
+            background-color: #f9fafb;
+            color: #1e3a8a;
+        }
+
+        .page-nav-btn.active {
+            color: #1e3a8a;
+            border-bottom-color: #1e3a8a;
+            background-color: #eff6ff;
+        }
+            h1, h2, h3, h4, h5, h6 { font-family: 'Nunito', sans-serif; }
+    </style>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    </head>
+
+<body class="bg-gray-50">
+
+    <!-- Header -->
+    <header class="bg-blue-900 text-white shadow-lg sticky top-0 z-50">
+        <div class="container mx-auto px-6 py-4">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h1 class="text-xl md:text-2xl font-bold">Admin Dashboard</h1>
+                    <p class="text-blue-200 text-sm">मॉनिटरिंग एवं परीक्षा प्रबंधन</p>
+                </div>
+                <div class="flex items-center gap-4">
+                    <div class="relative">
+                        <button onclick="toggleUserDropdown()" class="flex items-center gap-2 focus:outline-none">
+                            <span id="user-name"
+                                class="text-sm font-semibold hidden md:block text-blue-100">Loading...</span>
+                            <div
+                                class="w-8 h-8 rounded-full bg-blue-700 flex items-center justify-center border-2 border-blue-400">
+                                <i class="fas fa-user text-sm"></i>
+                            </div>
+                            <i class="fas fa-chevron-down text-xs text-blue-300"></i>
+                        </button>
+                        <div id="user-dropdown"
+                            class="hidden absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-xl z-50 border border-gray-100 py-1">
+                            <div class="px-4 py-3 border-b border-gray-100">
+                                <p class="text-xs text-gray-500 uppercase tracking-wider font-bold">Signed in as</p>
+                                <p id="dropdown-user-email" class="text-sm font-medium text-gray-900 truncate">
+                                    user@example.com</p>
+                            </div>
+                            <a href="#" onclick="openChangePasswordModal()"
+                                class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
+                                <i class="fas fa-key w-4 text-gray-400 mr-2"></i>Change Password
+                            </a>
+                            <div class="border-t border-gray-100 my-1"></div>
+                            <a href="#" onclick="authHelper.logout()"
+                                class="block px-4 py-2 text-sm text-red-600 hover:bg-red-50">
+                                <i class="fas fa-sign-out-alt w-4 text-red-400 mr-2"></i>Logout
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Page Group Navigation -->
+    <div class="bg-white border-b shadow-sm sticky top-[72px] z-40 overflow-x-auto no-scrollbar">
+        <div class="container mx-auto px-6 flex">
+            <a href="admin-dashboard.html" class="page-nav-btn" id="nav-dash">
+                <i class="fas fa-th-large"></i> Main
+            </a>
+            <a href="admin-students.html" class="page-nav-btn" id="nav-students">
+                <i class="fas fa-users"></i> Students
+            </a>
+            <a href="admin-messages.html" class="page-nav-btn" id="nav-messages">
+                <i class="fas fa-envelope"></i> Communication
+            </a>
+            <a href="admin-monitor.html" class="page-nav-btn active" id="nav-monitor">
+                <i class="fas fa-desktop"></i> Monitor
+            </a>
+            <a href="admin-inventory.html" class="page-nav-btn" id="nav-inventory">
+                <i class="fas fa-boxes"></i> Inventory
+            </a>
+        </div>
+    </div>
+
+    <div class="container mx-auto px-6 py-8">
+        <div class="bg-white rounded-xl shadow-lg mb-8 overflow-hidden">
+            <div class="flex overflow-x-auto no-scrollbar border-b">
+                <button onclick="switchTab('monitoring')"
+                    class="tab-btn active px-8 py-4 font-bold transition-colors hover:bg-gray-50 whitespace-nowrap">
+                    <i class="fas fa-user-check mr-2"></i>Live Attendance
+                </button>
+                <button onclick="switchTab('exams')"
+                    class="tab-btn px-8 py-4 font-bold transition-colors hover:bg-gray-50 whitespace-nowrap">
+                    <i class="fas fa-file-signature mr-2"></i>Examination Records
+                </button>
+            </div>
+
+            <!-- Monitoring Tab -->
+            <div id="monitoring-tab" class="tab-content active p-6">
+                <div class="flex flex-wrap items-center justify-between gap-4 mb-6">
+                    <h3 class="text-xl font-bold text-gray-800">Attendance Tracker</h3>
+                    <div class="flex flex-wrap gap-2">
+                        <select id="monitor-class-select" class="px-4 py-2 border rounded-lg outline-none">
+                            <option value="">Select Class</option>
+                            <option value="lkg">LKG</option>
+                            <option value="ukg">UKG</option>
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                            <option value="5">5</option>
+                            <option value="6">6</option>
+                            <option value="7">7</option>
+                            <option value="8">8</option>
+                        </select>
+                        <input type="date" id="monitor-date" class="px-4 py-2 border rounded-lg outline-none">
+                        <button onclick="loadClassAttendance()"
+                            class="bg-blue-900 text-white px-6 py-2 rounded-lg hover:bg-blue-800">
+                            <i class="fas fa-sync-alt mr-2"></i>View Attendance
+                        </button>
+                    </div>
+                </div>
+
+                <div class="overflow-x-auto rounded-lg border">
+                    <table class="w-full text-left">
+                        <thead class="bg-gray-100 text-gray-700 font-bold">
+                            <tr>
+                                <th class="px-6 py-4">Student Name</th>
+                                <th class="px-6 py-4">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="monitor-attendance-body">
+                            <tr>
+                                <td colspan="2" class="px-6 py-10 text-center text-gray-500">Please select class and
+                                    date to view logs</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Exams Tab -->
+            <div id="exams-tab" class="tab-content p-6">
+                <div class="flex flex-wrap items-center justify-between gap-4 mb-6">
+                    <h3 class="text-xl font-bold text-gray-800">Examination Results</h3>
+                    <div class="flex flex-wrap gap-2">
+                        <select id="exam-class-select" onchange="loadClassResults()"
+                            class="px-4 py-2 border rounded-lg outline-none bg-blue-50 font-bold border-blue-200">
+                            <option value="">Select Class</option>
+                            <option value="lkg">LKG</option>
+                            <option value="ukg">UKG</option>
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                            <option value="5">5</option>
+                            <option value="6">6</option>
+                            <option value="7">7</option>
+                            <option value="8">8</option>
+                        </select>
+                        <select id="exam-type-select" onchange="loadClassResults()"
+                            class="px-4 py-2 border rounded-lg outline-none">
+                            <option value="unit1">Unit Test 1</option>
+                            <option value="unit2">Unit Test 2</option>
+                            <option value="half-yearly">Half Yearly</option>
+                            <option value="annual">Annual Exam</option>
+                        </select>
+                        <button onclick="openExamConfigModal()"
+                            class="bg-blue-100 text-blue-900 border border-blue-200 px-6 py-2 rounded-lg hover:bg-blue-200 shadow-sm font-bold">
+                            <i class="fas fa-cog mr-2"></i>Configure Schedule
+                        </button>
+                        <button onclick="loadClassResults()"
+                            class="bg-blue-900 text-white px-6 py-2 rounded-lg hover:bg-blue-800 shadow-md">
+                            <i class="fas fa-sync-alt mr-2"></i>Refresh List
+                        </button>
+                        <button onclick="bulkPrintAdmitCards()"
+                            class="bg-green-700 text-white px-6 py-2 rounded-lg hover:bg-green-800 shadow-md font-bold">
+                            <i class="fas fa-print mr-2"></i>Bulk Print Admit Cards
+                        </button>
+                    </div>
+                </div>
+
+                <div class="overflow-x-auto rounded-lg border">
+                    <table class="w-full text-left">
+                        <thead class="bg-gray-100 text-gray-700 font-bold">
+                            <tr>
+                                <th class="px-6 py-4">Student Name</th>
+                                <th class="px-6 py-4 text-center">Exam Type</th>
+                                <th class="px-6 py-4 text-center">Marks/Grade</th>
+                                <th class="px-6 py-4 text-center">Academic Result</th>
+                                <th class="px-6 py-4 text-center">Exam Admit Card</th>
+                            </tr>
+                        </thead>
+                        <tbody id="monitor-results-body">
+                            <tr>
+                                <td colspan="5" class="px-6 py-10 text-center text-gray-500">Select parameters to view
+                                    results</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Result View Modal -->
+    <div id="result-view-modal" style="z-index: 99999;" class="hidden fixed inset-0 bg-black bg-opacity-70 flex justify-center items-start pt-20 pb-10 px-4 backdrop-blur-sm overflow-y-auto">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-lg w-full max-h-[85vh] transform transition-all scale-100 flex flex-col">
+            <div class="bg-blue-900 text-white px-6 py-4 rounded-t-2xl flex justify-between items-center flex-shrink-0">
+                <h3 class="text-xl font-bold"><i class="fas fa-file-contract mr-2"></i>Academic Result</h3>
+                <button onclick="closeAcademicResultModal()" class="text-white hover:text-gray-200 focus:outline-none">
+                    <i class="fas fa-times text-2xl"></i>
+                </button>
+            </div>
+            <div class="p-6 bg-gray-50 flex-1 overflow-y-auto">
+                <div class="flex justify-between items-center mb-6 pb-4 border-b border-gray-200">
+                    <div>
+                        <h4 class="text-lg font-black text-gray-800 uppercase tracking-wide" id="result-student-name">Student Name</h4>
+                        <p class="text-xs font-bold text-gray-500 uppercase tracking-widest mt-1">Roll No: <span id="result-roll-no" class="text-blue-700">---</span></p>
+                    </div>
+                    <div class="text-right">
+                        <span class="inline-block bg-blue-100 text-blue-800 text-xs px-3 py-1 rounded-full font-bold uppercase tracking-wider" id="result-exam-name">Exam Name</span>
+                    </div>
+                </div>
+
+                <div class="overflow-hidden rounded-lg border border-gray-200 shadow-sm mb-6 bg-white">
+                    <table class="w-full text-sm">
+                        <thead class="bg-gray-100 border-b border-gray-200">
+                            <tr>
+                                <th class="px-4 py-2 text-left text-xs font-bold text-gray-600 uppercase">Subject</th>
+                                <th class="px-4 py-2 text-right text-xs font-bold text-gray-600 uppercase">Max</th>
+                                <th class="px-4 py-2 text-right text-xs font-bold text-gray-600 uppercase">Obtained</th>
+                            </tr>
+                        </thead>
+                        <tbody id="result-subjects-body" class="divide-y divide-gray-100 font-medium text-gray-700">
+                            <!-- Populated dynamically -->
+                        </tbody>
+                        <tfoot class="bg-gray-50 border-t-2 border-gray-200">
+                            <tr>
+                                <th class="px-4 py-3 text-left text-sm font-black text-gray-800 uppercase tracking-wide">Total</th>
+                                <th class="px-4 py-3 text-right text-sm font-black text-gray-800" id="result-total-max">0</th>
+                                <th class="px-4 py-3 text-right text-sm font-black text-blue-900" id="result-total-obtained">0</th>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+
+                <div class="grid grid-cols-3 gap-4 text-center">
+                    <div class="bg-white p-3 rounded-lg border border-gray-200 shadow-sm">
+                        <p class="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Percentage</p>
+                        <p class="text-lg font-black text-gray-800" id="result-percentage">0%</p>
+                    </div>
+                    <div class="bg-white p-3 rounded-lg border border-gray-200 shadow-sm">
+                        <p class="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Grade</p>
+                        <p class="text-lg font-black text-green-600" id="result-grade">-</p>
+                    </div>
+                    <div class="bg-white p-3 rounded-lg border border-gray-200 shadow-sm">
+                        <p class="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Class Rank</p>
+                        <p class="text-lg font-black text-blue-600" id="result-rank">-</p>
+                    </div>
+                </div>
+            </div>
+            <div class="px-6 py-4 bg-gray-100 rounded-b-2xl text-center">
+                <button onclick="closeAcademicResultModal()" class="bg-gray-300 text-gray-700 px-8 py-2 rounded-lg font-bold hover:bg-gray-400 transition-colors">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Password Modal -->
+    <div id="change-password-modal"
+        class="fixed inset-0 bg-black bg-opacity-70 hidden items-center justify-center z-[70] p-4 backdrop-blur-sm">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md" id="password-modal-content">
+            <div class="p-6">
+                <h2 class="text-xl font-bold text-gray-800 mb-6">Change Password</h2>
+                <form id="change-password-form" onsubmit="handlePasswordChange(event)" class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Current Password</label>
+                        <input type="password" id="current-password" required
+                            class="w-full px-4 py-2 border rounded-lg shadow-sm">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">New Password</label>
+                        <input type="password" id="new-password" required minlength="6"
+                            class="w-full px-4 py-2 border rounded-lg shadow-sm">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Confirm New Password</label>
+                        <input type="password" id="confirm-password" required minlength="6"
+                            class="w-full px-4 py-2 border rounded-lg shadow-sm">
+                    </div>
+                    <div class="flex gap-3 pt-4">
+                        <button type="button" onclick="closeChangePasswordModal()"
+                            class="flex-1 bg-gray-100 py-2.5 rounded-lg">Cancel</button>
+                        <button type="submit" id="save-password-btn"
+                            class="flex-1 bg-blue-900 text-white py-2.5 rounded-lg font-bold">Update Password</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Admit Card Modal -->
+    <div id="admit-card-modal"
+        class="hidden fixed inset-0 bg-black bg-opacity-70 z-[70] flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-4xl w-full max-h-[95vh] overflow-y-auto">
+            <div class="sticky top-0 bg-blue-900 text-white px-6 py-4 flex justify-between items-center z-10">
+                <h3 class="text-xl font-bold"><i class="fas fa-id-card mr-2"></i>Examination Admit Card</h3>
+                <div class="flex gap-2">
+                    <button onclick="printAdmitCard()"
+                        class="bg-white text-blue-900 px-4 py-1.5 rounded-lg font-bold hover:bg-gray-100 transition-colors">
+                        <i class="fas fa-print mr-2"></i>Print Card
+                    </button>
+                    <button onclick="closeAdmitCardModal()" class="text-white hover:text-gray-200">
+                        <i class="fas fa-times text-2xl"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div class="p-8 bg-gray-100" id="admit-card-content">
+                <!-- Admit Card Format (Printable) -->
+                <!-- MARK: CARD WIDTH AND HEIGHT -->
+                <!-- Modify 'width: 650px' and 'min-height: 500px' below to manually set the exact size of your admit card -->
+                <div class="bg-white p-3 shadow-2xl mx-auto font-sans text-gray-800 relative overflow-hidden transition-all flex flex-col"
+                    style="border: 3px solid #1e3a8a; width: 650px; min-height: 500px; height: auto; box-sizing: border-box;">
+                    <!-- MARK: WATERMARK OPACITY & SIZE -->
+                    <!-- Modify 'opacity: 0.10' to change transparency (e.g. 0.15 is darker, 0.05 is lighter). Modify 'w-64' to change size. -->
+                    <div class="absolute inset-0 flex items-center justify-center pointer-events-none"
+                        style="opacity: 0.10;">
+                        <img src="../assets/images/logo/logo1.png" alt="Watermark" class="w-64">
+                    </div>
+
+                    <div class="flex items-center justify-between pb-1 mb-1 relative z-10"
+                        style="border-bottom: 3px solid #1e3a8a;">
+                        <!-- MARK: SCHOOL LOGO SIZE -->
+                        <!-- Modify 'w-14 h-14' to resize the top-left school logo -->
+                        <img src="../assets/images/logo/logo.png" alt="Logo" class="w-14 h-14 object-contain">
+                        <div class="flex-1 text-center px-2">
+                            <h1 class="text-base font-black uppercase text-blue-900 tracking-tighter leading-none m-0"
+                                style="line-height: 1.1;">Police Modern School</h1>
+                            <p class="text-[7px] font-bold text-gray-500 uppercase tracking-widest mt-0.5">
+                                25<sup>th</sup> BN PAC Raebareli, Uttar Pradesh</p>
+                            <div
+                                class="inline-block bg-blue-900 text-white text-[8px] px-3 py-0.5 rounded-full mt-1 font-bold tracking-widest uppercase">
+                                Admit Card
+                            </div>
+                        </div>
+                        <!-- MARK: STUDENT PHOTO BOX SIZE -->
+                        <!-- Modify 'w-14 h-16' below to resize the student photograph container -->
+                        <div
+                            class="w-14 h-16 border-2 border-dashed border-gray-400 flex items-center justify-center text-[7px] text-gray-400 text-center leading-tight bg-gray-50 rounded">
+                            Affix<br>Photo
+                        </div>
+                    </div>
+
+                    <div class="text-center mb-1 relative z-10">
+                        <h2 class="text-xs font-black text-blue-900 uppercase tracking-tight m-0" id="admit-exam-title"
+                            style="margin-top:-2px;">
+                            Annual Examination 2024-25
+                        </h2>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-x-6 gap-y-1 mb-2 text-[10px] relative z-10">
+                        <div class="border-b border-gray-200 pb-0.5">
+                            <p class="text-[7px] uppercase font-bold text-gray-500 tracking-tighter mb-0.5">Student Name
+                            </p>
+                            <p class="font-black text-gray-900 uppercase truncate" id="admit-student-name">---</p>
+                        </div>
+                        <div class="border-b border-gray-200 pb-0.5">
+                            <p class="text-[7px] uppercase font-bold text-gray-500 tracking-tighter mb-0.5">Roll Number
+                            </p>
+                            <p class="font-black text-blue-900 font-mono text-xs" id="admit-roll-no">---</p>
+                        </div>
+                        <div class="border-b border-gray-200 pb-0.5">
+                            <p class="text-[7px] uppercase font-bold text-gray-500 tracking-tighter mb-0.5">Class &
+                                Section</p>
+                            <p class="font-black text-gray-900 uppercase" id="admit-class">---</p>
+                        </div>
+                        <div class="border-b border-gray-200 pb-0.5">
+                            <p class="text-[7px] uppercase font-bold text-gray-500 tracking-tighter mb-0.5">Father's
+                                Name</p>
+                            <p class="font-black text-gray-900 uppercase truncate" id="admit-father-name">---</p>
+                        </div>
+                    </div>
+
+                    <div class="mb-2 relative z-10 flex-grow">
+                        <table class="w-full text-[9.5px] border-collapse">
+                            <thead>
+                                <tr class="bg-blue-50">
+                                    <th class="border-2 border-blue-900 p-1.5 text-blue-900 uppercase">Subject</th>
+                                    <th class="border-2 border-blue-900 p-1.5 text-blue-900 uppercase">Date</th>
+                                    <th class="border-2 border-blue-900 p-1.5 text-blue-900 uppercase">Time</th>
+                                </tr>
+                            </thead>
+                            <tbody id="admit-subjects-body">
+                                <!-- Populated dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="flex justify-between items-end relative z-10 mt-auto">
+                        <div class="text-[7px] space-y-1 mb-1">
+                            <p class="font-bold text-red-600 underline text-[8px]">Note:</p>
+                            <ul class="list-disc list-inside text-gray-600 leading-tight font-medium">
+                                <li>Carry admit card daily to the examination hall.</li>
+                                <li>Reach the examination hall 15 minutes early.</li>
+                            </ul>
+                        </div>
+                        <div class="flex flex-col items-center pt-1">
+                            <!-- MARK: SIGNATURE SIZE -->
+                            <!-- Modify 'h-10 w-48' to resize the signature image. You can also add 'mb-2' or 'mt-2' to adjust spacing. -->
+                            <img src="../assets/images/logo/signature.png" alt="Signature"
+                                class="h-10 w-48 object-contain mb-1">
+                            <div class="w-48 pt-1 text-center" style="border-top: 2px solid #1e3a8a;">
+                                <p class="text-[8px] font-black text-blue-900 tracking-wide">Controller of Exams</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-2 pt-1.5 flex justify-between items-center opacity-50 relative z-10 text-[7px] font-bold"
+                        style="border-top: 1px dashed #cbd5e1;">
+                        <p id="admit-timestamp">ID: 000 | Generated: ---</p>
+                        <p>© Police Modern School</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Exam Schedule Configuration Modal -->
+    <div id="exam-config-modal"
+        class="fixed inset-0 bg-black bg-opacity-70 hidden items-center justify-center z-[80] p-4 backdrop-blur-sm">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-2xl overflow-hidden">
+            <div class="bg-blue-900 text-white px-6 py-4 flex justify-between items-center">
+                <div class="flex items-center gap-3">
+                    <i class="fas fa-calendar-alt text-xl text-blue-300"></i>
+                    <h3 class="text-xl font-bold">Default Exam Schedule</h3>
+                </div>
+                <button onclick="closeExamConfigModal()" class="text-white hover:text-gray-200 transition-colors"><i
+                        class="fas fa-times text-xl"></i></button>
+            </div>
+            <div class="p-6">
+                <div class="bg-blue-50 p-4 rounded-xl border border-blue-100 flex items-center justify-between mb-6">
+                    <div>
+                        <p class="text-[10px] text-blue-600 font-bold uppercase tracking-widest">Selected Scope</p>
+                        <h4 class="text-lg font-black text-blue-900 uppercase" id="config-target-info">Class --- | ---
+                        </h4>
+                    </div>
+                    <div class="text-right">
+                        <p class="text-[10px] text-gray-400 font-bold uppercase">Academic Year</p>
+                        <p class="font-bold text-gray-700">2024-25</p>
+                    </div>
+                </div>
+
+                <div class="mb-6">
+                    <div class="flex items-center justify-between mb-3">
+                        <label class="block text-sm font-black text-gray-700">Subjects & Examination Dates</label>
+                        <button onclick="addConfigSubject()" class="text-blue-700 text-xs font-bold hover:underline"><i
+                                class="fas fa-plus mr-1"></i>Add Row</button>
+                    </div>
+                    <div class="max-h-[300px] overflow-y-auto pr-2 custom-scroll space-y-3" id="config-subjects-list">
+                        <!-- Dynamic subject inputs -->
+                    </div>
+                </div>
+
+                <div class="flex gap-4 pt-4 border-t">
+                    <button onclick="closeExamConfigModal()"
+                        class="flex-1 bg-gray-100 text-gray-600 py-3 rounded-xl font-bold hover:bg-gray-200 transition-all">Cancel</button>
+                    <button onclick="saveExamSchedule()"
+                        class="flex-[2] bg-blue-900 text-white py-3 rounded-xl font-bold shadow-lg hover:bg-blue-800 transition-all">
+                        <i class="fas fa-check-circle mr-2"></i>Apply & Save as Default
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Hidden Bulk Print Layout Styles -->
+    <style>
+        /* A4 Portrait: 210mm x 297mm | A4 Landscape: 297mm x 210mm */
+        /* 1-Card-per-page Layout */
+        @media print {
+            @page {
+                size: A4 landscape;
+                margin: 0;
+            }
+
+            body>*:not(#bulk-print-wrapper) {
+                display: none !important;
+            }
+
+            #bulk-print-wrapper {
+                display: block !important;
+                padding: 0;
+                margin: 0;
+                position: absolute !important;
+                left: 0;
+                top: 0;
+                width: 100%;
+                background: white !important;
+            }
+
+            .print-page {
+                display: block;
+                width: 100%;
+                page-break-after: always;
+                box-sizing: border-box;
+                padding-top: 15mm;
+            }
+
+            .print-card-box {
+                width: 100%;
+                margin: 0 auto;
+                position: relative;
+                overflow: hidden;
+                background: white !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+        }
+
+        #bulk-print-wrapper {
+            display: none;
+        }
+
+        .custom-scroll::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .custom-scroll::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 10px;
+        }
+            h1, h2, h3, h4, h5, h6 { font-family: 'Nunito', sans-serif; }
+    </style>
+
+    <div id="bulk-print-wrapper"></div>
+
+    <script type="module">
+        import { initDashboard } from '../assets/js/admin-dashboard.js?v=2';
+        window.addEventListener('load', () => {
+            initDashboard();
+        });
+    </script>
+</body>
+
+</html>

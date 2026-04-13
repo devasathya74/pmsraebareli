@@ -154,246 +154,54 @@
     </div>
 
     <!-- Modals -->
-    <!-- Fee Ledger Modal — Redesigned Financial Overview -->
-    <div id="ledger-modal"
-        class="hidden fixed inset-0 bg-black bg-opacity-60 z-[60] flex items-start justify-center p-4 overflow-y-auto"
-        style="backdrop-filter: blur(8px); padding-top: var(--ledger-top-offset, 120px);">
-        <!-- TIP: To manually shift the popup, change the 120px value above or set --ledger-top-offset in CSS -->
-        <div class="bg-white rounded-3xl shadow-2xl max-w-7xl w-full max-h-[94vh] flex flex-col my-auto sm:my-0 shadow-purple-900/20"
-            style="box-shadow: 0 40px 100px -20px rgba(0,0,0,0.5);">
-
-            <div class="px-6 py-4 border-b flex items-center justify-between bg-white flex-shrink-0 rounded-t-3xl text-gray-800">
-                <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 bg-purple-100 rounded-xl flex items-center justify-center text-purple-600">
-                        <i class="fas fa-file-invoice-dollar text-xl"></i>
-                    </div>
-                    <div>
-                        <h2 class="text-xl font-black tracking-tight">School Financial Ledger</h2>
-                        <p class="text-[10px] text-gray-400 font-bold uppercase tracking-widest leading-none mt-1">Real-time Performance Metrics</p>
-                    </div>
-                </div>
-                <div class="flex items-center gap-3">
-                    <button onclick="calculateLedgerData()" class="px-3 py-1.5 text-xs font-black text-purple-700 bg-purple-50 hover:bg-purple-100 rounded-lg transition-all flex items-center gap-2 border border-purple-200">
-                        <i class="fas fa-sync-alt"></i> REFRESH DATA
-                    </button>
-                    <button onclick="document.getElementById('ledger-modal').classList.add('hidden')" class="w-8 h-8 flex items-center justify-center text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-all">
-                        <i class="fas fa-times"></i>
-                    </button>
-                </div>
-            </div>
-
-            <!-- Tabs -->
-            <div class="flex border-b bg-gray-50 flex-shrink-0 px-6">
-                <button id="ledger-tab-overview" onclick="switchLedgerTab('overview')"
-                    class="px-6 py-4 font-bold text-purple-800 border-b-2 border-purple-700 text-sm uppercase tracking-wider transition-colors">
-                    <i class="fas fa-chart-bar mr-2"></i>Financial Overview
-                </button>
-                <button id="ledger-tab-student" onclick="switchLedgerTab('student')"
-                    class="px-6 py-4 font-bold text-gray-400 border-b-2 border-transparent text-sm uppercase tracking-wider transition-colors hover:text-gray-700">
-                    <i class="fas fa-user mr-2"></i>Student Ledger
-                </button>
-                <button id="ledger-tab-expense" onclick="switchLedgerTab('expense')"
-                    class="px-6 py-4 font-bold text-gray-400 border-b-2 border-transparent text-sm uppercase tracking-wider transition-colors hover:text-gray-700">
-                    <i class="fas fa-receipt mr-2"></i>Add Expense
+    <!-- Financial Ledger Modal (Global) -->
+    <div id="ledger-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-[60] flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-5xl w-full max-h-[90vh] flex flex-col scale-100">
+            <div class="bg-blue-900 text-white px-6 py-4 rounded-t-2xl flex justify-between items-center flex-shrink-0">
+                <h3 class="text-xl font-bold"><i class="fas fa-book-open mr-2"></i>School Financial Ledger</h3>
+                <button onclick="document.getElementById('ledger-modal').classList.add('hidden')" class="text-white hover:text-gray-200">
+                    <i class="fas fa-times text-2xl"></i>
                 </button>
             </div>
 
-            <!-- =================== TAB 1: FINANCIAL OVERVIEW =================== -->
-            <div id="ledger-panel-overview" class="flex-1 overflow-y-auto p-6">
-                
-                <!-- Session Filter -->
-                <div class="mb-6 flex flex-col sm:flex-row justify-between items-center bg-white p-5 rounded-2xl border border-purple-100 shadow-sm gap-4">
-                    <div class="flex items-center gap-4">
-                        <div class="w-10 h-10 rounded-xl bg-purple-50 flex items-center justify-center text-purple-600">
-                            <i class="fas fa-calendar-check"></i>
-                        </div>
-                        <div>
-                            <span class="block font-black text-purple-900 text-sm">Select Academic Session</span>
-                            <span class="text-[10px] font-bold text-purple-400 uppercase tracking-widest">Global Financial Context</span>
-                        </div>
+            <div class="p-6 border-b bg-gray-50">
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                    <div class="bg-white p-4 rounded-lg border shadow-sm text-center">
+                        <p class="text-xs font-bold text-gray-500 uppercase">Annual Income</p>
+                        <p id="ledger-total-income" class="text-xl font-bold text-green-700">₹0</p>
                     </div>
-                    <!-- Session Tabs Container -->
-                    <div id="overview-session-tabs" class="flex bg-gray-100/80 p-1.5 rounded-xl border border-gray-200 shadow-inner">
-                        <!-- Populated dynamicallly as tabs -->
+                    <div class="bg-white p-4 rounded-lg border shadow-sm text-center">
+                        <p class="text-xs font-bold text-gray-500 uppercase">Salaries (Annual)</p>
+                        <p id="ledger-total-expense" class="text-xl font-bold text-red-700">₹0</p>
                     </div>
-                </div>
-
-                <!-- KPI Summary Cards -->
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 mb-8">
-                    <div class="rounded-2xl p-5 text-white shadow-lg" style="background: linear-gradient(135deg, #7c3aed, #6d28d9);">
-                        <div class="flex justify-between items-start mb-1">
-                            <p class="text-purple-100 text-[10px] font-black uppercase tracking-widest">Teacher Salary Paid</p>
-                            <span class="bg-white/20 px-2 py-0.5 rounded text-[10px] font-black" id="ledger-teacher-count">0 STAFF</span>
-                        </div>
-                        <p class="text-3xl font-black" id="ledger-teacher-salary">₹0</p>
-                        <p class="text-purple-200 text-[10.5px] mt-2 font-bold"><i class="fas fa-history mr-1"></i>Actual payments emitted</p>
+                    <div class="bg-white p-4 rounded-lg border shadow-sm text-center">
+                        <p class="text-xs font-bold text-gray-500 uppercase">Other Expenses</p>
+                        <p id="ledger-other-expense" class="text-xl font-bold text-orange-700">₹0</p>
                     </div>
-
-                    <div class="rounded-2xl p-5 text-white shadow-lg" style="background: linear-gradient(135deg, #16a34a, #15803d);">
-                        <div class="flex justify-between items-start mb-1">
-                            <p class="text-green-100 text-[10px] font-black uppercase tracking-widest">Actual Income (Fees)</p>
-                            <span class="bg-white/20 px-2 py-0.5 rounded text-[10px] font-black" id="ledger-student-count">0 STUDENTS</span>
-                        </div>
-                        <p class="text-3xl font-black" id="ledger-total-income">₹0</p>
-                        <p class="text-green-200 text-[10.5px] mt-2 font-bold"><i class="fas fa-check-circle mr-1"></i>Fees & Admissions Received</p>
-                    </div>
-
-                    <div class="rounded-2xl p-5 text-white shadow-lg" style="background: linear-gradient(135deg, #ea580c, #c2410c);">
-                        <p class="text-orange-100 text-[10px] font-black uppercase tracking-widest mb-1">Other Expenses</p>
-                        <p class="text-3xl font-black" id="ledger-other-expense">₹0</p>
-                        <p class="text-orange-200 text-[10.5px] mt-2 font-bold"><i class="fas fa-shopping-cart mr-1"></i>Operations & Maintenance</p>
-                    </div>
-
-                    <div class="rounded-2xl p-5 text-white shadow-lg" style="background: linear-gradient(135deg, #dc2626, #b91c1c);">
-                        <p class="text-red-100 text-[10px] font-black uppercase tracking-widest mb-1">Pending to Collect</p>
-                        <p class="text-3xl font-black" id="ledger-pending-collect">₹0</p>
-                        <p class="text-red-200 text-[10.5px] mt-2 font-bold"><i class="fas fa-exclamation-triangle mr-1"></i>Overdue till current month</p>
-                    </div>
-
-                    <div class="rounded-2xl p-5 text-white shadow-lg" id="ledger-current-profit-card" style="background: linear-gradient(135deg, #0369a1, #075985);">
-                        <p class="text-blue-100 text-[10px] font-black uppercase tracking-widest mb-1">Profit/Loss (Current)</p>
-                        <p class="text-3xl font-black" id="ledger-net-balance">₹0</p>
-                        <p class="text-blue-200 text-[10.5px] mt-2 font-bold"><i class="fas fa-balance-scale mr-1"></i>Reality: Income - Expenses</p>
-                    </div>
-
-                    <div class="rounded-2xl p-5 text-white shadow-lg" style="background: linear-gradient(135deg, #475569, #334155);">
-                        <p class="text-slate-100 text-[10px] font-black uppercase tracking-widest mb-1">Annual Projection</p>
-                        <p class="text-3xl font-black" id="ledger-annual-projection">₹0</p>
-                        <p class="text-slate-300 text-[10.5px] mt-2 font-bold"><i class="fas fa-forward mr-1"></i>Est. Annual Balance</p>
-                    </div>
-                </div>
-
-                <!-- Class-wise Income Table -->
-                <div class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
-                    <div class="px-6 py-4 border-b flex items-center justify-between bg-gray-50">
-                        <div>
-                            <h4 class="font-black text-gray-800 text-base">Class-wise Estimate vs Reality</h4>
-                            <p class="text-xs text-gray-400 mt-0.5">Calculated Fee + Admission Fee analysis per class</p>
-                        </div>
-                    </div>
-                    <div class="overflow-x-auto">
-                        <table class="w-full text-sm">
-                            <thead>
-                                <tr class="bg-gray-800 text-white">
-                                    <th class="px-4 py-4 text-left font-black uppercase tracking-wider text-[10px]">Class</th>
-                                    <th class="px-3 py-4 text-right font-black uppercase tracking-wider text-[10px]">Students</th>
-                                    <th class="px-3 py-4 text-right font-black uppercase tracking-wider text-[10px]">Monthly</th>
-                                    <th class="px-3 py-4 text-right font-black uppercase tracking-wider text-[10px]">Misc (Adm.)</th>
-                                    <th class="px-3 py-4 text-right font-black uppercase tracking-wider text-[10px] text-gray-400">Annual Est.</th>
-                                    <th class="px-3 py-4 text-right font-black uppercase tracking-wider text-[10px] bg-green-700">Collected</th>
-                                    <th class="px-3 py-4 text-right font-black uppercase tracking-wider text-[10px] bg-red-700">Pending (Month)</th>
-                                    <th class="px-3 py-4 text-right font-black uppercase tracking-wider text-[10px] bg-gray-600">Annual Pending</th>
-                                </tr>
-                            </thead>
-                            <tbody id="ledger-class-body">
-                                <tr>
-                                    <td colspan="8" class="py-12 text-center text-gray-400">
-                                        <i class="fas fa-search-dollar text-3xl mb-3 block opacity-20"></i>
-                                        Loading financials...
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
+                    <div class="bg-white p-4 rounded-lg border shadow-sm text-center">
+                        <p class="text-xs font-bold text-gray-500 uppercase">Net Balance</p>
+                        <p id="ledger-net-balance" class="text-xl font-bold">₹0</p>
                     </div>
                 </div>
             </div>
 
-            <!-- =================== TAB 2: STUDENT LEDGER =================== -->
-            <div id="ledger-panel-student" class="flex-1 overflow-y-auto p-6 hidden">
-                <div class="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm mb-6">
-                    <div class="flex flex-col sm:flex-row justify-between items-center gap-6 mb-6">
-                        <div class="flex items-center gap-4">
-                            <div class="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center text-blue-600">
-                                <i class="fas fa-calendar-alt"></i>
-                            </div>
-                            <div>
-                                <span class="block font-black text-blue-900 text-sm">Target Academic Session</span>
-                                <span class="text-[10px] font-bold text-blue-400 uppercase tracking-widest">Active Report Period</span>
-                            </div>
-                        </div>
-                        <div id="ledger-session-tabs" class="flex bg-gray-100/80 p-1.5 rounded-xl border border-gray-200 shadow-inner">
-                            <!-- Populated dynamicallly -->
-                        </div>
-                    </div>
-
-                    <div class="flex flex-wrap gap-4 items-end pt-4 border-t">
-                        <div class="w-32">
-                            <label class="block text-[10px] font-black text-blue-700 uppercase tracking-widest mb-2">Class</label>
-                            <select id="ledger-class-filter" onchange="populateLedgerStudentList()" class="w-full px-4 py-2 bg-gray-50 border rounded-xl font-bold">
-                                <option value="">All</option>
-                                <option value="lkg">LKG</option><option value="ukg">UKG</option>
-                                <option value="1">1st</option><option value="2">2nd</option>
-                                <option value="3">3rd</option><option value="4">4th</option>
-                                <option value="5">5th</option><option value="6">6th</option>
-                                <option value="7">7th</option><option value="8">8th</option>
-                            </select>
-                        </div>
-                        <div class="flex-1">
-                            <label class="block text-[10px] font-black text-purple-700 uppercase tracking-widest mb-2">Search Student</label>
-                            <select id="ledger-student-select" onchange="handleLedgerStudentChange()" class="w-full px-4 py-2 bg-gray-50 border rounded-xl font-bold">
-                                <option value="">Select Student...</option>
-                            </select>
-                        </div>
-                        <button onclick="populateLedgerStudentList()" class="bg-purple-700 text-white px-6 py-2 rounded-xl font-bold uppercase text-xs">Sync</button>
-                    </div>
-                </div>
-
-                <div id="ledger-content" class="hidden">
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-5 mb-8">
-                        <div class="bg-green-50 border border-green-200 p-6 rounded-3xl text-center">
-                            <p class="text-[10px] font-black text-green-700 uppercase mb-2">Total Paid</p>
-                            <p class="text-3xl font-black text-green-900" id="ledger-total-paid">₹0</p>
-                        </div>
-                        <div class="bg-blue-50 border border-blue-200 p-6 rounded-3xl text-center">
-                            <p class="text-[10px] font-black text-blue-700 uppercase mb-2">Expected Fee</p>
-                            <p class="text-3xl font-black text-blue-900" id="ledger-total-expected">₹0</p>
-                        </div>
-                        <div class="bg-red-50 border border-red-200 p-6 rounded-3xl text-center">
-                            <p class="text-[10px] font-black text-red-700 uppercase mb-2">Balance Due</p>
-                            <p class="text-3xl font-black text-red-900" id="ledger-balance">₹0</p>
-                        </div>
-                    </div>
-                    <div class="bg-white rounded-2xl border overflow-hidden">
-                        <table class="w-full text-sm">
-                            <thead class="bg-gray-800 text-white">
-                                <tr>
-                                    <th class="px-5 py-3 text-left font-bold uppercase text-[10px]">Month</th>
-                                    <th class="px-5 py-3 text-left font-bold uppercase text-[10px]">Description</th>
-                                    <th class="px-5 py-3 text-right font-bold uppercase text-[10px]">Due</th>
-                                    <th class="px-5 py-3 text-right font-bold uppercase text-[10px]">Paid</th>
-                                    <th class="px-5 py-3 text-center font-bold uppercase text-[10px]">Status</th>
-                                </tr>
-                            </thead>
-                            <tbody id="ledger-tbody"></tbody>
-                        </table>
-                    </div>
-                </div>
-
-                <div id="ledger-placeholder" class="bg-white p-20 text-center rounded-3xl border-2 border-dashed border-purple-100">
-                    <i class="fas fa-search-dollar text-4xl text-purple-200 mb-4 animate-bounce"></i>
-                    <h3 class="text-xl font-black text-gray-800">Awaiting Student Selection</h3>
-                    <p class="text-gray-400 text-sm mt-2">Select a student above to synchronize records.</p>
-                </div>
-            </div>
-
-            <!-- =================== TAB 3: ADD EXPENSE =================== -->
-            <div id="ledger-panel-expense" class="flex-1 overflow-y-auto p-6 hidden">
-                <div class="mb-6 flex flex-col sm:flex-row justify-between items-center bg-white p-5 rounded-2xl border border-orange-100 shadow-sm gap-4">
-                    <div class="flex items-center gap-4">
-                        <div class="w-10 h-10 rounded-xl bg-orange-50 flex items-center justify-center text-orange-600">
-                            <i class="fas fa-receipt"></i>
-                        </div>
-                        <div>
-                            <span class="block font-black text-orange-900 text-sm">Expense Management</span>
-                            <span class="text-[10px] font-bold text-orange-400 uppercase tracking-widest">Operational Bookkeeping</span>
-                        </div>
-                    </div>
-                </div>
-                <div id="expense-form-container">
-                    <!-- Standardized form can be added here or in JS -->
-                    <div class="bg-white p-8 rounded-3xl border shadow-sm max-w-lg mx-auto">
-                         <p class="text-center text-gray-400 italic">Expense entry module synchronized with global session.</p>
-                    </div>
+            <div class="flex-1 overflow-y-auto p-6">
+                <h4 class="font-bold text-gray-700 mb-4 uppercase text-sm tracking-wider">Class-wise Income Breakdown</h4>
+                <div class="bg-white rounded-xl border border-gray-200 overflow-hidden">
+                    <table class="w-full text-sm">
+                        <thead class="bg-gray-50 border-b">
+                            <tr>
+                                <th class="px-4 py-3 text-left font-bold text-gray-600 uppercase">Class</th>
+                                <th class="px-4 py-3 text-right font-bold text-gray-600 uppercase">Students</th>
+                                <th class="px-4 py-3 text-right font-bold text-gray-600 uppercase">Monthly Fee</th>
+                                <th class="px-4 py-3 text-right font-bold text-gray-600 uppercase">Misc (Annual)</th>
+                                <th class="px-4 py-3 text-right font-bold text-gray-600 uppercase">Annual Income</th>
+                            </tr>
+                        </thead>
+                        <tbody id="ledger-class-body">
+                            <!-- JS populated -->
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>

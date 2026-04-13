@@ -25,13 +25,13 @@
             <a href="#gallery" class="hover:text-secondary transition-colors whitespace-nowrap">Gallery</a>
             <a href="#faq" class="hover:text-secondary transition-colors whitespace-nowrap">FAQ</a>
             <a href="#contact" class="hover:text-secondary transition-colors whitespace-nowrap">Contact</a>
-            <a href="pages/login.html"
+            <a href="/pages/login.html"
                 class="flex items-center gap-1 bg-white/10 border border-white/20 px-3 py-1 rounded-full hover:bg-secondary hover:text-primary transition-all whitespace-nowrap text-white font-bold text-[10px]">
                 <i class="fas fa-user-lock"></i>Login
             </a>
-            <a href="pages/admission.html"
+            <a href="/pages/admission.html"
                 class="bg-secondary text-primary px-3 py-1.5 rounded-full font-bold hover:bg-yellow-300 hover:scale-105 transition-all shadow-md hover:shadow-lg whitespace-nowrap text-[10px]">Admissions</a>
-            <a href="new_index.html"
+            <a href="{{ url_for('public.index') }}"
                 class="flex items-center gap-1 bg-white border border-secondary text-primary px-2 py-1 rounded-full font-bold hover:bg-secondary transition-all shadow-sm text-[10px] whitespace-nowrap">
                 <i class="fas fa-language text-xs"></i> हिंदी
             </a>
@@ -45,7 +45,7 @@
     </div>
 
     <div class="lg:hidden container mx-auto px-4 pb-2 flex justify-end">
-        <a href="new_index.html"
+        <a href="{{ url_for('public.index') }}"
             class="flex items-center gap-1 bg-white border border-secondary text-primary px-3 py-1.5 rounded-full font-bold hover:bg-secondary transition-all shadow-sm text-[10px]">
             <i class="fas fa-language text-sm"></i> हिंदी
         </a>
@@ -76,10 +76,10 @@
                     class="hover:text-primary hover:bg-gray-50 py-2 px-1 rounded-lg border border-gray-100">Contact</a>
             </div>
             <div class="mt-2 flex flex-col gap-1">
-                <a href="pages/login.html"
+                <a href="/pages/login.html"
                     class="flex items-center justify-center gap-1 bg-primary text-white px-4 py-2 rounded-lg font-bold text-sm"><i
                         class="fas fa-user-lock"></i> Login</a>
-                <a href="pages/admission.html"
+                <a href="/pages/admission.html"
                     class="flex items-center justify-center gap-1 bg-secondary text-primary px-4 py-2 rounded-lg font-bold text-sm">Admissions</a>
             </div>
         </div>
